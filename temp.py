@@ -1,7 +1,7 @@
 
 import NXOpen
-import NXOpen.Assemblies
-import NXOpen.Features
+# import NXOpen.Assemblies
+# import NXOpen.Features
 
 session = NXOpen.Session.GetSession()
 listing_window = session.ListingWindow

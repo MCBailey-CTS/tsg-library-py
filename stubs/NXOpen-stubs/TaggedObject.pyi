@@ -1,3 +1,13 @@
+
+
+class TaggedObject:
+    Null:'TaggedObject'
+
+    @property
+    def Tag(self)->int:
+        pass
+
+
 # Features
 # AOCS
 # AOCSBuilder
