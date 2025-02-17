@@ -1,7 +1,4 @@
-
-
 from NXOpen import NXObject
-
 
 class ComponentAssembly(NXObject):
     # ActiveArrangement
