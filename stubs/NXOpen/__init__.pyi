@@ -34,6 +34,9 @@ import NXOpen.Assemblies
 # BodyGroupRule
 # BodyList
 
+class Update:
+    pass
+
 class Builder(TaggedObject):
     def Commit(self) -> Optional[NXObject]:
         pass
@@ -231,15 +234,42 @@ class NXObject(TaggedObject):
 
 class Part:
     # Annotations
-    # Arcs
-    # Axes
-    # Bodies
+    # 
+    @property
+    def Arcs(self)->NXOpen.ArcCollection:
+        pass
+    @property
+    def Axes(self)->NXOpen.AxesCollection:
+        pass
+    @property
+    def Bodies(self)->NXOpen.BodyCollection:
+        pass
+    @property
+    def Curves(self)->NXOpen.CurveCollection:
+        pass
+    @property
+    def Datums(self)->NXOpen.DatumCollection:
+        pass
+    # @property
+    # def Bodies(self)->NXOpen.BodyCollection:
+    #     pass
+    # @property
+    # def Bodies(self)->NXOpen.BodyCollection:
+    #     pass
+    # @property
+    # def Bodies(self)->NXOpen.BodyCollection:
+    #     pass
+    # @property
+    # def Bodies(self)->NXOpen.BodyCollection:
+    #     pass
     # CanBeDisplayPart
     # Close
     # CloseAfterSave
     # CloseModified
     # CloseWholeTree
-    # ComponentAssembly
+    @property
+    def ComponentAssembly(self)->NXOpen.Assemblies.ComponentAssembly:
+        pass
     # CoordinateSystems
     # CurrentFeature
     # Curves
@@ -252,7 +282,7 @@ class Part:
     # Ellipses
     # Expressions
     @property
-    def Features(self) -> List[NXOpen.Features.Feature]:
+    def Features(self) -> NXOpen.Features.FeatureCollection:
         pass
     # FullPath
     # GetAttributeTitlesByType
@@ -508,7 +538,7 @@ class PartCollection:
     # SdpsStatus
     # SetActiveDisplay
     # SetAllowMultipleDisplayedParts
-    def SetDisplay(part:Part, false0, false1)->None:
+    def SetDisplay(self, part:Part, false0, false1)->None:
         pass
     # SetMirrorPartType
     # SetNonmasterSeedPartData
@@ -584,10 +614,25 @@ class Session(TaggedObject):
     def Parts(self) -> PartCollection:
         pass
 
+    @property
+    def Parts(self) -> PartCollection:
+        pass
+
+    @property
+    def UpdateManager(self)->NXOpen.Update:
+        pass
+
+
+    def SetUndoMark(visibility:NXOpen.Session.SetUndoMarkVisibility, name:str)->NXOpen.UndoToMark:
+        pass
+    @property
+    def DisplayManager(self)->NXOpen.DisplayManager:
+        pass
+
 # Spline
 
 class TaggedObject:
-    Null: "TaggedObject"
+    Null: TaggedObject
 
     @property
     def Tag(self) -> int:
