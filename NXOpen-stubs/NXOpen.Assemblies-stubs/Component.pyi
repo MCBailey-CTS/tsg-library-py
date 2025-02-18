@@ -1,5 +1,6 @@
 from NXOpen.DisplayableObject import DisplayableObject
 
+
 class Component(DisplayableObject):
     # AttributeInformation
     # AttributeType
@@ -148,5 +149,6 @@ class Component(DisplayableObject):
     # UpdateStructure
     # UsedArrangement
     @property
-    def DisplayName(self) -> str:
+    def DisplayName(self)->str:
         pass
+
