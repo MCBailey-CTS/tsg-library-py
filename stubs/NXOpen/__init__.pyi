@@ -1,9 +1,143 @@
-# from NX
-# from Session import Session as ses
-# Session = ses
+from typing import Any
 
-from NXOpen.Assemblies import Component
 
+# ApparentChainingRule
+# ApparentChainingRuleSelection
+# ApparentChainingRuleSelectionMemberType
+# ApparentChainingRuleType
+# ApparentChainingRuleTypeMemberType
+# Arc
+# ArcCollection
+
+# Assemblies
+# AssembliesUtils
+
+# Axis
+# AxisCollection
+# AxisOrientation
+# AxisOrientationMemberType
+# AxisTypes
+# AxisTypesMemberType
+
+# BasePartUnits
+
+# Body
+# BodyCollection
+# BodyDumbRule
+
+# BodyFeatureRule
+# BodyGroupRule
+# BodyList
+
+# Builder
+
+# CartesianCoordinateSystem
+
+# ClipboardOperationsManager
+
+# Conic
+
+# CoordinateSystem
+# CoordinateSystemCollection
+
+
+class Curve(DisplayableObject):
+    pass
+# CurveChainRule
+# CurveCollection
+# CurveDumbRule
+# CurveFeatureChainRule
+# CurveFeatureRule
+# CurveFeatureTangentRule
+
+# CurveTangentRule
+
+# DatumAxis
+# DatumCollection
+
+# DatumPlane
+
+# DexBuilder
+# DexManager
+
+
+
+class DisplayableObject(NXObject):
+    # AttributeInformation
+    # AttributeType
+    # Blank
+    # Color
+    # ComputationalTime
+    # CreateAttributeIterator
+    # DateAndTimeFormat
+    # DeleteAllAttributesByType
+    # DeleteAttributeByTypeAndTitle
+    # DeleteUserAttribute
+    # DeleteUserAttributes
+    # FindObject
+    # GetAttributeTitlesByType
+    # GetBooleanUserAttribute
+    # GetComputationalTimeUserAttribute
+    # GetIntegerAttribute
+    # GetIntegerUserAttribute
+    # GetNextUserAttribute
+    # GetPdmReferenceAttributeValue
+    # GetRealAttribute
+    # GetRealUserAttribute
+    # GetReferenceAttribute
+    # GetStringAttribute
+    # GetStringUserAttribute
+    # GetTimeAttribute
+    # GetTimeUserAttribute
+    # GetUserAttribute
+    # GetUserAttributeAsString
+    # GetUserAttributeCount
+    # GetUserAttributeLock
+    # GetUserAttributeSize
+    # GetUserAttributeSourceObjects
+    # GetUserAttributes
+    # GetUserAttributesAsStrings
+    # HasUserAttribute
+    # Highlight
+    # IsBlanked
+    # IsOccurrence
+    # JournalIdentifier
+    # Layer
+    # LineFont
+    # LineWidth
+    # Name
+    # NameLocation
+    # Null
+    # ObjectFont
+    # ObjectWidth
+    # OwningComponent
+    # OwningPart
+    # Print
+    # Prototype
+    # RedisplayObject
+    # RemoveViewDependency
+    # SetAttribute
+    # SetBooleanUserAttribute
+    # SetName
+    # SetNameLocation
+    # SetPdmReferenceAttribute
+    # SetReferenceAttribute
+    # SetTimeAttribute
+    # SetTimeUserAttribute
+    # SetUserAttribute
+    # SetUserAttributeLock
+    # Tag
+    # Unblank
+    # Unhighlight
+    pass
+# Direction
+# DirectionCollection
+
+# DisplayManager
+
+# DisplayModification
+# DisplayPartOption
+# DisplayPartOptionMemberType
 
 # DraftingManager
 # DxfdwgCreator
@@ -21,6 +155,8 @@ from NXOpen.Assemblies import Component
 # Hyperbola
 
 # JournalManager
+
+
 
 
 class ListingWindow:
@@ -482,6 +618,8 @@ class PartCollection:
     # IsMirroredPart
     # LoadOptions
     # MultipleDisplayedPartStatus
+    class Matrix3x3:
+        pass
     # NewBase
     # NewBaseDisplay
     # NewDisplay
@@ -529,7 +667,7 @@ class PartCollection:
         pass
     # WorkComponent
     @property
-    def WorkComponent(self)->Component:
+    def WorkComponent(self)->Any:
         pass
     # WorkComponentOption
 

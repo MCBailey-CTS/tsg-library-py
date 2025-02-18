@@ -1,5 +1,4 @@
 import NXOpen 
-import NXOpen.Assemblies
 # import NXOpen.Features
 
 
