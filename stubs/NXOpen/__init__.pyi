@@ -1,5 +1,7 @@
 from typing import Any
 
+from NXOpen.Assemblies import Component
+
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -105,7 +107,10 @@ class DisplayableObject(NXObject):
     # Layer
     # LineFont
     # LineWidth
-    # Name
+    @property
+    def Name(self)->str:
+        """Returns the name of the object"""
+        pass
     # NameLocation
     # Null
     # ObjectFont
@@ -130,7 +135,17 @@ class DisplayableObject(NXObject):
     # Unblank
     # Unhighlight
     pass
-# Direction
+
+
+class Direction(SmartObject):
+    @property
+    def Origin(Self)->Point3d:
+        pass
+
+    @property
+    def Vector(self)->Vector3d:
+        pass
+
 # DirectionCollection
 
 # DisplayManager
@@ -201,7 +216,8 @@ class ListingWindow:
 
 # LogFile
 
-# Matrix3x3
+class Matrix3x3:
+        pass
 
 # ModelingView
 # ModelingViewCollection
@@ -618,8 +634,7 @@ class PartCollection:
     # IsMirroredPart
     # LoadOptions
     # MultipleDisplayedPartStatus
-    class Matrix3x3:
-        pass
+    
     # NewBase
     # NewBaseDisplay
     # NewDisplay
@@ -667,7 +682,8 @@ class PartCollection:
         pass
     # WorkComponent
     @property
-    def WorkComponent(self)->Any:
+    def WorkComponent(self)->Component:
+        """"""
         pass
     # WorkComponentOption
 
@@ -709,6 +725,10 @@ class Point3d:
 
 # Sense
 # SenseMemberType
+
+
+class SmartObject(DisplayableObject):
+    pass
 
 class Session(TaggedObject):
     @property
