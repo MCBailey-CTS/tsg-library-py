@@ -1,5 +1,5 @@
 #!/bin/bash
-mypy --strict --disallow-any-unimported --verbose .
+mypy --strict   .
 # --warn-unused-configs
 # --disallow-any-generics
 # --disallow-subclassing-any

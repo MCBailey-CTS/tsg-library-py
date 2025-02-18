@@ -1,20 +1,20 @@
 from typing import NoReturn
 import NXOpen
-# import NXOpen.Curve 
+
+# import NXOpen.Curve
 # import NXOpen.Features
 
-def print_(obj:object)->None:
+
+def print_(obj: object) -> None:
     session = NXOpen.Session.GetSession()
     listing_window = session.ListingWindow
-    listing_window.Open()    
-    listing_window.WriteLine(str(obj))    
-    
+    listing_window.Open()
+    listing_window.WriteLine(str(obj))
+
 
 session = NXOpen.Session.GetSession()
 listing_window = session.ListingWindow
 listing_window.Open()
-
-
 
 
 # %freebeerRocks96^
@@ -44,13 +44,9 @@ for x in dir(NXOpen.Direction):
 #     print_(att)
 
 
-
-
-
 # print_(work_comp)
 
 # listing_window.WriteLine(str(dir(NXOpen.Curve.Curve)))
-
 
 
 # v = str(NXOpen.Assemblies.Component.GetPosition.__doc__)

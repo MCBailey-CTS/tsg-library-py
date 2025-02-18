@@ -1,7 +1,9 @@
-from typing import Any
+"""
+Hello
+"""
+from typing import Any, Optional
 
 from NXOpen.Assemblies import Component
-
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -31,7 +33,11 @@ from NXOpen.Assemblies import Component
 # BodyGroupRule
 # BodyList
 
-# Builder
+class Builder(TaggedObject):
+    def Commit(self) -> Optional[NXObject]:
+        pass
+    def Destroy(self) -> None:
+        pass
 
 # CartesianCoordinateSystem
 
@@ -42,9 +48,9 @@ from NXOpen.Assemblies import Component
 # CoordinateSystem
 # CoordinateSystemCollection
 
-
 class Curve(DisplayableObject):
     pass
+
 # CurveChainRule
 # CurveCollection
 # CurveDumbRule
@@ -61,8 +67,6 @@ class Curve(DisplayableObject):
 
 # DexBuilder
 # DexManager
-
-
 
 class DisplayableObject(NXObject):
     # AttributeInformation
@@ -108,7 +112,7 @@ class DisplayableObject(NXObject):
     # LineFont
     # LineWidth
     @property
-    def Name(self)->str:
+    def Name(self) -> str:
         """Returns the name of the object"""
         pass
     # NameLocation
@@ -136,14 +140,12 @@ class DisplayableObject(NXObject):
     # Unhighlight
     pass
 
-
 class Direction(SmartObject):
     @property
-    def Origin(Self)->Point3d:
+    def Origin(Self) -> Point3d:
         pass
-
     @property
-    def Vector(self)->Vector3d:
+    def Vector(self) -> Vector3d:
         pass
 
 # DirectionCollection
@@ -170,9 +172,6 @@ class Direction(SmartObject):
 # Hyperbola
 
 # JournalManager
-
-
-
 
 class ListingWindow:
     def Close(self) -> None:
@@ -217,7 +216,7 @@ class ListingWindow:
 # LogFile
 
 class Matrix3x3:
-        pass
+    pass
 
 # ModelingView
 # ModelingViewCollection
@@ -225,7 +224,6 @@ class Matrix3x3:
 # NXException
 # NXMatrix
 # NXMatrixCollection
-
 
 class NXObject(TaggedObject):
     # AttributeInformation
@@ -281,9 +279,7 @@ class NXObject(TaggedObject):
     # Tag
     pass
 
-
 # Parabola
-
 
 class Part:
     # AnalysisManager
@@ -597,7 +593,6 @@ class Part:
     # Xforms
     pass
 
-
 class PartCollection:
     # AddPartClosedHandler
     # AddPartCreatedHandler
@@ -616,7 +611,7 @@ class PartCollection:
     # CreateGenericFileNewBuilder
     # CreateLinkedMirrorPartBuilder
     @property
-    def Display(self)->Part:
+    def Display(self) -> Part:
         pass
     # EnsurePartsLoadedFully
     # EnsurePartsLoadedPartially
@@ -634,7 +629,7 @@ class PartCollection:
     # IsMirroredPart
     # LoadOptions
     # MultipleDisplayedPartStatus
-    
+
     # NewBase
     # NewBaseDisplay
     # NewDisplay
@@ -678,15 +673,14 @@ class PartCollection:
     # SolveAllPostponedConstraints
     # Work
     @property
-    def Work(self)->Part:
+    def Work(self) -> Part:
         pass
     # WorkComponent
     @property
-    def WorkComponent(self)->Component:
+    def WorkComponent(self) -> Component:
         """"""
         pass
     # WorkComponentOption
-
 
 # PartCleanup
 
@@ -699,14 +693,15 @@ class PartCollection:
 
 class Point3d:
     @property
-    def X(self)->float:
+    def X(self) -> float:
         pass
     @property
-    def Y(self)->float:
+    def Y(self) -> float:
         pass
     @property
-    def Z(self)->float:
+    def Z(self) -> float:
         pass
+
 # PointCollection
 
 # ReferenceSet
@@ -726,7 +721,6 @@ class Point3d:
 # Sense
 # SenseMemberType
 
-
 class SmartObject(DisplayableObject):
     pass
 
@@ -740,7 +734,6 @@ class Session(TaggedObject):
     @property
     def Parts(self) -> PartCollection:
         pass
-
 
 # Spline
 
@@ -769,17 +762,15 @@ class TaggedObject:
 
 class Vector3d:
     @property
-    def X(self)->float:
+    def X(self) -> float:
         pass
     @property
-    def Y(self)->float:
+    def Y(self) -> float:
         pass
     @property
-    def Z(self)->float:
+    def Z(self) -> float:
         pass
 
 # WCS
 # WCSAxis
 # WCSAxisMemberType
-
-

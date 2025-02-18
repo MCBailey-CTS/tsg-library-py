@@ -205,7 +205,6 @@
 #         }
 
 
-
 #         public static bool __HasDrawingSheet(this BasePart part, string drawingSheetName)
 #         {
 #             return ((Part)part).__HasDrawingSheet(drawingSheetName, StringComparison.Ordinal);
@@ -1097,7 +1096,6 @@
 #         }
 
 
-
 #         public static void __Close(
 #             this BasePart part,
 #             bool closeWholeTree = false,
@@ -1134,8 +1132,6 @@
 #         //    NXOpen.Vector3d axisY = matrix._AxisY();
 #         //    return part.__CreateArc(center, axisX, axisY, radius, angle1, angle2);
 #         //}
-
-
 
 
 #         public static DatumAxis __CreateFixedDatumAxis(
@@ -3151,7 +3147,6 @@
 #    #endregion
 
 
-
 #     #region Body
 
 #  public static void __NXOpenBody(Body body)
@@ -3303,17 +3298,14 @@
 #      ).ToArray();
 #  }
 
-#  public static Feature __ParentFeature(this Body body)        
+#  public static Feature __ParentFeature(this Body body)
 #  {
 #      body.__AssertIsPrototype();
 #      return body.__OwningPart().Features.GetParentFeatureOfBody(body);
 #  }
- 
- 
 
 
 #  #endregion
-
 
 
 #   #region Builder
@@ -3427,7 +3419,7 @@
 
 #          if (!(max is null) && !(num > max))
 #              continue;
-         
+
 #          max = num;
 #          max_item = item;
 #      }
@@ -3446,7 +3438,7 @@
 
 #          if (!(min is null) && !(num < min))
 #              continue;
-         
+
 #          min = num;
 #          min_item = item;
 #      }
@@ -3745,7 +3737,6 @@
 #  }
 
 
-
 #  public static IEnumerable<Component> _AssemblyPath(this Component component)
 #  {
 #      do
@@ -3957,7 +3948,7 @@
 
 #     public static void __RotateAroundY(this WCS wcs, double degrees)
 #     {
-        
+
 #     }
 
 #     public static void __RotateAroundZ(this WCS wcs, double degrees)
@@ -4958,7 +4949,7 @@
 #  //         if (fractionValue <= ii)
 #  //             return truncateValue + ii;
 
-#  //     throw new 
+#  //     throw new
 #  // }
 
 #  #endregion
@@ -5150,7 +5141,7 @@
 
 
 #    #region Mirror
-   
+
 #         // public static void __Mirror(this NXOpen.CartesianCoordinateSystem obj, Su)
 
 
@@ -5535,7 +5526,6 @@
 #    }
 
 #    #endregion
-
 
 
 #  #region Exception
@@ -6577,8 +6567,6 @@
 #    #endregion
 
 
-
-       
 #  #region DatumAxisFeature
 
 #  [Obsolete(nameof(NotImplementedException))]
@@ -6624,10 +6612,6 @@
 #   }
 
 #   #endregion
-
-
-
-
 
 
 #         #region Curve
@@ -7484,7 +7468,6 @@
 
 #         #endregion
 
-       
 
 #         #region Line
 
@@ -7665,35 +7648,18 @@
 #  }
 
 
-
-
-
-
-
 #  // public static Point __Copy()
 #  // {
 #  //     ufsession_.Trns.CreateReflectionMatrix()
 #  // }
 
 
-
 #  // move point
-
-
-
-
-
-
-
-
-
-
 
 
 #  // try to move arc
 
 #  #endregion
-
 
 
 #   #region Globals
@@ -7865,26 +7831,26 @@
 #   };
 
 #   public static UI TheUISession =>
-      
+
 #       UI.GetUI();
 
 #   public static Session session_ =>
-      
+
 #       GetSession();
 
 #   public static double Factor =>
-      
+
 #       1.0;
 
 #   public static Point3d _Point3dOrigin
 #   {
-      
+
 #       get { return new[] { 0d, 0d, 0d }.__ToPoint3d(); }
 #   }
 
 #   public static Matrix3x3 _Matrix3x3Identity
 #   {
-      
+
 #       get
 #       {
 #           double[] array = new double[9];
@@ -7896,31 +7862,31 @@
 #   /// <summary>
 #   ///     Multiply by this number to convert Part Units to Millimeters (1 or 25.4)
 #   /// </summary>
-  
+
 #   internal static double PartUnitsToMillimeters =>
-      
+
 #       MillimetersPerUnit;
 
 #   /// <summary>
 #   ///     Multiply by this number to convert Millimeters to Part Units (1 or 0.04)
 #   /// </summary>
-  
+
 #   internal static double MillimetersToPartUnits =>
-      
+
 #       1.0 / PartUnitsToMillimeters;
 
 #   /// <summary>
 #   ///     Multiply by this number to convert Part Units to Inches (1 or 0.04)
 #   /// </summary>
 #   internal static double PartUnitsToInches =>
-      
+
 #       InchesPerUnit;
 
 #   /// <summary>
 #   ///     Multiply by this number to convert Inches to Part Units (either 1 or 25.4)
 #   /// </summary>
 #   internal static double InchesToPartUnits =>
-      
+
 #       1.0 / PartUnitsToInches;
 
 #   //
@@ -7928,7 +7894,7 @@
 #   //     Multiply by this number to convert Part Units to Meters, to go to Parasolid (0.001
 #   //     or 0.0254)
 #   internal static double PartUnitsToMeters =>
-      
+
 #       0.001 * PartUnitsToMillimeters;
 
 #   //
@@ -7936,7 +7902,7 @@
 #   //     Multiply by this number to convert Meters to Part Units, when coming from Parasolid
 #   //     (1000 or 40)
 #   internal static double MetersToPartUnits =>
-      
+
 #       1000.0 * MillimetersToPartUnits;
 
 #   //
@@ -7944,14 +7910,14 @@
 #   //     Multiply by this number to convert Part Units to Points (for font sizes)
 
 #   internal static double PartUnitsToPoints =>
-      
+
 #       PartUnitsToInches * 72.0;
 
 #   //
 #   // Summary:
 #   //     Multiply by this number to convert Points to Part Units (for font sizes)
 #   internal static double PointsToPartUnits =>
-      
+
 #       1.0 / 72.0 * InchesToPartUnits;
 
 
@@ -7961,7 +7927,7 @@
 #   /// </summary>
 
 #   public static Point3d WorkCompOrigin => throw
-      
+
 #       //if (TSG_Library.Extensions.__work_part_.Tag == TSG_Library.Extensions.DisplayPart.Tag) return BaseOrigin;
 #       //if (!(NXOpen.Session.session_.Parts.WorkComponent != null)) throw new System.Exception("NullWorkComponentException");
 #       //return NXOpen.Assemblies.Component.Wrap(NXOpen.Session.session_.Parts.WorkComponent.Tag).Position;
@@ -7970,19 +7936,19 @@
 #   //"CTS Office MFC on ctsfps1.cts.toolingsystemsgroup.com";
 
 #   public static string __PrinterCts =>
-      
+
 #       _printerCts;
 
 #   public static string __SimActive =>
-      
+
 #       _simActive;
 
-  
+
 #   public static Part __display_part_
 #   {
-      
+
 #       get => session_.Parts.Display;
-      
+
 #       set => session_.Parts.SetDisplay(value, false, false, out _);
 #   }
 
@@ -7993,35 +7959,35 @@
 
 #   public static ModelingView __work_view_ => __display_part_.ModelingViews.WorkView;
 
-  
+
 #   public static Part __work_part_
 #   {
-      
+
 #       get => session_.Parts.Work;
-      
+
 #       set => session_.Parts.SetWork(value);
 #   }
 
 #   public static Part _WorkPart
 #   {
-      
+
 #       get => session_.Parts.Work;
-      
+
 #       set => session_.Parts.SetWork(value);
 #   }
 
 #   public static UFSession _UFSession =>
-      
+
 #       ufsession_;
 
 #   public static UI uisession_ =>
-      
+
 #       UI.GetUI();
 
-  
+
 #   public static WCS __wcs_
 #   {
-      
+
 #       get => __display_part_.WCS;
 #       //{
 
@@ -8032,10 +7998,10 @@
 #       //set => ufsession_.Csys.SetWcs(value.Tag);
 #   }
 
-  
+
 #   public static Component __work_component_
 #   {
-      
+
 #       get => session_.Parts.WorkComponent is null
 #           ? null
 #           : session_.Parts.WorkComponent;
@@ -8045,14 +8011,14 @@
 
 
 #   public static UFSession uf_ =>
-      
+
 #       ufsession_;
 
 #   public static UFSession ufsession_ => NXOpen.UF.UFSession.GetUFSession();
 
 #   public static string TodaysDate
 #   {
-      
+
 #       get
 #       {
 #           string day = DateTime.Today.Day < 10
@@ -8066,11 +8032,11 @@
 #   }
 
 #   public static int __process_id =>
-      
+
 #       Process.GetCurrentProcess().Id;
 
 #   public static string __user_name =>
-      
+
 #       Environment.UserName;
 
 
@@ -8082,9 +8048,9 @@
 #   /// </remarks>
 #   public static int WorkLayer
 #   {
-      
+
 #       get => __work_part_.Layers.WorkLayer;
-      
+
 #       set => __work_part_.Layers.WorkLayer = value;
 #   }
 
@@ -8099,7 +8065,7 @@
 #   ///     <para>If UnitType == Inch, then MillimetersPerUnit = 25.4</para>
 #   /// </remarks>
 #   public static double MillimetersPerUnit =>
-      
+
 #       __work_part_.PartUnits != BasePart.Units.Millimeters ? 25.4 : 1.0;
 
 #   /// <summary>Inches per part unit (either 1 or roughly 0.04)</summary>
@@ -8111,7 +8077,7 @@
 #   ///     <para>If UnitType = Inch, then InchesPerUnit = 1.</para>
 #   /// </remarks>
 #   public static double InchesPerUnit =>
-      
+
 #       __work_part_.PartUnits != BasePart.Units.Millimeters ? 1.0 : 5.0 / sbyte.MaxValue;
 
 #   /// <summary>Distance tolerance</summary>
@@ -8127,9 +8093,9 @@
 #   /// </remarks>
 #   public static double DistanceTolerance
 #   {
-      
+
 #       get => __work_part_.Preferences.Modeling.DistanceToleranceData;
-      
+
 #       set => __work_part_.Preferences.Modeling.DistanceToleranceData = value;
 #   }
 
@@ -8150,9 +8116,9 @@
 #   /// </remarks>
 #   public static double AngleTolerance
 #   {
-      
+
 #       get => __work_part_.Preferences.Modeling.AngleToleranceData;
-      
+
 #       set => __work_part_.Preferences.Modeling.AngleToleranceData = value;
 #   }
 
@@ -8164,7 +8130,7 @@
 #   ///     </para>
 #   /// </remarks>
 #   internal static double ChainingTolerance =>
-      
+
 #       0.95 * DistanceTolerance;
 
 #   /// <summary>
@@ -8184,9 +8150,9 @@
 #   /// </remarks>
 #   public static bool HistoryMode
 #   {
-      
+
 #       get => __work_part_.Preferences.Modeling.GetHistoryMode();
-      
+
 #       set
 #       {
 #           if (value)
@@ -8207,7 +8173,7 @@
 #   ///// </remarks>
 #   //public static Utilities. Unit UnitType
 #   //{
-#   //    
+#   //
 #   //    get
 #   //    {
 #   //        var workPart = __work_part_;
@@ -8221,7 +8187,7 @@
 #   /// </summary>
 #   public static CartesianCoordinateSystem __Wcs_
 #   {
-      
+
 #       get
 #       {
 #           UFSession uFSession = ufsession_;
@@ -8230,7 +8196,7 @@
 #           CartesianCoordinateSystem csys = (CartesianCoordinateSystem)objectFromTag;
 #           return csys;
 #       }
-      
+
 #       set
 #       {
 #           Tag nXOpenTag = value.Tag;
@@ -8242,7 +8208,7 @@
 #   // Summary:
 #   //     The orientation of the Wcs of the work part
 #   public static Matrix3x3 WcsOrientation =>
-      
+
 #       __wcs_.CoordinateSystem.Orientation.Element;
 
 #   //set
@@ -8254,7 +8220,7 @@
 #   /// <summary>
 #   /// </summary>
 #   public static CartesianCoordinateSystem WcsCoordinateSystem =>
-      
+
 #       session_
 #           .Parts.Display.CoordinateSystems
 #           .CreateCoordinateSystem(__Wcs_.Origin, __display_part_.WCS.__Orientation(), true);
@@ -8274,31 +8240,31 @@
 #       return new[] { 0d, 0d, 1d }.__ToVector3d();
 #   }
 
-  
+
 #   public static void print(object __object)
 #   {
 #       print($"{__object}");
 #   }
 
-  
+
 #   public static void prompt(string message)
 #   {
 #       uf_.Ui.SetPrompt(message);
 #   }
 
-  
+
 #   public static void print(bool __bool)
 #   {
 #       print($"{__bool}");
 #   }
 
-  
+
 #   public static void print(int __int)
 #   {
 #       print($"{__int}");
 #   }
 
-  
+
 #   public static void print(string message)
 #   {
 #       ListingWindow lw = session_.ListingWindow;
@@ -8445,7 +8411,6 @@
 #   #endregion
 
 
-
 #     #region Dimension
 
 #   //public static bool _IsAssociative(this Dimension dim)
@@ -8490,7 +8455,6 @@
 #   //}
 
 #   #endregion
-
 
 
 #    #region Line
@@ -8672,35 +8636,18 @@
 #  }
 
 
-
-
-
-
-
 #  // public static Point __Copy()
 #  // {
 #  //     ufsession_.Trns.CreateReflectionMatrix()
 #  // }
 
 
-
 #  // move point
-
-
-
-
-
-
-
-
-
-
 
 
 #  // try to move arc
 
 #  #endregion
-
 
 
 #     #region DatumCsys
@@ -8772,7 +8719,7 @@
 #        //switch(ruleType)
 #        //{
 #        //    case SelectionIntentRule.RuleType.BodyDumb:
-               
+
 #        //}
 
 #        throw new System.NotImplementedException();
@@ -8837,7 +8784,7 @@
 
 #         /// <summary>
 #         /// Get ths unit normal vector of the fae if it is planar.
-#         /// </summary>        
+#         /// </summary>
 #         public static Vector3d __Normal(this Face face)
 #         {
 #             return face.__NormalVector().__Unit();
@@ -9022,8 +8969,6 @@
 #         }
 
 
-        
-
 #         // var top_face = smart_boss.GetFaces().Single(f => __IsAbsPosZ(f.__NormalVector()));
 
 #         #endregion
@@ -9070,7 +9015,7 @@
 #               return solidBodiesOnLayer1[0];
 #           default:
 #               throw new MoreThanOneSolidBodyOnLayer1Exception(part.Leaf);
-               
+
 #       }
 #   }
 
@@ -9413,7 +9358,6 @@
 #   }
 
 
-
 #   public static bool __WorkIsNotDisplay(this Session session)
 #   {
 #       return !session.__WorkIsDisplay();
@@ -9593,7 +9537,7 @@
 #   //     string title = "Select Curve")
 #   // {
 #   //     NXOpen.Edge e = null;
-#   //     e.SolidEdgeType == 
+#   //     e.SolidEdgeType ==
 
 #   //     throw new NotImplementedException();
 #   // }
@@ -9713,7 +9657,6 @@
 #    }
 
 #    #endregion
-
 
 
 #  #region IntegerArray
@@ -10264,8 +10207,6 @@
 #            ??
 #            throw new FormatException();
 #    }
-
-
 
 
 #    public static void temp111()
@@ -12144,7 +12085,6 @@
 #   }
 
 
-
 #   #region NXObject
 
 #   public static void __DeleteUserAttribute(
@@ -12621,7 +12561,6 @@
 #   #endregion
 
 
-
 #   #region Int
 
 #   public static string __PadInt(this int integer, int padLength)
@@ -12822,9 +12761,4 @@
 #         }
 
 
-
-
-
-
 #         #endregion
-
