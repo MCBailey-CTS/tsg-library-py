@@ -1,3 +1,4 @@
+from typing import List
 import NXOpen
 
 session_ = NXOpen.Session.GetSession()
@@ -16,6 +17,12 @@ def print_(obj: object) -> None:
     listing_window = session_.ListingWindow
     listing_window.Open()
     listing_window.WriteLine(str(obj))
+
+
+
+# get all objects like {point, lines, bodies} and so on
+def all_objects(part:NXOpen.Part)->List[NXOpen.NXObject]:
+    pass
 
 
 #  #region Arc

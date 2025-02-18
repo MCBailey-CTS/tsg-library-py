@@ -65,6 +65,10 @@ def delete_objects(objects) -> None:
 
 # def main():
 print_("in here")
+
+
+
+exit()
 session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "GMCleanAssembly")
 
 original_display = session().Parts.Display

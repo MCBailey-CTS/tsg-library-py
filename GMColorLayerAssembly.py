@@ -3,6 +3,10 @@ import NXOpen
 import NXOpen.UF
 from __extensions__ import *
 
+# for x in 
+
+# exit()
+
 
 def select_components():
     # Set up the selection criteria
@@ -25,8 +29,8 @@ def select_components():
 # print_(inspect.signature())
 
 # NXOpen.UF.UFSession.GetUFSession().Ui.GetInputIntegers()
-# for x in dir(NXOpen.TaggedObjectManager):
-#     print_(x)
+for x in dir(NXOpen.DisplayManager):
+    print_(x)
 
 # for x in dir(NXOpen.UF.UFSession.GetUFSession().Ui.GetInputIntegers):
 comp = display_part().ComponentAssembly.RootComponent.GetChildren()[0]

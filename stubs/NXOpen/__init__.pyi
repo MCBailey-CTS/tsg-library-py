@@ -3,8 +3,8 @@ NXOpen module mcb
 """
 from typing import Any, List, Optional
 
-from NXOpen.Assemblies import Component
 import NXOpen
+import NXOpen.Assemblies
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -70,18 +70,23 @@ class Curve(DisplayableObject):
 # DexManager
 
 class DisplayableObject(NXObject):
-    # Blank
-    # Color
-    # Highlight
-    # IsBlanked
-    # Layer
-    @property
-    def Name(self) -> str:
-        """Returns the name of the object"""
+    def Blank(self)->None:
         pass
-    # RedisplayObject
-    # Unhighlight
-    pass
+    @property
+    def Color(self)->int:
+        pass
+    def Highlight(self)->None:
+        pass
+    @property
+    def IsBlanked(self)->bool:
+        pass
+    @property
+    def Layer(self)->None:
+        pass
+    def RedisplayObject(self)->None:
+        pass
+    def Unhighlight(self)->None:
+        pass
 
 class Direction(SmartObject):
     @property
@@ -503,7 +508,8 @@ class PartCollection:
     # SdpsStatus
     # SetActiveDisplay
     # SetAllowMultipleDisplayedParts
-    # SetDisplay
+    def SetDisplay(part:Part, false0, false1)->None:
+        pass
     # SetMirrorPartType
     # SetNonmasterSeedPartData
     # SetOpenPassword
@@ -515,13 +521,12 @@ class PartCollection:
     # SetWorkComponentOverride
     # ShapeSearchManager
     # SolveAllPostponedConstraints
-    # Work
     @property
     def Work(self) -> Part:
         pass
     # WorkComponent
     @property
-    def WorkComponent(self) -> Component:
+    def WorkComponent(self) -> NXOpen.Assemblies. Component:
         """"""
         pass
     # WorkComponentOption
