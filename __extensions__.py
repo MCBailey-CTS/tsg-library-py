@@ -1,3 +1,23 @@
+import NXOpen
+
+session_ = NXOpen.Session.GetSession()
+
+
+# def session() -> NXOpen.Session:
+#     return NXOpen.Session.GetSession()
+
+
+def display_part() -> NXOpen.Part:
+    return session_.Parts.Display
+
+
+def print_(obj: object) -> None:
+    # session = NXOpen.Session.GetSession()
+    listing_window = session_.ListingWindow
+    listing_window.Open()
+    listing_window.WriteLine(str(obj))
+
+
 #  #region Arc
 
 #  [Obsolete(nameof(NotImplementedException))]
@@ -10787,144 +10807,6 @@
 #         return basePart.ScRuleFactory.CreateRuleBodyDumb(bodies);
 #     }
 
-#     //public static void __CreateRuleBodyFeature(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleBodyGroup(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveChain(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveDumb(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveDumbFromPoints(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveFeature(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveFeatureChain(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveFeatureTangent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveGroup(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleCurveTangent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeBody(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeBoundary(this BasePart basePart)
-#     //{
-#     //}
-
-#     //[Obsolete]
-#     //public static EdgeChainRule __CreateRuleEdgeChain(this BasePart basePart)
-#     //{
-#     //    throw new NotImplementedException();
-#     //}
-
-#     //[Obsolete]
-#     //public static EdgeDumbRule __CreateRuleEdgeDumb(this BasePart basePart)
-#     //{
-#     //    throw new NotImplementedException();
-#     //}
-
-#     //public static void __CreateRuleEdgeFace(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeFeature(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeIntersect(this BasePart basePart)
-#     //{
-#     //}
-
-
-#     //public static void __CreateRuleEdgeMultipleSeedTangent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeSheetBoundary(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeTangent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeVertex(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleEdgeVertexTangent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceAdjacent(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceAllBlend(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceAndAdjacentFaces(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceBody(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceBossPocket(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceConnectedBlend(this BasePart basePart)
-#     //{
-#     //}
-
-#     //public static void __CreateRuleFaceDatum(this BasePart basePart)
-#     //{
-#     //}
-
-#     public static FaceDumbRule __CreateRuleFaceDumb(this BasePart basePart,
-#         params Face[] faces)
-#     {
-#         return basePart.ScRuleFactory.CreateRuleFaceDumb(faces);
-#     }
-
-#     [Obsolete]
-#     public static FaceFeatureRule __CreateRuleFaceFeature(this BasePart basePart)
-#     {
-#         throw new NotImplementedException();
-#     }
-
-#     [Obsolete]
-#     public static FaceTangentRule __CreateRuleFaceTangent(this BasePart basePart)
-#     {
-#         throw new NotImplementedException();
-#     }
 
 #     #endregion
 

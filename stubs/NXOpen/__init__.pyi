@@ -1,9 +1,10 @@
 """
-Hello
+NXOpen module mcb
 """
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from NXOpen.Assemblies import Component
+import NXOpen
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -69,74 +70,16 @@ class Curve(DisplayableObject):
 # DexManager
 
 class DisplayableObject(NXObject):
-    # AttributeInformation
-    # AttributeType
     # Blank
     # Color
-    # ComputationalTime
-    # CreateAttributeIterator
-    # DateAndTimeFormat
-    # DeleteAllAttributesByType
-    # DeleteAttributeByTypeAndTitle
-    # DeleteUserAttribute
-    # DeleteUserAttributes
-    # FindObject
-    # GetAttributeTitlesByType
-    # GetBooleanUserAttribute
-    # GetComputationalTimeUserAttribute
-    # GetIntegerAttribute
-    # GetIntegerUserAttribute
-    # GetNextUserAttribute
-    # GetPdmReferenceAttributeValue
-    # GetRealAttribute
-    # GetRealUserAttribute
-    # GetReferenceAttribute
-    # GetStringAttribute
-    # GetStringUserAttribute
-    # GetTimeAttribute
-    # GetTimeUserAttribute
-    # GetUserAttribute
-    # GetUserAttributeAsString
-    # GetUserAttributeCount
-    # GetUserAttributeLock
-    # GetUserAttributeSize
-    # GetUserAttributeSourceObjects
-    # GetUserAttributes
-    # GetUserAttributesAsStrings
-    # HasUserAttribute
     # Highlight
     # IsBlanked
-    # IsOccurrence
-    # JournalIdentifier
     # Layer
-    # LineFont
-    # LineWidth
     @property
     def Name(self) -> str:
         """Returns the name of the object"""
         pass
-    # NameLocation
-    # Null
-    # ObjectFont
-    # ObjectWidth
-    # OwningComponent
-    # OwningPart
-    # Print
-    # Prototype
     # RedisplayObject
-    # RemoveViewDependency
-    # SetAttribute
-    # SetBooleanUserAttribute
-    # SetName
-    # SetNameLocation
-    # SetPdmReferenceAttribute
-    # SetReferenceAttribute
-    # SetTimeAttribute
-    # SetTimeUserAttribute
-    # SetUserAttribute
-    # SetUserAttributeLock
-    # Tag
-    # Unblank
     # Unhighlight
     pass
 
@@ -282,130 +225,31 @@ class NXObject(TaggedObject):
 # Parabola
 
 class Part:
-    # AnalysisManager
-    # AnalysisResults
-    # AnimationCameras
     # Annotations
     # Arcs
-    # Assemblies
-    # AssemblyManager
-    # AssignPermanentName
-    # AttributeInformation
-    # AttributeType
     # Axes
-    # BaseFeatures
-    # BlendStopshortBuilder
     # Bodies
-    # BookmarkOption
-    # CAMDataManager
-    # CAMDataPrepManager
-    # CAMFeatures
-    # CAMSetup
-    # CaeViewLayoutManager
-    # Cameras
     # CanBeDisplayPart
-    # ClipboardOperationsManager
     # Close
     # CloseAfterSave
     # CloseModified
     # CloseWholeTree
-    # CollaborativeContentType
-    # Colors
-    # CompleteStructure
-    # Component2dCollection
     # ComponentAssembly
-    # ComponentDefinitions
-    # ComponentGroups
-    # ComputationalTime
-    # ConvertPreNX9CompoundWelds
-    # ConvertToPMIBuilderManager
     # CoordinateSystems
-    # CreateAttributeIterator
-    # CreateBoundingObjectBuilder
-    # CreateCamSetup
-    # CreateDynamicSectionBuilder
-    # CreateEffectivityConditionBuilder
-    # CreateEmptyBlendSetbackBuilder
-    # CreateEmptyBoundaryDefinitionBuilder
-    # CreateEmptyExpressionCollectorSet
-    # CreateEmptyExpressionSectionSet
-    # CreateEmptyRegionPoint
-    # CreateEmptySelectionList
-    # CreateEmptySpinePlaneBuilder
-    # CreateEmptyTransitionCurveBuilder
-    # CreateEmptyTwoExpressionsCollectorSet
-    # CreateEmptyTwoExpressionsSectionSet
-    # CreateExpressionCollectorSet
-    # CreateExpressionSectionSet
-    # CreateFacetSettingsBuilder
-    # CreateGatewayGroupBuilder
-    # CreateInspectionSetup
-    # CreateKinematicConfigurator
-    # CreateObjectList
-    # CreatePartFamily
-    # CreatePerspectiveOptionsBuilder
-    # CreatePointSetAlignmentBuilder
-    # CreatePointsFromFileBuilder
-    # CreateReferenceSet
-    # CreateRegionPoint
-    # CreateSelectionList
-    # CreateTwoExpressionsCollectorSet
-    # CreateTwoExpressionsSectionSet
-    # CreateWavelinkRepository
     # CurrentFeature
     # Curves
-    # CutViews
-    # DBEntityProxies
-    # DateAndTimeFormat
     # Datums
-    # Decals
-    # DeleteAllAttributesByType
-    # DeleteAttributeByTypeAndTitle
-    # DeleteCamSetup
-    # DeleteDisplayFacets
-    # DeleteInspectionSetup
-    # DeleteReferenceSet
-    # DeleteRetainedDraftingObjectsInCurrentLayout
-    # DeleteUserAttribute
-    # DeleteUserAttributes
-    # DesignStudy
-    # DiagrammingManager
-    # DieSimData
     # Dimensions
     # Directions
     # Displayed
     # DisplayedConstraints
-    # DraftPointData
-    # Drafting
-    # DraftingDrawingSheets
-    # DraftingManager
-    # DraftingViews
-    # DrawingCompare
     # DrawingSheets
-    # DynamicSections
     # Ellipses
-    # ExpressionGroups
     # Expressions
-    # ExternalFileReferenceManager
-    # FacePlaneSelectionBuilderData
-    # FaceSetData
-    # FaceSetOffsets
-    # FacetCollectorCollection
-    # FacetSelectionRuleFactory
-    # FacetedBodies
-    # FeatureUpdateStatus
-    # Features
-    # FieldManager
-    # FindObject
-    # Fonts
+    @property
+    def Features(self) -> List[NXOpen.Features.Feature]:
+        pass
     # FullPath
-    # Functions
-    # GanttCollection
-    # GanttLinkerCollection
-    # Gdts
-    # GeometryLocationData
-    # GetAllReferenceSets
-    # GetArrangements
     # GetAttributeTitlesByType
     # GetBooleanUserAttribute
     # GetCollaborativeContentType

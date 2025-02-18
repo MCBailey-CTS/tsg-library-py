@@ -1,6 +1,9 @@
 from pathlib import Path
+from typing import List
 import NXOpen
 import os
+
+import NXOpen.Assemblies
 
 
 def print_(obj: object) -> None:
@@ -20,14 +23,17 @@ def display_part() -> NXOpen.Part:
 
 # Stopwatch stopwatch = Stopwatch.StartNew();
 
-def get_all_descendants(component):
+
+def get_all_descendants(
+    component: NXOpen.Assemblies.Component,
+) -> List[NXOpen.Assemblies.Component]:
     descendants = []
     # print_('hdhdhdh')
 
     if component is None:
         # print_('none')
         return descendants
-    
+
     # Get children of the current component
     children = component.GetChildren()
 
@@ -42,25 +48,24 @@ def get_all_descendants(component):
 
 def DescendantParts(part):
     __parts = {}
-    __parts[part.Leaf] =part
+    __parts[part.Leaf] = part
     for component in get_all_descendants(part.ComponentAssembly.RootComponent):
         if isinstance(component.Prototype, NXOpen.Part):
             if component.DisplayName not in __parts.keys():
                 __parts[component.DisplayName] = component.Prototype
     return list(__parts.values())
 
-def delete_objects(objects)->None:
+
+def delete_objects(objects) -> None:
     session().UpdateManager.ClearDeleteList()
     undo = session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
 
-
-
 # def main():
 print_("in here")
-session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "GMCleanAssembly" )
+session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "GMCleanAssembly")
 
 original_display = session().Parts.Display
 # print_('helllo world')
@@ -76,10 +81,9 @@ for root, dirs, files in os.walk("G:\\0Library\\Fasteners"):
 parts = DescendantParts(display_part())
 
 
-
 parts = list(filter(lambda p: p.Leaf not in fasteners, parts))
-parts = list(filter(lambda p: 'layout'not in p.Leaf.lower()  , parts))
-parts = list(filter(lambda p: 'strip'not in p.Leaf.lower()  , parts))
+parts = list(filter(lambda p: "layout" not in p.Leaf.lower(), parts))
+parts = list(filter(lambda p: "strip" not in p.Leaf.lower(), parts))
 
 #     using (session_.__UsingDisplayPartReset())
 #     using (session_.__UsingSuppressDisplay())
@@ -88,16 +92,16 @@ parts = list(filter(lambda p: 'strip'not in p.Leaf.lower()  , parts))
 # print_(len(parts))
 
 for index, value in enumerate(parts):
-
-#             try
-#             {
-#                 Part part = parts[i];
-#                 prompt($"({i + 1} - {parts.Length}) -> {part.Leaf}");
-
+    #             try
+    #             {
+    #                 Part part = parts[i];
+    #                 prompt($"({i + 1} - {parts.Length}) -> {part.Leaf}");
 
     session().Parts.SetDisplay(value, False, False)
 
-    suppresed_features = list(filter(lambda f:not f.Suppressed, display_part().Features))
+    suppresed_features = list(
+        filter(lambda f: not f.Suppressed, display_part().Features)
+    )
 
     if len(suppresed_features) > 0:
         # session_.__DeleteObjects(suppresed_features);
@@ -114,24 +118,26 @@ for index, value in enumerate(parts):
         removeBuilder.Commit()
     removeBuilder.Destroy()
 
-    non_layer_1_bodies = list(filter(lambda b:b.Layer != 1, list(display_part().Bodies)))
+    non_layer_1_bodies = list(
+        filter(lambda b: b.Layer != 1, list(display_part().Bodies))
+    )
 
     if len(non_layer_1_bodies) > 0:
         delete_objects(non_layer_1_bodies)
 
     Curves = list(display_part().Curves)
 
-    if len(Curves)> 0:
+    if len(Curves) > 0:
         delete_objects(Curves)
 
     Datums = list(display_part().Datums)
 
-    if len(Datums)> 0:
+    if len(Datums) > 0:
         delete_objects(Datums)
 
     Notes = list(display_part().Notes)
 
-    if len(Notes)> 0:
+    if len(Notes) > 0:
         delete_objects(Notes)
 
     if display_part().ComponentAssembly.RootComponent is not None:
@@ -141,12 +147,12 @@ for index, value in enumerate(parts):
 
     contraints = list(display_part().DisplayedConstraints)
 
-    if len(contraints)> 0:
+    if len(contraints) > 0:
         delete_objects(contraints)
 
     drawings = list(display_part().DrawingSheets)
 
-    if len(drawings)> 0:
+    if len(drawings) > 0:
         delete_objects(drawings)
 
 session().Parts.SetDisplay(original_display, False, False)
@@ -157,7 +163,6 @@ part_cleanup = session().NewPartCleanup()
 
 # for k in dir(NXOpen.PartCleanup.CleanupParts):
 #     print_(k)
-
 
 
 # change this to Components.
@@ -187,7 +192,9 @@ part_cleanup.DeleteUnusedUnits = True
 part_cleanup.DeleteVisualEditorData = True
 part_cleanup.FixOffplaneSketchCurves = True
 part_cleanup.GroupsToDelete = NXOpen.PartCleanup.DeleteGroups.All
-part_cleanup.ResetComponentDisplay = NXOpen.PartCleanup.ResetComponentDisplayAction.RemoveAllChanges
+part_cleanup.ResetComponentDisplay = (
+    NXOpen.PartCleanup.ResetComponentDisplayAction.RemoveAllChanges
+)
 part_cleanup.TurnOffHighlighting = True
 part_cleanup.DoCleanup()
 
