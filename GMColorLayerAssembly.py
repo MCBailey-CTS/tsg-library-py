@@ -9,7 +9,7 @@ from __extensions__ import *
 # exit()
 
 
-def select_components() -> list[Component]:
+def select_components() -> List[Component]:
     # Set up the selection criteria
     # Select the components in the current work part
     # displayableObjectType = NXOpen.Selection.Filter.Component
@@ -38,16 +38,16 @@ def select_components() -> list[Component]:
 # for x in dir(NXOpen.UF.UFSession.GetUFSession().Ui.GetInputIntegers):
 comp = display_part().ComponentAssembly.RootComponent.GetChildren()[0]
 
-print_(comp.DisplayName)
-print_(comp.Tag)
-print_(comp)
+# print_(comp.DisplayName)
+# print_(comp.Tag)
+# print_(comp)
 xxx = NXOpen.TaggedObjectManager.GetTaggedObject(comp.Tag)
-print_(repr(xxx))
+# print_(repr(xxx))
 ggg = NXOpen.Selection.MaskTriple(63, 0, 0)
 
-print_(ggg)
+# print_(ggg)
 
-print_(session_)
+# print_(session_)
 
 
 # theSession = NXOpen.Session.GetSession()
@@ -82,6 +82,8 @@ try:
 
         # foreach selected component, need to prompt the user for a layer, and color
 
+        # comp.SetLayerOption(-1)
+
         session_.Parts.SetDisplay(comp.Prototype, False, False)
         solid_body_layer_1 = list(
             filter(lambda b: b.Layer == 1, list(session_.Parts.Display.Bodies))
@@ -104,7 +106,7 @@ try:
         displayModification1.NewLayer = layer
         displayModification1.Apply([solid_body_layer_1])
         theSession.UpdateManager.DoUpdate(
-            session_.SetUndoMark(NXOpen.Session.SetUndoMarkVisibility.Visible, "m")
+            session_.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "m")
         )
         displayModification1.Dispose()
 
@@ -118,7 +120,7 @@ try:
         displayModification1.NewLayer = layer
         displayModification1.Apply([solid_body_layer_1])
         theSession.UpdateManager.DoUpdate(
-            session_.SetUndoMark(NXOpen.Session.SetUndoMarkVisibility.Visible, "m")
+            session_.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "m")
         )
         displayModification1.Dispose()
 
@@ -129,4 +131,11 @@ try:
 
 finally:
     session_.Parts.SetDisplay(original, False, False)
-    pass
+    
+for comp in components:
+        # need to set the {comp} to the {layer} first before you change displayed part
+
+        # foreach selected component, need to prompt the user for a layer, and color
+
+    comp.SetLayerOption(-1)
+    comp.RedisplayObject()
