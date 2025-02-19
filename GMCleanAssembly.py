@@ -172,7 +172,7 @@ part_cleanup = session().NewPartCleanup()
 # we should be at the first display part.
 # it will prevent them from cleaning up all open parts
 # and fasteners that might not pertain to this assembly any more
-part_cleanup.PartsToCleanup = NXOpen.PartCleanup.CleanupParts.Components
+part_cleanup.PartsToCleanup = NXOpen.PartCleanupCleanupParts.Components
 part_cleanup.CleanupAssemblyConstraints = True
 part_cleanup.CleanupCAMObjects = True
 part_cleanup.CleanupDraftingObjects = True

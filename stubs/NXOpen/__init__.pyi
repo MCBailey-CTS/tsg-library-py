@@ -2,10 +2,12 @@
 NXOpen module mcb
 """
 
+import enum
 from typing import Any, List, Optional
 
 import NXOpen
 import NXOpen.Assemblies
+from NXOpen.Positioning import DisplayedConstraintCollection
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -59,7 +61,10 @@ class Builder(TaggedObject):
 # CoordinateSystemCollection
 
 class Curve(DisplayableObject):
-    pass
+    def GetLength(self) -> float:
+        pass
+    def IsReference(self) -> bool:
+        pass
 
 # CurveChainRule
 # CurveCollection
@@ -84,13 +89,19 @@ class DisplayableObject(NXObject):
     @property
     def Color(self) -> int:
         pass
+    @Color.setter
+    def Color(self, color:int) -> None:
+        pass
     def Highlight(self) -> None:
         pass
     @property
     def IsBlanked(self) -> bool:
         pass
     @property
-    def Layer(self) -> None:
+    def Layer(self) -> int:
+        pass
+    @Layer.setter
+    def Layer(self, layer:int) -> None:
         pass
     def RedisplayObject(self) -> None:
         pass
@@ -108,8 +119,33 @@ class Direction(SmartObject):
 # DirectionCollection
 
 class DisplayManager:
-    def NewDisplayModification(self) -> NXOpen.DisplayModification:
+    def NewDisplayModification(self) -> DisplayModification:
         pass
+
+class DisplayModification:
+    ApplyToAllFaces: bool
+    ApplyToOwningParts = False
+    NewColor: int
+    NewLayer: int
+    def Apply(self, nxobjects: List[NXObject]) -> None:
+        pass
+    def Dispose(self) -> None:
+        pass
+
+class SelectionSelectionScope(enum.Enum):
+    AnyInAssembly: int
+    UseDefault: int
+    ValueOf: int
+    WorkPart: int
+    WorkPartAndOccurrence: int
+    WorkPartAndWorkPartOccurrence: int
+
+class SelectionSelectionAction(enum.Enum):
+    AllAndDisableSpecific: int
+    ClearAndEnableSpecific: int
+    DisableSpecific: int
+    EnableAll: int
+    EnableSpecific: int
 
 # DisplayModification
 # DisplayPartOption
@@ -242,39 +278,56 @@ class NXObject(TaggedObject):
 
 # Parabola
 
+class DatumCollection:
+    def CreateFixedDatumAxis(self) -> None:
+        pass
+    def CreateFixedDatumPlane(self) -> None:
+        pass
+    def FindObject(self) -> None:
+        pass
+
+class CurveCollection:
+    pass
+
+class NoteCollection:
+    pass
+
 class Part:
     # Annotations
     #
+    # @property
+    # def Arcs(self) -> NXOpen.ArcCollection:
+    #     pass
+    # @property
+    # def Axes(self) -> NXOpen.AxesCollection:
+    #     pass
+    # @property
+    # def Bodies(self) -> NXOpen.BodyCollection:
+    #     pass
     @property
-    def Arcs(self) -> NXOpen.ArcCollection:
+    def Curves(self) -> CurveCollection:
         pass
     @property
-    def Axes(self) -> NXOpen.AxesCollection:
-        pass
-    @property
-    def Bodies(self) -> NXOpen.BodyCollection:
-        pass
-    @property
-    def Curves(self) -> NXOpen.CurveCollection:
-        pass
-    @property
-    def Datums(self) -> NXOpen.DatumCollection:
+    def Datums(self) -> DatumCollection:
         pass
     @property
     def Points(self) -> NXOpen.BodyCollection:
         pass
     @property
-    def CoordinateSystems(self) -> NXOpen.BodyCollection:
+    def Notes(self) -> NoteCollection:
         pass
-    @property
-    def Notes(self) -> NXOpen.BodyCollection:
-        pass
-    @property
-    def DisplayedConstraints(self) -> NXOpen.BodyCollection:
-        pass
-    @property
-    def DrawingSheets(self) -> NXOpen.BodyCollection:
-        pass
+    # @property
+    # def CoordinateSystems(self) -> NXOpen.BodyCollection:
+    #     pass
+    # @property
+    # def Notes(self) -> NXOpen.BodyCollection:
+    #     pass
+    # @property
+    # def DisplayedConstraints(self) -> NXOpen.Positioning.DisplayedConstraint:
+    #     pass
+    # @property
+    # def DrawingSheets(self) -> NXOpen.BodyCollection:
+    #     pass
     # CanBeDisplayPart
     # Close
     # CloseAfterSave
@@ -290,7 +343,9 @@ class Part:
     # Dimensions
     # Directions
     # Displayed
-    # DisplayedConstraints
+    @property
+    def  DisplayedConstraints(self)->DisplayedConstraintCollection:
+        pass
     # DrawingSheets
     # Ellipses
     # Expressions
@@ -577,6 +632,21 @@ class PartCollection:
     # WorkComponentOption
 
 # PartCleanup
+class PartCleanupCleanupParts(enum.Enum):
+    All: int
+    Components: int
+    Work: int
+
+class PartCleanupResetComponentDisplayAction(enum.Enum):
+    No: int
+    RemoveAllChanges: int
+    RemoveRedundantChanges: int
+
+class PartCleanupDeleteGroups(enum.Enum):
+    All: int
+    NotSet: int
+    Unnamed: int
+
 
 # PartUnits
 
@@ -626,37 +696,211 @@ class SmartObject(DisplayableObject):
 class Session(TaggedObject):
     class SetUndoMarkVisibility:
         Visible: Session.SetUndoMarkVisibility
-
     @property
     def ListingWindow(self) -> ListingWindow:
         pass
-
     @staticmethod
     def GetSession() -> NXOpen.Session:
         pass
-
     @property
     def Parts(self) -> PartCollection:
         pass
-
     @property
     def Parts(self) -> PartCollection:
         pass
-
     @property
     def UpdateManager(self) -> Update:
         pass
-
     def SetUndoMark(
         self, visibility: NXOpen.Session.SetUndoMarkVisibility, name: str
     ) -> int:
         pass
-    
     @property
     def DisplayManager(self) -> NXOpen.DisplayManager:
         pass
+    def NewPartCleanup(self) -> PartCleanup:
+        pass
 
 # Spline
+
+class PartCleanup:
+    @property
+    def PartsToCleanup(self) -> PartCleanupCleanupParts:
+        pass
+    @PartsToCleanup.setter
+    def PartsToCleanup(self, value: PartCleanupCleanupParts) -> None:
+        pass
+    
+    @property
+    def CleanupAssemblyConstraints(self) -> bool:
+        pass
+    @CleanupAssemblyConstraints.setter
+    def CleanupAssemblyConstraints(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupCAMObjects(self) -> bool:
+        pass
+    @CleanupCAMObjects.setter
+    def CleanupCAMObjects(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupDraftingObjects(self) -> bool:
+        pass
+    @CleanupDraftingObjects.setter
+    def CleanupDraftingObjects(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupFeatureData(self) -> bool:
+        pass
+    @CleanupFeatureData.setter
+    def CleanupFeatureData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupMatingData(self) -> bool:
+        pass
+    @CleanupMatingData.setter
+    def CleanupMatingData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupMotionData(self) -> bool:
+        pass
+    @CleanupMotionData.setter
+    def CleanupMotionData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupPartFamilyData(self) -> bool:
+        pass
+    @CleanupPartFamilyData.setter
+    def CleanupPartFamilyData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def CleanupRoutingData(self) -> bool:
+        pass
+    @CleanupRoutingData.setter
+    def CleanupRoutingData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteBrokenInterpartLinks(self) -> bool:
+        pass
+    @DeleteBrokenInterpartLinks.setter
+    def DeleteBrokenInterpartLinks(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteDuplicateLights(self) -> bool:
+        pass
+    @DeleteDuplicateLights.setter
+    def DeleteDuplicateLights(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteInvalidAttributes(self) -> bool:
+        pass
+    @DeleteInvalidAttributes.setter
+    def DeleteInvalidAttributes(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteMaterials(self) -> bool:
+        pass
+    @DeleteMaterials.setter
+    def DeleteMaterials(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteSpreadSheetData(self) -> bool:
+        pass
+    @DeleteSpreadSheetData.setter
+    def DeleteSpreadSheetData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteUnusedExpressions(self) -> bool:
+        pass
+    @DeleteUnusedExpressions.setter
+    def DeleteUnusedExpressions(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteUnusedExtractReferences(self) -> bool:
+        pass
+    @DeleteUnusedExtractReferences.setter
+    def DeleteUnusedExtractReferences(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteUnusedFonts(self) -> bool:
+        pass
+    @DeleteUnusedFonts.setter
+    def DeleteUnusedFonts(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteUnusedObjects(self) -> bool:
+        pass
+    @DeleteUnusedObjects.setter
+    def DeleteUnusedObjects(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteUnusedUnits(self) -> bool:
+        pass
+    @DeleteUnusedUnits.setter
+    def DeleteUnusedUnits(self, value: bool) -> None:
+        pass
+    
+    @property
+    def DeleteVisualEditorData(self) -> bool:
+        pass
+
+    @DeleteVisualEditorData.setter
+    def DeleteVisualEditorData(self, value: bool) -> None:
+        pass
+    
+    @property
+    def FixOffplaneSketchCurves(self) -> bool:
+        pass
+
+    @FixOffplaneSketchCurves.setter
+    def FixOffplaneSketchCurves(self, value: bool) -> None:
+        pass
+
+    @property
+    def GroupsToDelete(self) -> PartCleanupDeleteGroups:
+        pass
+
+    @GroupsToDelete.setter
+    def GroupsToDelete(self, value: PartCleanupDeleteGroups) -> None:
+        pass
+
+    @property
+    def ResetComponentDisplay(self) -> PartCleanupResetComponentDisplayAction:
+        pass
+
+    @ResetComponentDisplay.setter
+    def ResetComponentDisplay(
+        self, value: PartCleanupResetComponentDisplayAction
+    ) -> None:
+        pass
+
+    @property
+    def TurnOffHighlighting(self) -> bool:
+        pass
+
+    @TurnOffHighlighting.setter
+    def TurnOffHighlighting(self, value: bool) -> None:
+        pass
+
+    def DoCleanup(self) -> None:
+        pass
 
 class TaggedObject:
     Null: TaggedObject
@@ -669,7 +913,37 @@ class TaggedObject:
 # TaggedObjectManager
 
 # TransientObject
-# UI
+class UI:
+    # AddUtilityFunctionVisibilityHandler
+    # AskLockStatus
+    # CanOpenPart
+    # CreateCustomPopupMenuHandler
+    # CreateDialog
+    # CreateImageExportBuilder
+    @staticmethod
+    def GetUI() -> UI:
+        pass
+    # JournalPause
+    # LockAccess
+    # MenuBarManager
+    # MovieManager
+    # NXMessageBox
+    # Null
+    # ObjectPreferences
+    # RemoveUtilityFunctionVisibilityHandler
+    @property
+    def SelectionManager(self) -> Selection:
+        pass
+    # Status
+    # Styler
+    # Tag
+    # UnlockAccess
+    # UserInterfacePreferences
+    # ViewUIManager
+    # VisualizationLinePreferences
+    # VisualizationShadingPreferences
+    # VisualizationVisualPreferences
+    pass
 
 # Unit
 # UnitCollection

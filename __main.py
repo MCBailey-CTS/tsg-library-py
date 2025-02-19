@@ -1,35 +1,37 @@
 import NXOpen
 import NXOpen.UF
+import NXOpen.Features
+import NXOpen.Annotations
+from NXOpen.Positioning import DisplayedConstraint, DisplayedConstraintCollection
 from NXOpen import Session
+from __extensions__ import *
 
 
-def print_(obj: object) -> None:
-    session = Session.GetSession()
-    listing_window = session.ListingWindow
-    listing_window.Open()
-    listing_window.WriteLine(str(obj))
 
+# print_()
 
-session_ = Session.GetSession()
-display = session_.Parts.Display
-comps = list(filter(lambda x:'101' in x.Name, display.ComponentAssembly.RootComponent.GetChildren()))
-result = NXOpen.UF.UFSession.GetUFSession().Assem.AskOccsOfPart(0,comps[0].Prototype.Tag )
+print_(NXOpen.Features.FeatureCollection.__base__)
 
-print_(len(comps))
-print_(len(result))
-# for k in comps:
-#     k.Highlight()
+# print_(NXOpen.Positioning.DisplayedConstraint)
+for x in dir(DisplayedConstraintCollection):
+    #  .CleanupParts.Components
+    #  ):
+    print_(x)
 
-# for x in dir(NXOpen.SessionUndoMarkData_Struct):
-# UndoMarkData
-# for x in dir(NXOpen.UF.UFSession.GetUFSession().Assem):
-#     print_(x)
+# selected_objects = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
+#         "Select components",
+#         "Select components",
+#         # NXOpen.SelectionResponseMemberType
+#         NXOpen.SelectionSelectionScope.AnyInAssembly,
+#         NXOpen.SelectionSelectionAction.ClearAndEnableSpecific,
+#         False,
+#         False,
+#         [NXOpen.Selection.MaskTriple(63, 0, 0)],
+#     )
 
 # o = Session.GetSession().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, 'help')
 
 # print_(type(o))
-
-
 
 
 # comp = NXOpen.Session.GetSession().Parts.WorkComponent

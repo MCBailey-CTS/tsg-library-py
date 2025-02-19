@@ -1,15 +1,20 @@
 from typing import List
 import NXOpen
+from NXOpen.Assemblies import Component
 
 session_ = NXOpen.Session.GetSession()
 
 
-# def session() -> NXOpen.Session:
-#     return NXOpen.Session.GetSession()
-
-
 def display_part() -> NXOpen.Part:
     return session_.Parts.Display
+
+
+def work_part() -> NXOpen.Part:
+    return session_.Parts.Work
+
+
+def work_component() -> Component:
+    return session_.Parts.WorkComponent
 
 
 def print_(obj: object) -> None:

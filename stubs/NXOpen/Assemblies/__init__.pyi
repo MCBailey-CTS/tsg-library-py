@@ -1,5 +1,5 @@
-from typing import List
-from NXOpen import DisplayableObject
+from typing import List, Optional, Union
+from NXOpen import DisplayableObject, NXObject, Part
 
 class Component(DisplayableObject):
     def GetChildren(self) -> List[Component]:
@@ -11,4 +11,12 @@ class Component(DisplayableObject):
     @property
     def Name(self) -> str:
         """Returns the name of the component object"""
+        pass
+    @property
+    def Prototype(self)->Union[Part,NXObject]:
+        pass
+
+class ComponentAssembly:
+    @property
+    def RootComponent(self) -> Optional[Component]:
         pass

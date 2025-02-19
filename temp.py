@@ -1,8 +1,4 @@
-from typing import NoReturn
 import NXOpen
-
-# import NXOpen.Curve
-# import NXOpen.Features
 
 
 def print_(obj: object) -> None:

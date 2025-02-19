@@ -20,12 +20,15 @@ def select_components() -> List[Component]:
     ] = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
         "Select components",
         "Select components",
-        NXOpen.Selection.SelectionScope.AnyInAssembly,
-        NXOpen.Selection.SelectionAction.ClearAndEnableSpecific,
+        # NXOpen.SelectionResponseMemberType
+        NXOpen.SelectionSelectionScope.AnyInAssembly,
+        NXOpen.SelectionSelectionAction.ClearAndEnableSpecific,
         False,
         False,
         [NXOpen.Selection.MaskTriple(63, 0, 0)],
     )
+    print_(NXOpen.UI)
+    print_(selected_objects)
     return selected_objects[1]
 
 
@@ -64,8 +67,8 @@ def select_components() -> List[Component]:
 
 # k
 
-def __main__(layer:int, color:int)->None:
 
+def __main__(layer: int, color: int) -> None:
     components = select_components()
     # NXOpen.UF.UFSession.GetUFSession().Ui.SetStatus(str(components))
 
@@ -92,7 +95,6 @@ def __main__(layer:int, color:int)->None:
                 raise Exception(
                     f"There were {len(solid_body_layer_1)} solid bodies in part {comp.DisplayName}"
                 )
-            solid_body_layer_1 = solid_body_layer_1[0]
 
             displayModification1 = theSession.DisplayManager.NewDisplayModification()
             displayModification1.ApplyToAllFaces = True
@@ -104,14 +106,16 @@ def __main__(layer:int, color:int)->None:
             displayModification1.ApplyToOwningParts = False
             displayModification1.NewColor = color
             displayModification1.NewLayer = layer
-            displayModification1.Apply([solid_body_layer_1])
+            displayModification1.Apply([solid_body_layer_1[0]])
             # theSession.UpdateManager.DoUpdate(
             #     session_.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "m")
             # )
             displayModification1.Dispose()
-            print_(solid_body_layer_1.Layer)
-# bbai0@icloud.com
-            feature = display_part().Features.GetParentFeatureOfBody(solid_body_layer_1)
+            print_(solid_body_layer_1[0].Layer)
+            # bbai0@icloud.com
+            feature = display_part().Features.GetParentFeatureOfBody(
+                solid_body_layer_1[0]
+            )
             feature.MakeCurrentFeature()
 
             displayModification1 = theSession.DisplayManager.NewDisplayModification()
@@ -119,7 +123,7 @@ def __main__(layer:int, color:int)->None:
             displayModification1.ApplyToOwningParts = False
             displayModification1.NewColor = color
             displayModification1.NewLayer = layer
-            displayModification1.Apply([solid_body_layer_1])
+            displayModification1.Apply([solid_body_layer_1[0]])
             # theSession.UpdateManager.DoUpdate(
             #     session_.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "m")
             # )
@@ -129,20 +133,23 @@ def __main__(layer:int, color:int)->None:
 
             features[len(features) - 1].MakeCurrentFeature()
 
-    except  Exception as ex:
+    except Exception as ex:
         print_(ex)
 
     finally:
         session_.Parts.SetDisplay(original, False, False)
-        
-    for comp in components:
-            # need to set the {comp} to the {layer} first before you change displayed part
 
-            # foreach selected component, need to prompt the user for a layer, and color
-        comp.Layer= layer
+    for comp in components:
+        # need to set the {comp} to the {layer} first before you change displayed part
+
+        # foreach selected component, need to prompt the user for a layer, and color
+        comp.Layer = layer
         comp.RedisplayObject()
 
         comp.SetLayerOption(-1)
         comp.RedisplayObject()
-        print_(f'{comp.Name}-{comp.Tag}-{comp.Color}-{comp.Layer}')
+        print_(f"{comp.Name}-{comp.Tag}-{comp.Color}-{comp.Layer}")
     NXOpen.UF.UFSession.GetUFSession().Disp.RegenerateDisplay()
+
+
+__main__(10, 10)
