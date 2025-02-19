@@ -9,13 +9,15 @@ from __extensions__ import *
 # exit()
 
 
-def select_components()->list[Component]:
+def select_components() -> list[Component]:
     # Set up the selection criteria
     # Select the components in the current work part
     # displayableObjectType = NXOpen.Selection.Filter.Component
 
     # Use SelectTaggedObjects to allow the user to select components
-    selected_objects:tuple[object: list[Component]] = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
+    selected_objects: tuple[
+        object, list[Component]
+    ] = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
         "Select components",
         "Select components",
         NXOpen.Selection.SelectionScope.AnyInAssembly,

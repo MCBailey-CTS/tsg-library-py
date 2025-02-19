@@ -36,13 +36,16 @@ import NXOpen.Assemblies
 # BodyList
 
 class Update:
-    def DoUpdate(mark)->None:
+    def DoUpdate(self, mark: int) -> None:
+        pass
+    def AddObjectsToDeleteList(self, objects: List[NXObject]) -> None:
+        pass
+    def ClearDeleteList(self) -> None:
         pass
 
 class Builder(TaggedObject):
     def Commit(self) -> Optional[NXObject]:
         pass
-
     def Destroy(self) -> None:
         pass
 
@@ -78,25 +81,19 @@ class Curve(DisplayableObject):
 class DisplayableObject(NXObject):
     def Blank(self) -> None:
         pass
-
     @property
     def Color(self) -> int:
         pass
-
     def Highlight(self) -> None:
         pass
-
     @property
     def IsBlanked(self) -> bool:
         pass
-
     @property
     def Layer(self) -> None:
         pass
-
     def RedisplayObject(self) -> None:
         pass
-
     def Unhighlight(self) -> None:
         pass
 
@@ -104,7 +101,6 @@ class Direction(SmartObject):
     @property
     def Origin(Self) -> Point3d:
         pass
-
     @property
     def Vector(self) -> Vector3d:
         pass
@@ -112,7 +108,7 @@ class Direction(SmartObject):
 # DirectionCollection
 
 class DisplayManager:
-    def NewDisplayModification(self)->NXOpen.DisplayModification:
+    def NewDisplayModification(self) -> NXOpen.DisplayModification:
         pass
 
 # DisplayModification
@@ -139,28 +135,20 @@ class DisplayManager:
 class ListingWindow:
     def Close(self) -> None:
         pass
-
     def CloseWindow(self) -> None:
         pass
-
     def Device(self) -> None:
         pass
-
     def DeviceType(self) -> None:
         pass
-
     def IsOpen(self) -> None:
         pass
-
     def Open(self) -> None:
         pass
-
     def SelectDevice(self) -> None:
         pass
-
     def WriteFullline(self) -> None:
         pass
-
     def WriteLine(self, message: str) -> None:
         pass
 
@@ -238,7 +226,7 @@ class NXObject(TaggedObject):
     # OwningPart
     # Print
     @property
-    def  Prototype(self)->Optional[NXOpen.NXObject]:
+    def Prototype(self) -> Optional[NXOpen.NXObject]:
         pass
     # SetAttribute
     # SetBooleanUserAttribute
@@ -260,41 +248,40 @@ class Part:
     @property
     def Arcs(self) -> NXOpen.ArcCollection:
         pass
-
     @property
     def Axes(self) -> NXOpen.AxesCollection:
         pass
-
     @property
     def Bodies(self) -> NXOpen.BodyCollection:
         pass
-
     @property
     def Curves(self) -> NXOpen.CurveCollection:
         pass
-
     @property
     def Datums(self) -> NXOpen.DatumCollection:
         pass
-    # @property
-    # def Bodies(self)->NXOpen.BodyCollection:
-    #     pass
-    # @property
-    # def Bodies(self)->NXOpen.BodyCollection:
-    #     pass
-    # @property
-    # def Bodies(self)->NXOpen.BodyCollection:
-    #     pass
-    # @property
-    # def Bodies(self)->NXOpen.BodyCollection:
-    #     pass
+    @property
+    def Points(self) -> NXOpen.BodyCollection:
+        pass
+    @property
+    def CoordinateSystems(self) -> NXOpen.BodyCollection:
+        pass
+    @property
+    def Notes(self) -> NXOpen.BodyCollection:
+        pass
+    @property
+    def DisplayedConstraints(self) -> NXOpen.BodyCollection:
+        pass
+    @property
+    def DrawingSheets(self) -> NXOpen.BodyCollection:
+        pass
     # CanBeDisplayPart
     # Close
     # CloseAfterSave
     # CloseModified
     # CloseWholeTree
     @property
-    def ComponentAssembly(self) -> NXOpen.Assemblies.ComponentAssembly:
+    def ComponentAssembly(self) -> ComponentAssembly:
         pass
     # CoordinateSystems
     # CurrentFeature
@@ -372,7 +359,9 @@ class Part:
     # Layers
     # LayoutDrawingSheets
     # Layouts
-    # Leaf
+    @property
+    def Leaf(self) -> str:
+        pass
     # Lights
     # Lines
     # LoadFeatureDataForSelection
@@ -600,11 +589,9 @@ class Point3d:
     @property
     def X(self) -> float:
         pass
-
     @property
     def Y(self) -> float:
         pass
-
     @property
     def Z(self) -> float:
         pass
@@ -630,8 +617,7 @@ class Point3d:
 
 class Selection:
     class MaskTriple:
-        def __init__(self, type_:float, sub_type:float, solid_type:float)->None:
-
+        def __init__(self, type_: float, sub_type: float, solid_type: float) -> None:
             pass
 
 class SmartObject(DisplayableObject):
@@ -639,8 +625,7 @@ class SmartObject(DisplayableObject):
 
 class Session(TaggedObject):
     class SetUndoMarkVisibility:
-        Visible :Session.SetUndoMarkVisibility
-
+        Visible: Session.SetUndoMarkVisibility
 
     @property
     def ListingWindow(self) -> ListingWindow:
@@ -659,14 +644,14 @@ class Session(TaggedObject):
         pass
 
     @property
-    def UpdateManager(self) -> NXOpen.Update:
+    def UpdateManager(self) -> Update:
         pass
 
-    def SetUndoMark(self,
-        visibility: NXOpen.Session.SetUndoMarkVisibility, name: str
-    ) -> UndoToMark:
+    def SetUndoMark(
+        self, visibility: NXOpen.Session.SetUndoMarkVisibility, name: str
+    ) -> int:
         pass
-
+    
     @property
     def DisplayManager(self) -> NXOpen.DisplayManager:
         pass
@@ -700,11 +685,9 @@ class Vector3d:
     @property
     def X(self) -> float:
         pass
-
     @property
     def Y(self) -> float:
         pass
-
     @property
     def Z(self) -> float:
         pass

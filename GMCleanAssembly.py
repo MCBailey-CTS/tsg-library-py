@@ -1,32 +1,31 @@
 from pathlib import Path
 from typing import List
+from NXOpen import Part, Session
 import NXOpen
 import os
 
-import NXOpen.Assemblies
+from NXOpen.Assemblies import Component
 
 
 def print_(obj: object) -> None:
-    session = NXOpen.Session.GetSession()
+    session = Session.GetSession()
     listing_window = session.ListingWindow
     listing_window.Open()
     listing_window.WriteLine(str(obj))
 
 
-def session() -> NXOpen.Session:
-    return NXOpen.Session.GetSession()
+def session() -> Session:
+    return Session.GetSession()
 
 
-def display_part() -> NXOpen.Part:
+def display_part() -> Part:
     return session().Parts.Display
 
 
 # Stopwatch stopwatch = Stopwatch.StartNew();
 
 
-def get_all_descendants(
-    component: NXOpen.Assemblies.Component,
-) -> List[NXOpen.Assemblies.Component]:
+def get_all_descendants(component: Component) -> List[Component]:
     descendants = []
     # print_('hdhdhdh')
 
@@ -46,11 +45,11 @@ def get_all_descendants(
     return descendants
 
 
-def DescendantParts(part)->List[NXOpen.Part]:
+def DescendantParts(part) -> List[Part]:
     __parts = {}
     __parts[part.Leaf] = part
     for component in get_all_descendants(part.ComponentAssembly.RootComponent):
-        if isinstance(component.Prototype, NXOpen.Part):
+        if isinstance(component.Prototype, Part):
             if component.DisplayName not in __parts.keys():
                 __parts[component.DisplayName] = component.Prototype
     return list(__parts.values())
@@ -58,7 +57,7 @@ def DescendantParts(part)->List[NXOpen.Part]:
 
 def delete_objects(objects) -> None:
     session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "DELETE")
+    undo = session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
@@ -68,11 +67,11 @@ print_("in here")
 
 
 exit()
-session().SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "GMCleanAssembly")
+session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "GMCleanAssembly")
 
 original_display = session().Parts.Display
 # print_('helllo world')
-fasteners = {}
+fasteners: dict[str, Part] = {}
 
 for root, dirs, files in os.walk("G:\\0Library\\Fasteners"):
     for file in files:
