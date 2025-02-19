@@ -1,6 +1,7 @@
 """
 NXOpen module mcb
 """
+
 from typing import Any, List, Optional
 
 import NXOpen
@@ -35,11 +36,13 @@ import NXOpen.Assemblies
 # BodyList
 
 class Update:
-    pass
+    def DoUpdate(mark)->None:
+        pass
 
 class Builder(TaggedObject):
     def Commit(self) -> Optional[NXObject]:
         pass
+
     def Destroy(self) -> None:
         pass
 
@@ -73,35 +76,44 @@ class Curve(DisplayableObject):
 # DexManager
 
 class DisplayableObject(NXObject):
-    def Blank(self)->None:
+    def Blank(self) -> None:
         pass
+
     @property
-    def Color(self)->int:
+    def Color(self) -> int:
         pass
-    def Highlight(self)->None:
+
+    def Highlight(self) -> None:
         pass
+
     @property
-    def IsBlanked(self)->bool:
+    def IsBlanked(self) -> bool:
         pass
+
     @property
-    def Layer(self)->None:
+    def Layer(self) -> None:
         pass
-    def RedisplayObject(self)->None:
+
+    def RedisplayObject(self) -> None:
         pass
-    def Unhighlight(self)->None:
+
+    def Unhighlight(self) -> None:
         pass
 
 class Direction(SmartObject):
     @property
     def Origin(Self) -> Point3d:
         pass
+
     @property
     def Vector(self) -> Vector3d:
         pass
 
 # DirectionCollection
 
-# DisplayManager
+class DisplayManager:
+    def NewDisplayModification(self)->NXOpen.DisplayModification:
+        pass
 
 # DisplayModification
 # DisplayPartOption
@@ -127,20 +139,28 @@ class Direction(SmartObject):
 class ListingWindow:
     def Close(self) -> None:
         pass
+
     def CloseWindow(self) -> None:
         pass
+
     def Device(self) -> None:
         pass
+
     def DeviceType(self) -> None:
         pass
+
     def IsOpen(self) -> None:
         pass
+
     def Open(self) -> None:
         pass
+
     def SelectDevice(self) -> None:
         pass
+
     def WriteFullline(self) -> None:
         pass
+
     def WriteLine(self, message: str) -> None:
         pass
 
@@ -217,7 +237,9 @@ class NXObject(TaggedObject):
     # OwningComponent
     # OwningPart
     # Print
-    # Prototype
+    @property
+    def  Prototype(self)->Optional[NXOpen.NXObject]:
+        pass
     # SetAttribute
     # SetBooleanUserAttribute
     # SetName
@@ -234,21 +256,25 @@ class NXObject(TaggedObject):
 
 class Part:
     # Annotations
-    # 
+    #
     @property
-    def Arcs(self)->NXOpen.ArcCollection:
+    def Arcs(self) -> NXOpen.ArcCollection:
         pass
+
     @property
-    def Axes(self)->NXOpen.AxesCollection:
+    def Axes(self) -> NXOpen.AxesCollection:
         pass
+
     @property
-    def Bodies(self)->NXOpen.BodyCollection:
+    def Bodies(self) -> NXOpen.BodyCollection:
         pass
+
     @property
-    def Curves(self)->NXOpen.CurveCollection:
+    def Curves(self) -> NXOpen.CurveCollection:
         pass
+
     @property
-    def Datums(self)->NXOpen.DatumCollection:
+    def Datums(self) -> NXOpen.DatumCollection:
         pass
     # @property
     # def Bodies(self)->NXOpen.BodyCollection:
@@ -268,7 +294,7 @@ class Part:
     # CloseModified
     # CloseWholeTree
     @property
-    def ComponentAssembly(self)->NXOpen.Assemblies.ComponentAssembly:
+    def ComponentAssembly(self) -> NXOpen.Assemblies.ComponentAssembly:
         pass
     # CoordinateSystems
     # CurrentFeature
@@ -538,7 +564,7 @@ class PartCollection:
     # SdpsStatus
     # SetActiveDisplay
     # SetAllowMultipleDisplayedParts
-    def SetDisplay(self, part:Part, false0, false1)->None:
+    def SetDisplay(self, part: Part, false0, false1) -> None:
         pass
     # SetMirrorPartType
     # SetNonmasterSeedPartData
@@ -556,7 +582,7 @@ class PartCollection:
         pass
     # WorkComponent
     @property
-    def WorkComponent(self) -> NXOpen.Assemblies. Component:
+    def WorkComponent(self) -> NXOpen.Assemblies.Component:
         """"""
         pass
     # WorkComponentOption
@@ -574,9 +600,11 @@ class Point3d:
     @property
     def X(self) -> float:
         pass
+
     @property
     def Y(self) -> float:
         pass
+
     @property
     def Z(self) -> float:
         pass
@@ -600,18 +628,26 @@ class Point3d:
 # Sense
 # SenseMemberType
 
+class Selection:
+    class MaskTriple:
+        def __init__(self, type_:float, sub_type:float, solid_type:float)->None:
+
+            pass
+
 class SmartObject(DisplayableObject):
     pass
 
 class Session(TaggedObject):
+    class SetUndoMarkVisibility:
+        Visible :Session.SetUndoMarkVisibility
+
+
     @property
     def ListingWindow(self) -> ListingWindow:
         pass
+
     @staticmethod
-    def GetSession() -> "Session":
-        pass
-    @property
-    def Parts(self) -> PartCollection:
+    def GetSession() -> NXOpen.Session:
         pass
 
     @property
@@ -619,14 +655,20 @@ class Session(TaggedObject):
         pass
 
     @property
-    def UpdateManager(self)->NXOpen.Update:
+    def Parts(self) -> PartCollection:
         pass
 
-
-    def SetUndoMark(visibility:NXOpen.Session.SetUndoMarkVisibility, name:str)->NXOpen.UndoToMark:
-        pass
     @property
-    def DisplayManager(self)->NXOpen.DisplayManager:
+    def UpdateManager(self) -> NXOpen.Update:
+        pass
+
+    def SetUndoMark(self,
+        visibility: NXOpen.Session.SetUndoMarkVisibility, name: str
+    ) -> UndoToMark:
+        pass
+
+    @property
+    def DisplayManager(self) -> NXOpen.DisplayManager:
         pass
 
 # Spline
@@ -658,9 +700,11 @@ class Vector3d:
     @property
     def X(self) -> float:
         pass
+
     @property
     def Y(self) -> float:
         pass
+
     @property
     def Z(self) -> float:
         pass

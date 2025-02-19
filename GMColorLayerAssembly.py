@@ -1,20 +1,21 @@
 import inspect
 import NXOpen
+from NXOpen.Assemblies import Component
 import NXOpen.UF
 from __extensions__ import *
 
-# for x in 
+# for x in
 
 # exit()
 
 
-def select_components():
+def select_components()->list[Component]:
     # Set up the selection criteria
     # Select the components in the current work part
     # displayableObjectType = NXOpen.Selection.Filter.Component
 
     # Use SelectTaggedObjects to allow the user to select components
-    selected_objects = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
+    selected_objects:tuple[object: list[Component]] = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
         "Select components",
         "Select components",
         NXOpen.Selection.SelectionScope.AnyInAssembly,
@@ -101,7 +102,7 @@ try:
         displayModification1.NewLayer = layer
         displayModification1.Apply([solid_body_layer_1])
         theSession.UpdateManager.DoUpdate(
-            session_.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "m")
+            session_.SetUndoMark(NXOpen.Session.SetUndoMarkVisibility.Visible, "m")
         )
         displayModification1.Dispose()
 

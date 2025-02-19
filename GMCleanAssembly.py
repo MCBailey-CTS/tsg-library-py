@@ -46,7 +46,7 @@ def get_all_descendants(
     return descendants
 
 
-def DescendantParts(part):
+def DescendantParts(part)->List[NXOpen.Part]:
     __parts = {}
     __parts[part.Leaf] = part
     for component in get_all_descendants(part.ComponentAssembly.RootComponent):
@@ -65,7 +65,6 @@ def delete_objects(objects) -> None:
 
 # def main():
 print_("in here")
-
 
 
 exit()
