@@ -23,13 +23,20 @@ import NXOpen.Drawings
 
 # obj=NXOpen.Utilities.NXObjectManager.Get(objectTag)
 
-# for x in dir(NXOpen.TaggedObjectManager):
-#     print_(x)
+# ufsession().Vec3.Scale(scale, vector3d.__ToArray(), scaled_vec)
 
-temp = cycle_by_name("005")
-components = cast_components(temp)
-selected = select_components()
-print_(len(selected))
+print_(ufsession().Vec3)
+
+# ufsession().Vec3.Scale()
+
+
+for x in dir(ufsession().Vec3):
+    print_(x)
+
+# temp = cycle_by_name("005")
+# components = cast_components(temp)
+# selected = select_components()
+# print_(len(selected))
 # trimmed_components = hash_
 
 # for x in temp:

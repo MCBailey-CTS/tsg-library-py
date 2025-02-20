@@ -280,7 +280,8 @@ class NXObject(TaggedObject):
     # HasUserAttribute
     # IsOccurrence
     # JournalIdentifier
-    # Name
+    @property
+    def Name(self) -> str: ...
     # Null
     # OwningComponent
     # OwningPart
@@ -1024,15 +1025,13 @@ class UI:
 # UpdateOptionMemberType
 
 class Vector3d:
+    def __init__(self, x: float, y: float, z: float) -> None: ...
     @property
-    def X(self) -> float:
-        pass
+    def X(self) -> float: ...
     @property
-    def Y(self) -> float:
-        pass
+    def Y(self) -> float: ...
     @property
-    def Z(self) -> float:
-        pass
+    def Z(self) -> float: ...
 
 # WCS
 # WCSAxis

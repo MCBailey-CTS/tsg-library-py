@@ -24,3 +24,9 @@ class FeatureCollection(Iterable[Feature]):
         pass
     def CreateRemoveParametersBuilder(self) -> RemoveParametersBuilder:
         pass
+
+class BodyFeature(Feature):
+    pass
+
+class Block(BodyFeature):
+    pass
