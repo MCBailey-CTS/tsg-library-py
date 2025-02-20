@@ -1,7 +1,8 @@
-from typing import List, Sequence, Union
+from typing import List, Optional, Sequence, Tuple, Union
 import NXOpen
-from NXOpen import Part, TaggedObject, Vector3d
+from NXOpen import Curve, Line, Part, TaggedObject, Vector3d
 from NXOpen.Assemblies import Component
+from NXOpen.Drawings import DrawingSheet
 from NXOpen.Features import Block
 from NXOpen.UF import UFSession as UFSession_
 
@@ -119,65 +120,6 @@ def print_(obj: object) -> None:
 def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
     raise Exception()
 
-
-#  #region Arc
-
-#  [Obsolete(nameof(NotImplementedException))]
-#  public static Arc __Mirror(
-#      this Arc arc,
-#      Surface.Plane plane)
-#  {
-#      throw new NotImplementedException();
-#  }
-
-#  [Obsolete(nameof(NotImplementedException))]
-#  public static Arc __Mirror(
-#      this Arc arc,
-#      Surface.Plane plane,
-#      Component from,
-#      Component to)
-#  {
-#      throw new NotImplementedException();
-#  }
-
-#  public static Point3d __CenterPoint(this Arc arc)
-#  {
-#      return arc.CenterPoint;
-#  }
-
-#  public static double __EndAngle(this Arc arc)
-#  {
-#      return arc.EndAngle;
-#  }
-
-#  [Obsolete]
-#  public static bool __IsClosed(this Arc arc)
-#  {
-#      //return arc.IsClosed;
-#      throw new NotImplementedException();
-#  }
-
-#  public static bool __IsReference(this Arc arc)
-#  {
-#      return arc.IsReference;
-#  }
-
-#  public static NXMatrix __Matrix(this Arc arc)
-#  {
-#      return arc.Matrix;
-#  }
-
-#  public static Matrix3x3 __Orientation(this Arc arc)
-#  {
-#      return arc.__Matrix().__Element();
-#  }
-
-#  public static double __Radius(this Arc arc)
-#  {
-#      return arc.Radius;
-#  }
-
-#  #endregion
 
 #    #region BasePart
 
@@ -325,6 +267,19 @@ def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
 #         {
 #             return new SetWorkPartContextQuietly(basePart);
 #         }
+
+
+def part_sequence_drawing_sheets(part: Part) -> Sequence[DrawingSheet]:
+    return List(part.DrawingSheets)
+
+
+def part_try_drawing_sheet(
+    part: Part, name: str
+) -> Tuple[bool, Optional[DrawingSheet]]:
+    for sheet in part_sequence_drawing_sheets(part):
+        if sheet.Name == name:
+            return (True, sheet)
+    return (False, None)
 
 
 #         public static bool __HasDrawingSheet(this BasePart part, string drawingSheetName)
@@ -2941,15 +2896,6 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             }
 #         }
 
-#         public static void __CreateNXMatrix(this BasePart part)
-#         {
-#             throw new NotImplementedException();
-#         }
-
-#         public static Component[] __Children(this BasePart part)
-#         {
-#             return part.ComponentAssembly.RootComponent?.GetChildren() ?? new Component[0];
-#         }
 
 #         public static bool __TryGetRefset(this BasePart part, string name, out ReferenceSet refset)
 #         {
@@ -4371,22 +4317,22 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #        return vec0.__Add(negate);
 #    }
 
-def vector3d_negate(vec:Vector3d)->Vector3d:
+
+def vector3d_negate(vec: Vector3d) -> Vector3d:
     return Vector3d(-vec.X, -vec.Y, -vec.Z)
 
-def vector3d_angle(vec0:Vector3d, vec1:Vector3d)->float:
+
+def vector3d_angle(vec0: Vector3d, vec1: Vector3d) -> float:
     #    /// <summary>Calculates the angle in degrees between two vectors</summary>
     #    /// <param name="u">First vector</param>
     #    /// <param name="v">Second vector</param>
     #    /// <returns>The angle, theta, in degrees, where 0 ≤ theta ≤ 180</returns>
-    
 
     # double val = u.__Unit().__Multiply(v.__Unit());
     # val = System.Math.Min(1.0, val);
     # val = System.Math.Max(-1.0, val);
     # return System.Math.Acos(val) * 180.0 / System.Math.PI;
     raise NotImplementedError()
-
 
 
 #    public static double __Angle(this Vector3d u, Vector3d v)
@@ -5754,9 +5700,6 @@ def multiply_vector(vec: Vector3d, scale: float) -> Vector3d:
 #  #endregion
 
 
-
-
-
 #  #region DatumAxisFeature
 
 #  [Obsolete(nameof(NotImplementedException))]
@@ -5789,11 +5732,14 @@ def multiply_vector(vec: Vector3d, scale: float) -> Vector3d:
 #  #endregion
 
 
+def vector3d_unitize0(vec: Vector3d, tolerance: float = 0.001) -> Vector3d:
+    return to_vector3d(vector3d_unitize1(vec, tolerance)[1])
 
-def vector3d_unitize(vec:Vector3d, tolerance:float = .001)->Vector3d:
-    new_ = ufsession().Vec3.Unitize(vec, tolerance)
-    return to_vector3d(new_)
 
+def vector3d_unitize1(
+    vec: Vector3d, tolerance: float = 0.001
+) -> Tuple[float, Sequence[float]]:
+    return ufsession().Vec3.Unitize(to_list(vec), tolerance)
 
 
 #         #region Curve
@@ -6276,19 +6222,12 @@ def vector3d_unitize(vec:Vector3d, tolerance:float = .001)->Vector3d:
 #             throw new NotImplementedException();
 #         }
 
-#         //public static bool __IsClosed(this Curve curve)
-#         //{
-#         //    ufsession_.Modl.AskCurvePeriodicity(curve.Tag, out var status);
-#         //    switch (status)
-#         //    {
-#         //        case 0:
-#         //            return false;
-#         //        case 1:
-#         //            return true;
-#         //        default:
-#         //            throw NXException.Create(status);
-#         //    }
-#         //}
+
+def curve_is_closed(curve: Curve) -> bool:
+    status = ufsession().Modl.AskCurvePeriodicity(curve.Tag)
+    #  Status of the curve. UF_MODL_OPEN_CURVE UF_MODL_CLOSED_PERIODIC_CURVE UF_MODL_CLOSED_NON_PERIODIC_CURVE
+    raise Exception()
+
 
 #         //
 #         // Summary:
@@ -6664,23 +6603,9 @@ def vector3d_unitize(vec:Vector3d, tolerance:float = .001)->Vector3d:
 #  }
 
 
-#  public static Line __Copy(this Line line)
-#  {
-#      if (line.IsOccurrence)
-#          throw new ArgumentException($@"Cannot copy {nameof(line)} that is an occurrence.", nameof(line));
-
-#      return line.__OwningPart().Curves.CreateLine(line.__StartPoint(), line.__EndPoint());
-#  }
-
-#  public static Point3d __StartPoint(this Line line)
-#  {
-#      return line.StartPoint;
-#  }
-
-#  public static Point3d __EndPoint(this Line line)
-#  {
-#      return line.EndPoint;
-#  }
+def line_copy(line: Line) -> Line:
+    assert not line.IsOccurrence, f"cannot copy an occurrence line"
+    return line.OwningPart.Curves.CreateLine(line.StartPoint, line.EndPoint)
 
 
 #  /// <summary>Construct a line, given x,y,z coordinates of its end-points</summary>

@@ -1,3 +1,4 @@
+import enum
 from typing import Union
 import NXOpen
 import NXOpen.Annotations
@@ -5,6 +6,7 @@ import NXOpen.Annotations
 import NXOpen.UF
 import NXOpen.Features
 import NXOpen.Annotations
+import NXOpen.Layer
 from NXOpen.Positioning import DisplayedConstraint, DisplayedConstraintCollection
 from NXOpen import Session, TaggedObject
 from __extensions__ import *
@@ -25,12 +27,14 @@ import NXOpen.Drawings
 
 # ufsession().Vec3.Scale(scale, vector3d.__ToArray(), scaled_vec)
 
-print_(ufsession().Vec3)
+# print_(ufsession().Vec3)
 
 # ufsession().Vec3.Scale()
 
 
-for x in dir(ufsession().Vec3):
+print_(NXOpen.Layer)
+# for x in dir(NXOpen.Layer.State):
+for x in dir(NXOpen.Layer):
     print_(x)
 
 # temp = cycle_by_name("005")

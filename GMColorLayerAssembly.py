@@ -1,8 +1,11 @@
 from NXOpen import Part
 from NXOpen.Assemblies import Component
+from NXOpen.Layer import State
 import NXOpen.UF
 from __extensions__ import *
 from typing import List
+
+# set_layer_status(layer:int, )
 
 
 def main_component(component: Component, layer: int, color: int) -> None:
@@ -16,6 +19,8 @@ def main_component(component: Component, layer: int, color: int) -> None:
     ), f"Component {component.DisplayName} is not opened"
 
     session().Parts.SetDisplay(component.Prototype, False, False)
+    display_part().Layers.SetState(layer, State.Selectable)
+
     solid_body_layer_1 = list(
         filter(lambda b: b.Layer == 1, list(display_part().Bodies))
     )
@@ -23,9 +28,11 @@ def main_component(component: Component, layer: int, color: int) -> None:
     assert (
         len(solid_body_layer_1) == 1
     ), f"There were {len(solid_body_layer_1)} solid bodies in part {component.DisplayName}"
+
     display_part().Features.GetParentFeatureOfBody(
         solid_body_layer_1[0]
     ).MakeCurrentFeature()
+
     displayModification1 = session().DisplayManager.NewDisplayModification()
     displayModification1.ApplyToAllFaces = True
     displayModification1.ApplyToOwningParts = True
@@ -39,6 +46,9 @@ def main_component(component: Component, layer: int, color: int) -> None:
 
 def __main__(layer: int, color: int) -> None:
     components = select_components()
+    if len(components) == 0:
+        return
+    # return
     # the color to change the body
     # the layer to set the first and last solid body on layer 1 in a detail
     original = display_part()
@@ -60,8 +70,11 @@ def __main__(layer: int, color: int) -> None:
         comp.RedisplayObject()
         comp.SetLayerOption(-1)
         comp.RedisplayObject()
-        print_(f"{comp.Name}-{comp.Tag}-{comp.Color}-{comp.Layer}")
-    NXOpen.UF.UFSession.GetUFSession().Disp.RegenerateDisplay()
+
+    if display_part().Layers.WorkLayer != layer:
+        display_part().Layers.SetState(layer, State.Selectable)
+        # print_(f"{comp.Name}-{comp.Tag}-{comp.Color}-{comp.Layer}")
+    # NXOpen.UF.UFSession.GetUFSession().Disp.RegenerateDisplay()
 
 
 __main__(10, 10)

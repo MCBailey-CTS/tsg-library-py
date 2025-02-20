@@ -10,6 +10,7 @@ from NXOpen.Annotations import BaseNote
 import NXOpen.Assemblies
 from NXOpen.Drawings import DrawingSheetCollection
 from NXOpen.Features import FeatureCollection
+from NXOpen.Layer import LayerManager
 from NXOpen.Positioning import DisplayedConstraintCollection
 from NXOpen.Assemblies import ComponentAssembly as ComponentAssembly_
 
@@ -191,6 +192,12 @@ class SelectionSelectionAction(enum.Enum):
 # Hyperbola
 
 # JournalManager
+
+class Line(Curve):
+    @property
+    def StartPoint(self) -> Point3d: ...
+    @property
+    def EndPoint(self) -> Point3d: ...
 
 class ListingWindow:
     def Close(self) -> None:
@@ -485,7 +492,8 @@ class Part:
     # KinematicConfigurator
     # Labels
     # LayerCategories
-    # Layers
+    @property
+    def Layers(self) -> LayerManager: ...
     # LayoutDrawingSheets
     # Layouts
     @property
