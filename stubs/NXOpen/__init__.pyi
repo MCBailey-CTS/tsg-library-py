@@ -3,7 +3,7 @@ NXOpen module mcb
 """
 
 import enum
-from typing import Any, Iterable, List, Optional, Self, Tuple, Union
+from typing import Any, Iterable, List, Optional, Self, Sequence, Tuple, Union
 
 import NXOpen
 from NXOpen.Annotations import BaseNote
@@ -44,7 +44,7 @@ from NXOpen.Assemblies import ComponentAssembly as ComponentAssembly_
 class Update:
     def DoUpdate(self, mark: int) -> None:
         pass
-    def AddObjectsToDeleteList(self, objects: List[NXObject]) -> None:
+    def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None:
         pass
     def ClearDeleteList(self) -> None:
         pass
@@ -54,6 +54,9 @@ class Builder(TaggedObject):
         pass
     def Destroy(self) -> None:
         pass
+
+class PartCollectionSdpsStatus:
+    pass
 
 # CartesianCoordinateSystem
 
@@ -314,7 +317,7 @@ class CylindricalCoordinateSystem(CoordinateSystem):
 class SphericalCoordinateSystem(CoordinateSystem):
     pass
 
-class DatumCollection(Iterable[DisplayableObject]):
+class DatumCollection(List[DisplayableObject]):
     def CreateFixedDatumAxis(self) -> None:
         pass
     def CreateFixedDatumPlane(self) -> None:
@@ -344,6 +347,13 @@ class NoteCollection(Iterable[BaseNote]):
     def __iter__(self):  # type: ignore
         pass
 
+class ExpressionCollection(Iterable[Expression]):
+    def __iter__(self):  # type: ignore
+        pass
+
+class Expression(NXObject):
+    pass
+
 class Part:
     # Annotations
     #
@@ -363,16 +373,19 @@ class Part:
     def Datums(self) -> DatumCollection:
         pass
     @property
-    def Bodies(self) -> NXOpen.BodyCollection:
+    def Bodies(self) -> BodyCollection:
         pass
     @property
-    def Points(self) -> NXOpen.BodyCollection:
+    def Points(self) -> BodyCollection:
         pass
     @property
     def Notes(self) -> NoteCollection:
         pass
     @property
     def CoordinateSystems(self) -> CoordinateSystemCollection:
+        pass
+    @property
+    def Expressions(self) -> ExpressionCollection:
         pass
     # @property
     # def CoordinateSystems(self) -> NXOpen.BodyCollection:
@@ -962,6 +975,10 @@ class TaggedObject:
 
 # TaggedObjectList
 # TaggedObjectManager
+class TaggedObjectManager:
+    @staticmethod
+    def GetTaggedObject(tag: int) -> TaggedObject:
+        pass
 
 # TransientObject
 class UI:

@@ -1,3 +1,4 @@
+from typing import Union
 import NXOpen
 import NXOpen.Annotations
 import NXOpen.Annotations
@@ -5,7 +6,7 @@ import NXOpen.UF
 import NXOpen.Features
 import NXOpen.Annotations
 from NXOpen.Positioning import DisplayedConstraint, DisplayedConstraintCollection
-from NXOpen import Session
+from NXOpen import Session, TaggedObject
 from __extensions__ import *
 import NXOpen.Drawings
 
@@ -17,9 +18,25 @@ import NXOpen.Drawings
 # print_(NXOpen.Annotations.BaseNote.__bases__)
 # print_(NXOpen.SelectNXObjectList)
 # print_(NXOpen.Positioning.DisplayedConstraint)
-print_(NXOpen.UF.UFSession.GetUFSession().Disp)
-# for x in dir(NXOpen.Drawings.DrawingSheet):
+# print_(NXOpen.UF.UFSession.GetUFSession().Disp)
+# set_display_part()
+
+# obj=NXOpen.Utilities.NXObjectManager.Get(objectTag)
+
+# for x in dir(NXOpen.TaggedObjectManager):
 #     print_(x)
+
+temp = cycle_by_name("005")
+components = cast_components(temp)
+selected = select_components()
+print_(len(selected))
+# trimmed_components = hash_
+
+# for x in temp:
+#     print_(component_ancestors(x))
+
+# print_(len(temp))
+
 
 # selected_objects = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
 #         "Select components",

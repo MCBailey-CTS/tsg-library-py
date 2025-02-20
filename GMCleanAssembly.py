@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Sequence
 from NXOpen import Part, Session, TaggedObject
 import NXOpen
 import os
@@ -45,7 +45,7 @@ def get_all_descendants(component: Component) -> List[Component]:
     return descendants
 
 
-def DescendantParts(part:Part) -> List[Part]:
+def DescendantParts(part: Part) -> List[Part]:
     __parts = {}
     __parts[part.Leaf] = part
     for component in get_all_descendants(part.ComponentAssembly.RootComponent):
@@ -55,7 +55,7 @@ def DescendantParts(part:Part) -> List[Part]:
     return list(__parts.values())
 
 
-def delete_objects(objects:List[TaggedObject]) -> None:
+def delete_objects(objects: Sequence[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
     undo = session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
@@ -66,7 +66,6 @@ def delete_objects(objects:List[TaggedObject]) -> None:
 print_("in here")
 
 
-exit()
 session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "GMCleanAssembly")
 
 original_display = session().Parts.Display
@@ -77,7 +76,7 @@ for root, dirs, files in os.walk("G:\\0Library\\Fasteners"):
     for file in files:
         path = os.path.join(root, file)
         temp = Path(path).stem
-        fasteners[temp] = temp
+        fasteners[temp] = temp  # type: ignore
 
 
 parts = DescendantParts(display_part())

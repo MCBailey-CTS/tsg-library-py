@@ -1,25 +1,114 @@
-from typing import List
+from typing import List, Union
 import NXOpen
+from NXOpen import TaggedObject
 from NXOpen.Assemblies import Component
+from NXOpen.UF import UFSession
 
-session_ = NXOpen.Session.GetSession()
+# __session = None
+
+
+def session() -> NXOpen.Session:
+    """Gets NXOpen.Session"""
+    return NXOpen.Session.GetSession()
+
+
+def select_components() -> List[Component]:
+    selected_objects = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
+        "Select components",
+        "Select components",
+        NXOpen.SelectionSelectionScope.AnyInAssembly,
+        NXOpen.SelectionSelectionAction.ClearAndEnableSpecific,
+        False,
+        False,
+        [NXOpen.Selection.MaskTriple(63, 0, 0)],
+    )
+    return cast_components(selected_objects[1])
 
 
 def display_part() -> NXOpen.Part:
-    return session_.Parts.Display
+    return session().Parts.Display
 
 
 def work_part() -> NXOpen.Part:
-    return session_.Parts.Work
+    return session().Parts.Work
 
 
 def work_component() -> Component:
-    return session_.Parts.WorkComponent
+    return session().Parts.WorkComponent
+
+
+def cast_tagged_object(tag: int) -> TaggedObject:
+    return NXOpen.TaggedObjectManager.GetTaggedObject(tag)
+
+
+def cast_component(obj: Union[TaggedObject, int]) -> Component:
+    if isinstance(obj, int):
+        tagged_object = cast_tagged_object(obj)
+        return cast_component(tagged_object)
+    assert isinstance(obj, Component), f"Could not cast type {obj} to Component"
+    return obj
+
+
+def cast_components(tagged_objects: List[TaggedObject]) -> List[Component]:
+    components: List[Component] = []
+    for obj in tagged_objects:
+        components.append(cast_component(obj))
+    return components
+
+
+def cycle_by_name(name: str) -> List[TaggedObject]:
+    objects: List[TaggedObject] = []
+    tag = 0
+    while True:
+        tag = UFSession.GetUFSession().Obj.CycleByName(name, tag)
+        if tag == 0:
+            break
+        objects.append(cast_tagged_object(tag))
+    return objects
+
+
+def component_ancestors(component: Component) -> List[Component]:
+    ancestors: List[Component] = []
+    ancestor = component.Parent
+    while ancestor is not None:
+        ancestors.append(ancestor)
+        ancestor = ancestor.Parent
+    return ancestors
+
+
+# public enum SdpsStatus
+# {
+#     //
+#     // Summary:
+#     //     The work part was set successfully. This code indicates success: all other codes
+#     //     indicate failure
+#     Ok,
+#     //
+#     // Summary:
+#     //     The modelling application is not active
+#     OutsideModelling,
+#     //
+#     // Summary:
+#     //     A drawing is currently displayed
+#     DrawingDisplayed,
+#     //
+#     // Summary:
+#     //     The Part List module is active
+#     InPartsList,
+#     //
+#     // Summary:
+#     //     The Tolerancing module is active
+#     Gdt,
+#     //
+#     // Summary:
+#     //     The work part and displayed part have different units
+#     UnitsMismatch
+# # }
 
 
 def print_(obj: object) -> None:
     # session = NXOpen.Session.GetSession()
-    listing_window = session_.ListingWindow
+    listing_window = session().ListingWindow
     listing_window.Open()
     listing_window.WriteLine(str(obj))
 

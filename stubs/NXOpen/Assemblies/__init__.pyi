@@ -1,8 +1,8 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Sequence, Union
 from NXOpen import DisplayableObject, NXObject, Part
 
 class Component(DisplayableObject):
-    def GetChildren(self) -> List[Component]:
+    def GetChildren(self) -> Sequence[Component]:
         pass
     @property
     def DisplayName(self) -> str:
@@ -15,8 +15,10 @@ class Component(DisplayableObject):
     def SetLayerOption(self, layer: int) -> None: ...
     @property
     def IsSuppressed(self) -> bool: ...
+    @property
+    def Parent(self) -> Component: ...
 
 class ComponentAssembly:
     @property
-    def RootComponent(self) -> Optional[Component]:
+    def RootComponent(self) -> Component:
         pass

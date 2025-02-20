@@ -30,7 +30,7 @@ class PmiNoter(BaseNote):
     pass
 
 class NoteCollection(Iterable[BaseNote]):
-    def __iter__(self): # type: ignore
+    def __iter__(self):  # type: ignore
         pass
     # def CreatePmiNote(self, note_data, pmi_data, annotation_plane)
     # NewNoteData
