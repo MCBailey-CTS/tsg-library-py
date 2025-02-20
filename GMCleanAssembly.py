@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import List
-from NXOpen import Part, Session
+from NXOpen import Part, Session, TaggedObject
 import NXOpen
 import os
 
@@ -45,7 +45,7 @@ def get_all_descendants(component: Component) -> List[Component]:
     return descendants
 
 
-def DescendantParts(part) -> List[Part]:
+def DescendantParts(part:Part) -> List[Part]:
     __parts = {}
     __parts[part.Leaf] = part
     for component in get_all_descendants(part.ComponentAssembly.RootComponent):
@@ -55,7 +55,7 @@ def DescendantParts(part) -> List[Part]:
     return list(__parts.values())
 
 
-def delete_objects(objects) -> None:
+def delete_objects(objects:List[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
     undo = session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
@@ -142,8 +142,10 @@ for index, value in enumerate(parts):
     if len(Notes) > 0:
         delete_objects(Notes)
 
-    if display_part().ComponentAssembly.RootComponent is not None:
-        for child in list(display_part().ComponentAssembly.RootComponent.GetChildren()):
+    root_comp = display_part().ComponentAssembly.RootComponent
+
+    if root_comp is not None:
+        for child in List(root_comp.GetChildren()):
             if child.DisplayName in fasteners or child.IsSuppressed:
                 delete_objects([child])
 
@@ -193,9 +195,9 @@ part_cleanup.DeleteUnusedObjects = True
 part_cleanup.DeleteUnusedUnits = True
 part_cleanup.DeleteVisualEditorData = True
 part_cleanup.FixOffplaneSketchCurves = True
-part_cleanup.GroupsToDelete = NXOpen.PartCleanup.DeleteGroups.All
+part_cleanup.GroupsToDelete = NXOpen.PartCleanupDeleteGroups.All
 part_cleanup.ResetComponentDisplay = (
-    NXOpen.PartCleanup.ResetComponentDisplayAction.RemoveAllChanges
+    NXOpen.PartCleanupResetComponentDisplayAction.RemoveAllChanges
 )
 part_cleanup.TurnOffHighlighting = True
 part_cleanup.DoCleanup()

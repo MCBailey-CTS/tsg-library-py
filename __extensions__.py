@@ -26,7 +26,7 @@ def print_(obj: object) -> None:
 
 # get all objects like {point, lines, bodies} and so on
 def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
-    pass
+    raise Exception()
 
 
 #  #region Arc

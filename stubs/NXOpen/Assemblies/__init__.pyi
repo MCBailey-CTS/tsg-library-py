@@ -12,9 +12,9 @@ class Component(DisplayableObject):
     def Name(self) -> str:
         """Returns the name of the component object"""
         pass
+    def SetLayerOption(self, layer: int) -> None: ...
     @property
-    def Prototype(self)->Union[Part,NXObject]:
-        pass
+    def IsSuppressed(self) -> bool: ...
 
 class ComponentAssembly:
     @property
