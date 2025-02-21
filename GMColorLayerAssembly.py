@@ -185,4 +185,4 @@ def __main__(layer: int, color: int) -> None:
     if display_part().Layers.WorkLayer != layer:
         display_part().Layers.SetState(layer, State.Selectable)
 
-__main__(10, 186)
+# __main__(10, 186)
