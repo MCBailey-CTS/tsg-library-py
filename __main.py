@@ -34,21 +34,30 @@ def part_descendant_parts(part: Part) -> List[Part]:
                 __parts[component.DisplayName] = component.Prototype
     return list(__parts.values())
 
+def component_assembly_struct(components:List[Component])->Dict[str,Tuple[Part, List[Component]]]:
+    dict_:Dict[str,Tuple[Part, List[Component]]] = {}
+
+    for comp in components:
+        parent = comp.Parent
+        while parent is not None:
+            parent_part = parent.Prototype
+            part_occs:Tuple[List[int], int] = ufsession().Assem.AskOccsOfPart(parent_part.Tag, comp.Prototype.Tag)
+            descendants = []
+            for t in part_occs[0]:
+                descendants.append(cast_tagged_object(t))
+            if parent_part.Leaf not in dict_    :
+                dict_[parent_part.Leaf] = (parent_part, descendants)
+            parent = parent.Parent
+
+
+
+
 temp = cycle_by_name("041")
 components = cast_components(temp)
-dict_:Dict[str,Tuple[Part, List[Component]]] = {}
 
-for comp in components:
-    parent = comp.Parent
-    while parent is not None:
-        parent_part = parent.Prototype
-        part_occs:Tuple[List[int], int] = ufsession().Assem.AskOccsOfPart(parent_part.Tag, comp.Prototype.Tag)
-        descendants = []
-        for t in part_occs[0]:
-            descendants.append(cast_tagged_object(t))
-        if parent_part.Leaf not in dict_    :
-            dict_[parent_part.Leaf] = (parent_part, descendants)
-        parent = parent.Parent
+
+dict_ = component_assembly_struct(components)
+
 
 original = display_part()
 
@@ -66,10 +75,6 @@ try:
 
 finally:
     session().Parts.SetDisplay(original, False, False)
-
-
-
-
 
 
 
