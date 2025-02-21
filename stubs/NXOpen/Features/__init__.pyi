@@ -30,3 +30,5 @@ class BodyFeature(Feature):
 
 class Block(BodyFeature):
     pass
+
+class Cylinder(BodyFeature): ...

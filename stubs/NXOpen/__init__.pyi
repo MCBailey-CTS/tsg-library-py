@@ -13,6 +13,7 @@ from NXOpen.Features import FeatureCollection
 from NXOpen.Layer import LayerManager
 from NXOpen.Positioning import DisplayedConstraintCollection
 from NXOpen.Assemblies import ComponentAssembly as ComponentAssembly_
+from NXOpen.Assemblies import Component as Component_
 
 # ApparentChainingRule
 # ApparentChainingRuleSelection
@@ -42,13 +43,24 @@ from NXOpen.Assemblies import ComponentAssembly as ComponentAssembly_
 # BodyGroupRule
 # BodyList
 
+class NXObjectAttributeType(enum.Enum):
+    Any:int
+    Boolean:int
+    Integer:int
+    Invalid:int
+    Null:int
+    Real:int
+    Reference:int
+    String:int
+    Time:int
+
 class Update:
-    def DoUpdate(self, mark: int) -> None:
-        pass
-    def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None:
-        pass
-    def ClearDeleteList(self) -> None:
-        pass
+    def DoUpdate(self, mark: int) -> None:...
+    def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None:...
+    def ClearDeleteList(self) -> None:...
+    class Option(enum.Enum):
+        Later: int
+        Now: int
 
 class Builder(TaggedObject):
     def Commit(self) -> Optional[NXObject]:
@@ -59,30 +71,21 @@ class Builder(TaggedObject):
 class PartCollectionSdpsStatus:
     pass
 
-# CartesianCoordinateSystem
-
 # ClipboardOperationsManager
 
-# Conic
+class Conic(Curve): ...
+class CoordinateSystem(SmartObject): ...
 
-# CoordinateSystem
 # CoordinateSystemCollection
 
-class SelectObjectList(TaggedObject):
-    pass
-
 class SelectNXObjectList(TaggedObject):
-    def Add(self, objects: Union[NXObject, List[NXObject]]) -> bool:
-        pass
+    def Add(self, objects: Union[NXObject, List[NXObject]]) -> bool: ...
     @property
-    def Size(self) -> int:
-        pass
+    def Size(self) -> int: ...
 
 class Curve(DisplayableObject):
-    def GetLength(self) -> float:
-        pass
-    def IsReference(self) -> bool:
-        pass
+    def GetLength(self) -> float: ...
+    def IsReference(self) -> bool: ...
 
 # CurveChainRule
 # CurveCollection
@@ -102,29 +105,20 @@ class Curve(DisplayableObject):
 # DexManager
 
 class DisplayableObject(NXObject):
-    def Blank(self) -> None:
-        pass
+    def Blank(self) -> None: ...
     @property
-    def Color(self) -> int:
-        pass
+    def Color(self) -> int: ...
     @Color.setter
-    def Color(self, color: int) -> None:
-        pass
-    def Highlight(self) -> None:
-        pass
+    def Color(self, color: int) -> None: ...
+    def Highlight(self) -> None: ...
     @property
-    def IsBlanked(self) -> bool:
-        pass
+    def IsBlanked(self) -> bool: ...
     @property
-    def Layer(self) -> int:
-        pass
+    def Layer(self) -> int: ...
     @Layer.setter
-    def Layer(self, layer: int) -> None:
-        pass
-    def RedisplayObject(self) -> None:
-        pass
-    def Unhighlight(self) -> None:
-        pass
+    def Layer(self, layer: int) -> None: ...
+    def RedisplayObject(self) -> None: ...
+    def Unhighlight(self) -> None: ...
 
 class Direction(SmartObject):
     @property
@@ -134,7 +128,13 @@ class Direction(SmartObject):
     def Vector(self) -> Vector3d:
         pass
 
-# DirectionCollection
+class DirectionCollection(Iterable[Direction]):
+    def __iter__(self): ...  # type: ignore
+
+class Point(SmartObject): ...
+
+class PointCollection(Iterable[Point]):
+    def __iter__(self): ...  # type: ignore
 
 class DisplayManager:
     def NewDisplayModification(self) -> DisplayModification:
@@ -242,82 +242,88 @@ class ListingWindow:
 # LogFile
 
 class Matrix3x3:
-    pass
+    @property
+    def Xx(self)->float: ...
+    @Xx.setter
+    def Xx(self)->float: ...
+    @property
+    def Xy(self)->float: ...
+    @Xy.setter
+    def Xy(self)->float: ...
+    @property
+    def Xz(self)->float: ...
+    @Xz.setter
+    def Xz(self)->float: ...
+    @property
+    def Yx(self)->float: ...
+    @Yx.setter
+    def Yx(self)->float: ...
+    @property
+    def Yy(self)->float: ...
+    @Yy.setter
+    def Yy(self)->float: ...
+    @property
+    def Yz(self)->float: ...
+    @Yz.setter
+    def Yz(self)->float: ...
+    @property
+    def Zx(self)->float: ...
+    @Zx.setter
+    def Zx(self)->float: ...
+    @property
+    def Zy(self)->float: ...
+    @Zy.setter
+    def Zy(self)->float: ...
+    @property
+    def Zz(self)->float: ...
+    @Zz.setter
+    def Zz(self)->float: ...
+
+
 
 # ModelingView
 # ModelingViewCollection
 
 # NXException
-# NXMatrix
-# NXMatrixCollection
+class NXMatrix(NXObject): ...
+
+class NXMatrixCollection(Iterable[NXMatrix]):
+    def __iter__(self): ...  # type: ignore
 
 class NXObject(TaggedObject):
     # AttributeInformation
     # AttributeType
-    # ComputationalTime
-    # CreateAttributeIterator
-    # DateAndTimeFormat
-    # DeleteAllAttributesByType
-    # DeleteAttributeByTypeAndTitle
-    # DeleteUserAttribute
+    def DeleteUserAttribute(self, title: str, index: int) -> None: ...
     # DeleteUserAttributes
-    # FindObject
-    # GetAttributeTitlesByType
-    # GetBooleanUserAttribute
-    # GetComputationalTimeUserAttribute
-    # GetIntegerAttribute
-    # GetIntegerUserAttribute
-    # GetNextUserAttribute
-    # GetPdmReferenceAttributeValue
-    # GetRealAttribute
-    # GetRealUserAttribute
-    # GetReferenceAttribute
-    # GetStringAttribute
-    # GetStringUserAttribute
-    # GetTimeAttribute
-    # GetTimeUserAttribute
-    # GetUserAttribute
+    def GetStringUserAttribute(self, title: str, index: int) -> None: ...
     # GetUserAttributeAsString
-    # GetUserAttributeCount
-    # GetUserAttributeLock
-    # GetUserAttributeSize
-    # GetUserAttributeSourceObjects
     # GetUserAttributes
     # GetUserAttributesAsStrings
-    # HasUserAttribute
-    # IsOccurrence
-    # JournalIdentifier
+    def HasUserAttribute(self, title: str, type_:NXObject.AttributeType, index: int) -> bool: ...
+    @property
+    def IsOccurrence(self) -> bool: ...
+    @property
+    def JournalIdentifier(self) -> str: ...
     @property
     def Name(self) -> str: ...
-    # Null
-    # OwningComponent
-    # OwningPart
-    # Print
     @property
-    def Prototype(self) -> Optional[NXOpen.NXObject]:
-        pass
-    # SetAttribute
-    # SetBooleanUserAttribute
-    # SetName
-    # SetPdmReferenceAttribute
-    # SetReferenceAttribute
-    # SetTimeAttribute
-    # SetTimeUserAttribute
-    # SetUserAttribute
-    # SetUserAttributeLock
-    # Tag
-    pass
+    def OwningComponent(self) -> Component_: ...
+    @property
+    def OwningPart(self) -> Part: ...
+    def Print(self) -> None: ...
+    @property
+    def Prototype(self) -> NXObject: ...
+    def SetName(self, name: str) -> None: ...
+    def SetUserAttribute(
+        self, title: str, index: int, value: str, option: Update.Option
+    ) -> None: ...
 
 # Parabola
 
 class Body(DisplayableObject):
     pass
 
-class CoordinateSystem(SmartObject):
-    pass
-
-class CartesianCoordinateSystem(CoordinateSystem):
-    pass
+class CartesianCoordinateSystem(CoordinateSystem): ...
 
 class CylindricalCoordinateSystem(CoordinateSystem):
     pass
@@ -362,7 +368,7 @@ class ExpressionCollection(Iterable[Expression]):
 class Expression(NXObject):
     pass
 
-class Part:
+class Part(NXObject):
     # Annotations
     #
     # @property
@@ -371,30 +377,20 @@ class Part:
     # @property
     # def Axes(self) -> NXOpen.AxesCollection:
     #     pass
-    # @property
-    # def Bodies(self) -> NXOpen.BodyCollection:
-    #     pass
     @property
-    def Curves(self) -> CurveCollection:
-        pass
+    def Curves(self) -> CurveCollection: ...
     @property
-    def Datums(self) -> DatumCollection:
-        pass
+    def Datums(self) -> DatumCollection: ...
     @property
-    def Bodies(self) -> BodyCollection:
-        pass
+    def Bodies(self) -> BodyCollection: ...
     @property
-    def Points(self) -> BodyCollection:
-        pass
+    def Points(self) -> BodyCollection: ...
     @property
-    def Notes(self) -> NoteCollection:
-        pass
+    def Notes(self) -> NoteCollection: ...
     @property
-    def CoordinateSystems(self) -> CoordinateSystemCollection:
-        pass
+    def CoordinateSystems(self) -> CoordinateSystemCollection: ...
     @property
-    def Expressions(self) -> ExpressionCollection:
-        pass
+    def Expressions(self) -> ExpressionCollection: ...
     # @property
     # def CoordinateSystems(self) -> NXOpen.BodyCollection:
     #     pass
@@ -1042,5 +1038,48 @@ class Vector3d:
     def Z(self) -> float: ...
 
 # WCS
+class WCS:
+    @property
+    def CoordinateSystem(self)->CartesianCoordinateSystem:
+        """
+        Getter for property: (NXOpen::CartesianCoordinateSystem ) CoordinateSystem. More...
+        """
+        pass
+ 
+    def 	Origin (self):
+        """Getter for property: (NXOpen::Point3d ) Origin. More..."""
+        pass
+    
+    def 	Origin (self, origin):
+        """Setter for property: (NXOpen::Point3d ) Origin. More..."""
+        pass
+    
+    def 	Rotate (self, rotation_axis, angle):
+        """Rotates the WCS about the specified axis. More..."""
+        pass
+    
+    def 	Save (self):
+        """Saves the WCS. More..."""
+        pass
+    
+    def 	SetCoordinateSystem (self, new_cs):
+        """Changes the coordinate system of the WCS to a new coordinate system. More..."""
+        pass
+    
+    def 	SetCoordinateSystemCartesianAtCsys (self, new_cs):
+        """Creates a WCS at a new coordinate system. More..."""
+        pass
+    
+    def 	SetOriginAndMatrix (self, origin, matrix):
+        """Sets the origin and orientation matrix of the WCS. More..."""
+        pass
+    
+    def 	Visibility (self):
+        """Getter for property: (bool) Visibility. More..."""
+        pass
+    
+    def 	Visibility (self, is_visible):
+        """Setter for property: (bool) Visibility. More..."""
+        pass
 # WCSAxis
 # WCSAxisMemberType

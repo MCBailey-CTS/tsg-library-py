@@ -2,10 +2,8 @@ from NXOpen import Part
 from NXOpen.Assemblies import Component
 from NXOpen.Layer import State
 import NXOpen.UF
-from __extensions__ import *
+from extensions__ import *
 from typing import List
-
-# set_layer_status(layer:int, )
 
 
 def main_component(component: Component, layer: int, color: int) -> None:
@@ -59,22 +57,15 @@ def __main__(layer: int, color: int) -> None:
                 main_component(comp, layer, color)
             except Exception as ex:
                 print_(ex)
-
     finally:
         session().Parts.SetDisplay(original, False, False)
 
     for comp in components:
-        # need to set the {comp} to the {layer} first before you change displayed part
-        # foreach selected component, need to prompt the user for a layer, and color
         comp.Layer = layer
-        comp.RedisplayObject()
         comp.SetLayerOption(-1)
         comp.RedisplayObject()
 
     if display_part().Layers.WorkLayer != layer:
         display_part().Layers.SetState(layer, State.Selectable)
-        # print_(f"{comp.Name}-{comp.Tag}-{comp.Color}-{comp.Layer}")
-    # NXOpen.UF.UFSession.GetUFSession().Disp.RegenerateDisplay()
 
-
-__main__(10, 10)
+__main__(10, 186)

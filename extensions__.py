@@ -1,15 +1,31 @@
 from typing import List, Optional, Sequence, Tuple, Union
 import NXOpen
-from NXOpen import Curve, Line, Part, TaggedObject, Vector3d
+from NXOpen import (
+    WCS,
+    Curve,
+    Expression,
+    Line,
+    Matrix3x3,
+    NXObject,
+    Part,
+    Point,
+    Point3d,
+    SmartObject,
+    TaggedObject,
+    Update,
+    Vector3d,
+)
 from NXOpen.Assemblies import Component
 from NXOpen.Drawings import DrawingSheet
-from NXOpen.Features import Block
+from NXOpen.Features import Block, Cylinder
 from NXOpen.UF import UFSession as UFSession_
 
 
 def session() -> NXOpen.Session:
     return NXOpen.Session.GetSession()
 
+def wcs()->WCS:
+    return display_part().WCS
 
 def ufsession() -> UFSession_:
     return NXOpen.UF.UFSession.GetUFSession()
@@ -110,7 +126,6 @@ def component_ancestors(component: Component) -> List[Component]:
 
 
 def print_(obj: object) -> None:
-    # session = NXOpen.Session.GetSession()
     listing_window = session().ListingWindow
     listing_window.Open()
     listing_window.WriteLine(str(obj))
@@ -164,110 +179,46 @@ def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
 #         //}
 
 #         public static void __NXOpenBasePart(BasePart basePart)
-#         {
-#             //base_part.Annotations
-#             //base_part.Arcs
-#             //base_part.Axes
-#             //base_part.CanBeDisplayPart
-#             //base_part.Close
-#             //base_part.ComponentAssembly
-#             //base_part.CoordinateSystems
-#             //base_part.CreateReferenceSet
-#             //base_part.Curves
-#             //base_part.Datums
-#             //base_part.Directions
-#             //base_part.Displayed
-#             //base_part.Ellipses
-#             //base_part.Expressions
-#             //base_part.BaseFeatures
-#             //base_part.DeleteReferenceSet
-#             //base_part.Features
-#             //base_part.FullPath
-#             //base_part.GetAllReferenceSets
-#             //base_part.GetHistoryInformation
-#             //base_part.GetMinimallyLoadedParts
-#             //base_part.Grids
-#             //base_part.HasAnyMinimallyLoadedChildren
-#             //base_part.HasWriteAccess
-#             //base_part.Hyperbolas
-#             //base_part.IsFullyLoaded
-#             //base_part.IsModified
-#             //base_part.IsReadOnly
-#             //base_part.LayerCategories
-#             //base_part.Layers
-#             //base_part.Leaf
-#             //base_part.Lines
-#             //base_part.LoadFully
-#             //base_part.LoadThisPartFully
-#             //base_part.LoadThisPartPartially
-#             //base_part.ModelingViews
-#             //base_part.NXMatrices
-#             //base_part.Parabolas
-#             //base_part.PartLoadState
-#             //base_part.PartUnits
-#             //base_part.Planes
-#             //base_part.Points
-#             //base_part.Reopen
-#             //base_part.ReverseBlankAll
-#             //base_part.Save
-#             //base_part.SaveAs
-#             //base_part.ScCollectors
-#             //base_part.ScRuleFactory
-#             //base_part.Sections
-#             //base_part.Undisplay
-#             //base_part.UniqueIdentifier
-#             //base_part.UnitCollection
-#             //base_part.UserDefinedObjectManager
-#             //base_part.Views
-#             //base_part.WCS
-#         }
 
-#         /// <summary>
-#         ///     Creates a cylinder feature, given base point, direction, height and diameter<br />
-#         ///     expressions
-#         /// </summary>
-#         /// <param name="basePart">THe part to place the Cyclinder in</param>
-#         /// <param name="axisPoint">The point at base of cylinder</param>
-#         /// <param name="axisVector">The cylinder axis vector (length doesn't matter)</param>
-#         /// <param name="height">The cylinder height</param>
-#         /// <param name="diameter">The cylinder diameter</param>
-#         /// <returns>An NX.Cylinder feature</returns>
-#         internal static Cylinder __CreateCylinder(
-#             this BasePart basePart,
-#             Point3d axisPoint,
-#             Vector3d axisVector,
-#             double height,
-#             double diameter
-#         )
-#         {
-#             basePart.__AssertIsWorkPart();
-#             Part part = __work_part_;
-#             CylinderBuilder cylinderBuilder = part.Features.CreateCylinderBuilder(null);
+def part_create_cylinder(part:Part, axis_point:Point3d, axis_vector:Vector3d, height:float, diameter:float)->Cylinder:
+    """
+     <summary>
+         Creates a cylinder feature, given base point, direction, height and diameter<br />
+         expressions
+     </summary>
+     <param name="basePart">THe part to place the Cyclinder in</param>
+     <param name="axisPoint">The point at base of cylinder</param>
+     <param name="axisVector">The cylinder axis vector (length doesn't matter)</param>
+     <param name="height">The cylinder height</param>
+     <param name="diameter">The cylinder diameter</param>
+     <returns>An NX.Cylinder feature</returns>
+    """
+    # assert part_is_work_part(part)
+    # builder = part.Features.CreateCylinderBuilder(NXOpen.Features.Feature.Null)
+    # try:
+    #     builder.Type = CylinderBuilder.Types.AxisDiameterAndHeight
+    #     builder.BooleanOption.Type = BooleanOperation.BooleanType.Create
+    #     builder.Diameter.RightHandSide = str(diameter)
+    #     builder.Height.RightHandSide = height.ToString()
+    #     direction = part.Directions.CreateDirection(
+    #     point_3d_origin,
+    #     axis_vector,
+    #     SmartObject.UpdateOption.WithinModeling
+    #     )
+    #     builder.Axis.Direction = direction
+    #     builder.Axis.Point = part.Points.CreatePoint(axis_point)
+    #     return cast_cylinder(builder.Commit())
+    # finally:
+    #     builder.Destroy()
+    raise NotImplementedError()
 
-#             using (session_.__UsingBuilderDestroyer(cylinderBuilder))
-#             {
-#                 cylinderBuilder.Type = CylinderBuilder.Types.AxisDiameterAndHeight;
-#                 cylinderBuilder.BooleanOption.Type = BooleanOperation.BooleanType.Create;
-#                 cylinderBuilder.Diameter.RightHandSide = diameter.ToString();
-#                 cylinderBuilder.Height.RightHandSide = height.ToString();
-#                 Point3d origin = _Point3dOrigin;
-#                 Direction direction = part.Directions.CreateDirection(
-#                     origin,
-#                     axisVector,
-#                     SmartObject.UpdateOption.WithinModeling
-#                 );
-#                 cylinderBuilder.Axis.Direction = direction;
-#                 cylinderBuilder.Axis.Point = part.Points.CreatePoint(axisPoint);
-#                 Cylinder cylinder = (Cylinder)cylinderBuilder.Commit();
-#                 return cylinder;
-#             }
-#         }
+    
+
 
 #         public static SetWorkPartContextQuietly __UsingSetWorkPartQuietly(this BasePart basePart)
 #         {
 #             return new SetWorkPartContextQuietly(basePart);
 #         }
-
 
 def part_sequence_drawing_sheets(part: Part) -> Sequence[DrawingSheet]:
     return List(part.DrawingSheets)
@@ -282,75 +233,36 @@ def part_try_drawing_sheet(
     return (False, None)
 
 
-#         public static bool __HasDrawingSheet(this BasePart part, string drawingSheetName)
-#         {
-#             return ((Part)part).__HasDrawingSheet(drawingSheetName, StringComparison.Ordinal);
-#         }
-
-#         public static TreeNode __TreeNode(this BasePart part)
-#         {
-#             return new TreeNode(part.Leaf) { Tag = part };
-#         }
-
 #         public static string __AskDetailOp(this BasePart part)
 #         {
 #             return part.Leaf.__AskDetailOp();
 #         }
 
-#         public static bool __IsPartDetail(this BasePart part)
-#         {
-#             return part.Leaf.__IsPartDetail();
-#         }
+def part_has_drawing_sheet(part:Part, name:str)->bool:
+    for sheet in list(part.DrawingSheets):
+        if sheet == name:
+            return True
+    return False
 
-#         public static Body[] __Bodies(this BasePart basePart)
-#         {
-#             return basePart.__ToPart().Bodies.ToArray();
-#         }
-
-#         //ufsession_.Part.CheckPartWritable
-#         //ufsession_.Part.AskUnits
-#         //ufsession_.Part.AskStatus
-#         //ufsession_.Part.AddToRecentFileList
-#         //ufsession_.Part.AskNthPart
-#         //ufsession_.Part.AskNumParts
-#         //ufsession_.Part.ClearHistoryList
-#         //ufsession_.Part.CloseAll();
-
-#         //public static TreeNode _TreeNode(this NXOpen.BasePart part) => new TreeNode(part.Leaf) { Tag = part };
-
-#         public static bool __HasDrawingSheet(
-#             this BasePart part,
-#             string drawingSheetName,
-#             StringComparison stringComparison
-#         )
-#         {
-#             return part.__ToPart()
-#                 .DrawingSheets.ToArray()
-#                 .Any(sheet => string.Equals(sheet.Name, drawingSheetName, stringComparison));
-#         }
 
 #         public static Part __ToPart(this BasePart basePart)
 #         {
 #             return (Part)basePart;
 #         }
 
-#         public static Expression __FindExpressionOrNull(this BasePart part, string expressionName)
-#         {
-#             return part.__FindExpressionOrNull(expressionName, StringComparison.OrdinalIgnoreCase);
-#         }
 
-#         public static Expression __FindExpressionOrNull(
-#             this BasePart part,
-#             string expressionName,
-#             StringComparison stringComparison
-#         )
-#         {
-#             return part.Expressions
-#                 .Cast<Expression>()
-#                 .SingleOrDefault(
-#                     expression => expression.Name.Equals(expressionName, stringComparison)
-#                 );
-#         }
+def part_find_expression_or_none(part: Part, name: str) -> Optional[Expression]:
+    for expression in list(part.Expressions):
+        if expression.Name == name:
+            return expression
+    return None
+
+
+def part_find_expression(part: Part, name: str) -> Expression:
+    expression = part_find_expression_or_none(part, name)
+    assert expression is not None
+    return expression
+
 
 #         //public static bool _HasModelingView(this NXOpen.BasePart part, string modelingViewName)
 #         //{
@@ -476,103 +388,10 @@ def part_try_drawing_sheet(
 #             }
 #         }
 
-#         public static void __AssertIsDisplayPart(this BasePart basePart)
-#         {
-#             if (session_.Parts.Display.Tag != basePart.Tag)
-#                 throw new ArgumentException(
-#                     $"Part must be display part to {nameof(__AssertIsDisplayPart)}"
-#                 );
-#         }
 
-#         public static void __AssertIsDisplayOrWorkPart(this BasePart basePart)
-#         {
-#             if (
-#                 session_.Parts.Display.Tag != basePart.Tag
-#                 || session_.Parts.Work.Tag != basePart.Tag
-#             )
-#                 throw new PartIsNotWorkOrDisplayException();
-#         }
+def is_display_part(part: Part) -> bool:
+    return part.Tag == display_part().Tag
 
-#         public static TaggedObject[] __CycleByName(this BasePart basePart, string name)
-#         {
-#             basePart.__AssertIsWorkPart();
-#             Tag tag = Tag.Null;
-#             List<TaggedObject> list = new List<TaggedObject>();
-
-#             while (true)
-#             {
-#                 ufsession_.Obj.CycleByName(name, ref tag);
-
-#                 if (tag == Tag.Null)
-#                     break;
-
-#                 list.Add(session_.GetObjectManager().GetTaggedObject(tag));
-#             }
-
-#             return list.ToArray();
-#         }
-
-#         /// <summary>Creates an NX.Block with two points and height</summary>
-#         /// <param name="matrix">Orientation (see remarks)</param>
-#         /// <param name="originPoint">The origin-point of the block (in absolute coordinates</param>
-#         /// <param name="cornerPoint">The corner-point of the block</param>
-#         /// <param name="height">Height</param>
-#         /// <returns>An NX.Block object</returns>
-#         internal static Block __CreateBlock(
-#             this BasePart basePart,
-#             Matrix3x3 matrix,
-#             Point3d originPoint,
-#             Point3d cornerPoint,
-#             double height
-#         )
-#         {
-#             basePart.__AssertIsWorkPart();
-#             Part part = __work_part_;
-#             Matrix3x3 wcsOrientation = __display_part_.WCS.__Orientation();
-#             __display_part_.WCS.__Orientation(matrix);
-#             BlockFeatureBuilder builder = part.Features.CreateBlockFeatureBuilder(null);
-
-#             using (session_.__UsingBuilderDestroyer(builder))
-#             {
-#                 builder.Type = BlockFeatureBuilder.Types.TwoPointsAndHeight;
-#                 builder.BooleanOption.Type = BooleanOperation.BooleanType.Create;
-#                 builder.SetTwoPointsAndHeight(originPoint, cornerPoint, height.ToString());
-#                 __display_part_.WCS.__Orientation(wcsOrientation);
-#                 return (Block)builder.Commit();
-#             }
-#         }
-
-#         /// <summary>Creates an NX.Block from two diagonal points</summary>
-#         /// <param name="matrix">Orientation</param>
-#         /// <param name="originPoint">The origin-point of the block (in absolute coordinates</param>
-#         /// <param name="cornerPoint">The corner-point of the block </param>
-#         /// <returns>An NX.Block object</returns>
-#         internal static Block __CreateBlock(
-#             this BasePart basePart,
-#             Matrix3x3 matrix,
-#             Point3d originPoint,
-#             Point3d cornerPoint
-#         )
-#         {
-#             basePart.__AssertIsWorkPart();
-#             Part part = __work_part_;
-#             Matrix3x3 wcsOrientation = __wcs_.CoordinateSystem.Orientation.Element;
-#             __wcs_.CoordinateSystem.SetDirections(matrix.__AxisX(), matrix.__AxisY());
-#             BlockFeatureBuilder builder = part.Features.CreateBlockFeatureBuilder(null);
-
-#             using (session_.__UsingBuilderDestroyer(builder))
-#             {
-#                 builder.Type = BlockFeatureBuilder.Types.DiagonalPoints;
-#                 builder.BooleanOption.Type = BooleanOperation.BooleanType.Create;
-#                 builder.SetTwoDiagonalPoints(originPoint, cornerPoint);
-#                 Block block = (Block)builder.Commit();
-#                 __wcs_.CoordinateSystem.SetDirections(
-#                     wcsOrientation.__AxisX(),
-#                     __Wcs_.__Orientation().Element.__AxisY()
-#                 );
-#                 return block;
-#             }
-#         }
 
 #         [Obsolete(nameof(NotImplementedException))]
 #         public static TaggedObject[] __CycleObjsInPart1(this BasePart basePart, string name)
@@ -609,48 +428,49 @@ def part_try_drawing_sheet(
 #             return ufsession_.Part.IsModified(basePart.Tag);
 #         }
 
+
 #         public static DatumCsys __AbsoluteDatumCsys(this BasePart basePart)
 #         {
 #             return basePart.Features.OfType<DatumCsys>().First();
 #         }
+def part_create_text_feature(
+    part: Part,
+    note: str,
+    origin: Point3d,
+    orientation: Matrix3x3,
+    length: float,
+    height: float,
+    script,  #:TextBuilder.ScriptOptions
+):  # ->TextFeature:
+    #         {
+    #             TextBuilder textBuilder = part.Features.CreateTextBuilder(null);
 
-#         public static Feature __CreateTextFeature(
-#             this BasePart part,
-#             string note,
-#             Point3d origin,
-#             Matrix3x3 orientation,
-#             double length,
-#             double height,
-#             string font,
-#             TextBuilder.ScriptOptions script
-#         )
-#         {
-#             TextBuilder textBuilder = part.Features.CreateTextBuilder(null);
+    #             using (new Destroyer(textBuilder))
+    #             {
+    #                 textBuilder.PlanarFrame.AnchorLocation = RectangularFrameBuilder
+    #                     .AnchorLocationType
+    #                     .MiddleCenter;
+    #                 textBuilder.PlanarFrame.WScale = 100.0;
+    #                 textBuilder.PlanarFrame.Length.RightHandSide = $"{length}";
+    #                 textBuilder.PlanarFrame.Height.RightHandSide = $"{height}";
+    #                 textBuilder.PlanarFrame.WScale = 75d;
+    #                 textBuilder.SelectFont(font, script);
+    #                 textBuilder.TextString = note;
+    #                 Point point2 = part.Points.CreatePoint(origin);
+    #                 CartesianCoordinateSystem csys = part.CoordinateSystems.CreateCoordinateSystem(
+    #                     origin,
+    #                     orientation,
+    #                     true
+    #                 );
+    #                 textBuilder.PlanarFrame.CoordinateSystem = csys;
+    #                 textBuilder.PlanarFrame.UpdateOnCoordinateSystem();
+    #                 ModelingView workView = session_.Parts.Work.ModelingViews.WorkView;
+    #                 textBuilder.PlanarFrame.AnchorLocator.SetValue(point2, workView, origin);
+    #                 return (Text)textBuilder.Commit();
+    #             }
+    #         }
+    pass
 
-#             using (new Destroyer(textBuilder))
-#             {
-#                 textBuilder.PlanarFrame.AnchorLocation = RectangularFrameBuilder
-#                     .AnchorLocationType
-#                     .MiddleCenter;
-#                 textBuilder.PlanarFrame.WScale = 100.0;
-#                 textBuilder.PlanarFrame.Length.RightHandSide = $"{length}";
-#                 textBuilder.PlanarFrame.Height.RightHandSide = $"{height}";
-#                 textBuilder.PlanarFrame.WScale = 75d;
-#                 textBuilder.SelectFont(font, script);
-#                 textBuilder.TextString = note;
-#                 Point point2 = part.Points.CreatePoint(origin);
-#                 CartesianCoordinateSystem csys = part.CoordinateSystems.CreateCoordinateSystem(
-#                     origin,
-#                     orientation,
-#                     true
-#                 );
-#                 textBuilder.PlanarFrame.CoordinateSystem = csys;
-#                 textBuilder.PlanarFrame.UpdateOnCoordinateSystem();
-#                 ModelingView workView = session_.Parts.Work.ModelingViews.WorkView;
-#                 textBuilder.PlanarFrame.AnchorLocator.SetValue(point2, workView, origin);
-#                 return (Text)textBuilder.Commit();
-#             }
-#         }
 
 #         public static void __SetWcsToAbsolute(this BasePart part)
 #         {
@@ -1121,20 +941,26 @@ def part_try_drawing_sheet(
 #             part.Save(saveComponents, BasePart.CloseAfterSave.False);
 #         }
 
-#         public static bool __IsSee3DData(this BasePart part)
-#         {
-#             Regex regex = new Regex("SEE(-|_| )3D(-|_| )DATA");
 
-#             if (!part.HasUserAttribute("DESCRIPTION", NXObject.AttributeType.String, -1))
-#                 return false;
+def part_is_see_3d_data(part: Part) -> bool:
+    # value = part_attribute
 
-#             string descriptionValue = part.GetUserAttributeAsString(
-#                 "DESCRIPTION",
-#                 NXObject.AttributeType.String,
-#                 -1
-#             );
-#             return descriptionValue != null && regex.IsMatch(descriptionValue.ToUpper());
-#         }
+    #         public static bool __IsSee3DData(this BasePart part)
+    #         {
+    #             Regex regex = new Regex("SEE(-|_| )3D(-|_| )DATA");
+
+    #             if (!part.HasUserAttribute("DESCRIPTION", NXObject.AttributeType.String, -1))
+    #                 return false;
+
+    #             string descriptionValue = part.GetUserAttributeAsString(
+    #                 "DESCRIPTION",
+    #                 NXObject.AttributeType.String,
+    #                 -1
+    #             );
+    #             return descriptionValue != null && regex.IsMatch(descriptionValue.ToUpper());
+    #         }
+    pass
+
 
 #         /// <summary>Creates a tube feature, given spine and inner/outer diameters</summary>
 #         /// <param name="spine">The centerline (spine) of the tube</param>
@@ -3950,27 +3776,17 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #      return component.__Members().OfType<Body>().Where(__b => __b.IsSolidBody).ToArray();
 #  }
 
-#  public static TreeNode __TreeNode(this Component component)
-#  {
-#      return new TreeNode(component.DisplayName) { Tag = component };
-#  }
 
-#  public static Matrix3x3 __Orientation(this Component component)
-#  {
-#      component.GetPosition(out _, out Matrix3x3 orientation);
-#      return orientation;
-#  }
+def wcs_set_to_component(component:Component)->None:
+    """Sets the WCS to the position and orientation of the given component"""
+    display_part().WCS.SetOriginAndMatrix(component_origin(component), component_orientation(component))
 
-#  public static void __SetWcsToComponent(this Component component)
-#  {
-#      __display_part_.WCS.SetOriginAndMatrix(component.__Origin(), component.__Orientation());
-#  }
+def component_origin(component:Component)->Point3d:
+    return component.GetPosition()[0]
 
-#  public static Point3d __Origin(this Component component)
-#  {
-#      component.GetPosition(out Point3d origin, out _);
-#      return origin;
-#  }
+def component_orientation(component:Component)->Matrix3x3:
+    return component.GetPosition()[1]
+
 
 #  public static void __SetWcs(this Component comp)
 #  {
@@ -3982,22 +3798,20 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #      return new SetWorkPartContextQuietly(comp);
 #  }
 
-#  //public static NXOpen.Assemblies.Component find_component_or_null(this NXOpen.Assemblies.Component component , string journal_identifier)
-#  //{
-#  //    try
-#  //    {
-
-#  //    }catch (Exception e) { }
-#  //}
 
 #  #endregion
 
 #      #region WCS
 
+def wcs_orientation()->Matrix3x3:
+
+    # wcs.CoordinateSystem.GetDirections(out Vector3d xDir, out Vector3d yDir);
+    # return xDir.__ToMatrix3x3(yDir);
+    raise NotImplementedError()
+
+
 #     public static Matrix3x3 __Orientation(this WCS wcs)
 #     {
-#         wcs.CoordinateSystem.GetDirections(out Vector3d xDir, out Vector3d yDir);
-#         return xDir.__ToMatrix3x3(yDir);
 #     }
 
 #     public static void __Orientation(this WCS wcs, Matrix3x3 matrix)
@@ -10883,10 +10697,14 @@ def line_copy(line: Line) -> Line:
 #         );
 #     }
 
-#     //public static Point3d _MidPoint(this Point3d position1, Point3d position2)
-#     //{
-#     //    return new Point3d((position1.X + position2.X) / 2.0, (position1.Y + position2.Y) / 2.0, (position1.Z + position2.Z) / 2.0);
-#     //}
+
+def point3d_midpoint_point3d(pnt0: Point3d, pnt1: Point3d) -> Point3d:
+    #     //public static Point3d _MidPoint(this Point3d position1, Point3d position2)
+    #     //{
+    #     //    return new Point3d((position1.X + position2.X) / 2.0, (position1.Y + position2.Y) / 2.0, (position1.Z + position2.Z) / 2.0);
+    #     //}
+    pass
+
 
 #     public static Point _CreatePoint(this Part part, Point3d origin)
 #     {
@@ -11008,12 +10826,16 @@ def line_copy(line: Line) -> Line:
 #       }
 #   }
 
-#   public static void __Move(this Point point, Vector3d vector, double distance)
-#   {
-#       Vector3d unit = vector.__Unit().__Multiply(distance);
-#       point.SetCoordinates(point.Coordinates.__Add(unit));
-#       point.RedisplayObject();
-#   }
+
+def point_move(point: Point, vec: Vector3d, distance: float) -> None:
+    #   public static void __Move(this Point point, Vector3d vector, double distance)
+    #   {
+    #       Vector3d unit = vector.__Unit().__Multiply(distance);
+    #       point.SetCoordinates(point.Coordinates.__Add(unit));
+    #       point.RedisplayObject();
+    #   }
+    pass
+
 
 #   public static Point __Copy(this Point point, Vector3d vector, double distance)
 #   {
@@ -11094,84 +10916,30 @@ def line_copy(line: Line) -> Line:
 #       }
 #   }
 
-#   public static void __NXOpenNXObject(NXObject nxobject)
-#   {
-#       //nxobject.DeleteUserAttribute
-#       //nxobject.DeleteUserAttributes
-#       //nxobject.FindObject
-#       //nxobject.__GetAttribute
-#       //nxobject.HasUserAttribute
-#       //nxobject.IsOccurrence
-#       //nxobject.JournalIdentifier
-#       //nxobject.OwningComponent
-#       //nxobject.OwningPart
-#       //nxobject.Print
-#       //nxobject.Prototype
-#       //nxobject.SetName
-#       //nxobject.Name
-#       //nxobject.SetUserAttribute
-#   }
 
-#   public static NXObject __Prototype(this NXObject obj)
-#   {
-#       return (NXObject)obj.Prototype;
-#   }
+def nxobject_get_attribute(nxobject: NXObject, title: str) -> str:
+    # return nxobject.GetUserAttributeAsString(title, NXObject.AttributeType.String, -1)
+    raise Exception()
 
-#   public static string __GetAttribute(this NXObject nXObject, string title)
-#   {
-#       return nXObject.GetUserAttributeAsString(title, NXObject.AttributeType.String, -1);
-#   }
 
-#   public static bool __HasAttribute(this NXObject nXObject, string title)
-#   {
-#       return nXObject.HasUserAttribute(title, NXObject.AttributeType.String, -1);
-#   }
+def nxobject_has_attribute(nxobject: NXObject, title: str) -> bool:
+    return nxobject.HasUserAttribute(title, NXObject.AttributeType.String, -1)
 
-#   public static void __DeleteAttribute(this NXObject nXObject, string title)
-#   {
-#       nXObject.DeleteUserAttribute(
-#           NXObject.AttributeType.String,
-#           title,
-#           true,
-#           Update.Option.Now
-#       );
-#   }
 
-#   public static NXObject.AttributeInformation[] __Attributes(this NXObject nxobject)
-#   {
-#       return nxobject.GetUserAttributes();
-#   }
+def nxobject_del_attribute(nxobject: NXObject, title: str) -> None:
+    return nxobject.DeleteUserAttribute(
+        NXObject.AttributeType.String, title, True, Update.Option.Now
+    )
 
-#   public static void __SetAttribute(this NXObject nxobject, CtsAttributes att)
-#   {
-#       nxobject.__SetAttribute(att.AttrName, att.AttrValue);
-#   }
 
-#   public static void __SetAttribute(this NXObject nxobject, string title, string value, Update.Option option = Update.Option.Later)
-#   {
-#       nxobject.SetUserAttribute(title, -1, value, option);
-#   }
+def nxobject_set_attribute(
+    nxobject: NXObject,
+    title: str,
+    value: str,
+    option: Update.Option = Update.Option.Later,
+) -> None:
+    nxobject.SetUserAttribute(title, -1, value, option)
 
-#   public static Part __OwningPart(this NXObject nXObject)
-#   {
-#       return (Part)nXObject.OwningPart;
-#   }
-
-#   public static string ____GetAttribute(this NXObject part, string title)
-#   {
-#       return part.GetUserAttributeAsString(title, NXObject.AttributeType.String, -1);
-#   }
-
-#   public static NXObject.AttributeInformation[] __GetAttributes(this NXObject component)
-#   {
-#       return component.GetUserAttributes();
-#   }
-
-#   public static void __AssertIsPrototype(this NXObject nxobject)
-#   {
-#       if (nxobject.IsOccurrence)
-#           throw new InvalidOperationException($"NXObject {nxobject.GetType().Name} - {nxobject.Tag} was an occurrence");
-#   }
 
 #   //
 #   // Summary:
@@ -11371,15 +11139,19 @@ def line_copy(line: Line) -> Line:
 #         }
 
 
-#         public static double[] __Array(this Matrix3x3 matrix)
-#         {
-#             return new[]
-#             {
-#                 matrix.Xx, matrix.Xy, matrix.Xz,
-#                 matrix.Yx, matrix.Yy, matrix.Yz,
-#                 matrix.Zx, matrix.Zy, matrix.Zz
-#             };
-#         }
+def matrix3x3_to_sequence(matrix: Matrix3x3) -> Sequence[float]:
+    return [
+        matrix.Xx,
+        matrix.Xy,
+        matrix.Xz,
+        matrix.Yx,
+        matrix.Yy,
+        matrix.Yz,
+        matrix.Zx,
+        matrix.Zy,
+        matrix.Zz,
+    ]
+
 
 #         public static Vector3d __AxisX(this Matrix3x3 matrix)
 #         {
