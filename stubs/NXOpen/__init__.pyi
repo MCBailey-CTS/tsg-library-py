@@ -43,21 +43,33 @@ from NXOpen.Assemblies import Component as Component_
 # BodyGroupRule
 # BodyList
 
+class ReferenceSet(DisplayableObject):
+    # ('RemoveObjectsFromReferenceSet', <method 'RemoveObjectsFromReferenceSet' of 'NXOpen.ReferenceSet' objects>)
+    # ('AskMembersInReferenceSet', <method 'AskMembersInReferenceSet' of 'NXOpen.ReferenceSet' objects>)
+    # ('AskAllDirectMembers', <method 'AskAllDirectMembers' of 'NXOpen.ReferenceSet' objects>)
+    # ('SetAddComponentsAutomatically', <method 'SetAddComponentsAutomatically' of 'NXOpen.ReferenceSet' objects>)
+    # ('GetAddComponentsAutomatically', <method 'GetAddComponentsAutomatically' of 'NXOpen.ReferenceSet' objects>)
+    # ('__doc__', 'Represents a :py:class:`NXOpen.ReferenceSet`.  \n\n\nInput to this class can be PSM facet objects.\nThis is no KF creat
+    # ion\n\n\n.. versionadded:: NX6.0.0\n\n\n\n\n\n\n')
+    # ('Null', <NXOpen.ReferenceSet object at 0x0000029C91A04C60>)
+    def AddObjectsToReferenceSet(objects: Sequence[NXObject]) -> None: ...
+
 class NXObjectAttributeType(enum.Enum):
-    Any:int
-    Boolean:int
-    Integer:int
-    Invalid:int
-    Null:int
-    Real:int
-    Reference:int
-    String:int
-    Time:int
+    Any: int
+    Boolean: int
+    Integer: int
+    Invalid: int
+    Null: int
+    Real: int
+    Reference: int
+    String: int
+    Time: int
 
 class Update:
-    def DoUpdate(self, mark: int) -> None:...
-    def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None:...
-    def ClearDeleteList(self) -> None:...
+    def DoUpdate(self, mark: int) -> None: ...
+    def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None: ...
+    def ClearDeleteList(self) -> None: ...
+
     class Option(enum.Enum):
         Later: int
         Now: int
@@ -172,27 +184,6 @@ class SelectionSelectionAction(enum.Enum):
     EnableAll: int
     EnableSpecific: int
 
-# DisplayModification
-# DisplayPartOption
-# DisplayPartOptionMemberType
-
-# DraftingManager
-# DxfdwgCreator
-
-# Edge
-
-# Ellipse
-# EllipseCollection
-
-# Expression
-# ExpressionCollection
-
-# Face
-
-# Hyperbola
-
-# JournalManager
-
 class Line(Curve):
     @property
     def StartPoint(self) -> Point3d: ...
@@ -219,67 +210,43 @@ class ListingWindow:
     def WriteLine(self, message: str) -> None:
         pass
 
-# ListingWindowDeviceType
-# ListingWindowDeviceTypeMemberType
-# LoadOptions
-# LoadOptionsBookmarkComponents
-# LoadOptionsBookmarkComponentsMemberType
-# LoadOptionsBookmarkRefsets
-# LoadOptionsBookmarkRefsetsMemberType
-# LoadOptionsLoadComponents
-# LoadOptionsLoadComponentsMemberType
-# LoadOptionsLoadMethod
-# LoadOptionsLoadMethodMemberType
-# LoadOptionsLoadOption
-# LoadOptionsLoadOptionMemberType
-# LoadOptionsManagedModeLoadMethod
-# LoadOptionsManagedModeLoadMethodMemberType
-# LoadOptionsParent
-# LoadOptionsParentMemberType
-# LoadOptionsUpdateSubsetOnLoad
-# LoadOptionsUpdateSubsetOnLoadMemberType
-
-# LogFile
-
 class Matrix3x3:
     @property
-    def Xx(self)->float: ...
+    def Xx(self) -> float: ...
     @Xx.setter
-    def Xx(self)->float: ...
+    def Xx(self) -> float: ...
     @property
-    def Xy(self)->float: ...
+    def Xy(self) -> float: ...
     @Xy.setter
-    def Xy(self)->float: ...
+    def Xy(self) -> float: ...
     @property
-    def Xz(self)->float: ...
+    def Xz(self) -> float: ...
     @Xz.setter
-    def Xz(self)->float: ...
+    def Xz(self) -> float: ...
     @property
-    def Yx(self)->float: ...
+    def Yx(self) -> float: ...
     @Yx.setter
-    def Yx(self)->float: ...
+    def Yx(self) -> float: ...
     @property
-    def Yy(self)->float: ...
+    def Yy(self) -> float: ...
     @Yy.setter
-    def Yy(self)->float: ...
+    def Yy(self) -> float: ...
     @property
-    def Yz(self)->float: ...
+    def Yz(self) -> float: ...
     @Yz.setter
-    def Yz(self)->float: ...
+    def Yz(self) -> float: ...
     @property
-    def Zx(self)->float: ...
+    def Zx(self) -> float: ...
     @Zx.setter
-    def Zx(self)->float: ...
+    def Zx(self) -> float: ...
     @property
-    def Zy(self)->float: ...
+    def Zy(self) -> float: ...
     @Zy.setter
-    def Zy(self)->float: ...
+    def Zy(self) -> float: ...
     @property
-    def Zz(self)->float: ...
+    def Zz(self) -> float: ...
     @Zz.setter
-    def Zz(self)->float: ...
-
-
+    def Zz(self) -> float: ...
 
 # ModelingView
 # ModelingViewCollection
@@ -291,15 +258,14 @@ class NXMatrixCollection(Iterable[NXMatrix]):
     def __iter__(self): ...  # type: ignore
 
 class NXObject(TaggedObject):
-    # AttributeInformation
-    # AttributeType
     def DeleteUserAttribute(self, title: str, index: int) -> None: ...
-    # DeleteUserAttributes
     def GetStringUserAttribute(self, title: str, index: int) -> None: ...
     # GetUserAttributeAsString
     # GetUserAttributes
     # GetUserAttributesAsStrings
-    def HasUserAttribute(self, title: str, type_:NXObject.AttributeType, index: int) -> bool: ...
+    def HasUserAttribute(
+        self, title: str, type_: NXObjectAttributeType, index: int
+    ) -> bool: ...
     @property
     def IsOccurrence(self) -> bool: ...
     @property
@@ -321,10 +287,10 @@ class NXObject(TaggedObject):
 # Parabola
 
 class Body(DisplayableObject):
-    Null:Body
-    def GetFeatures(self)->Sequence[Feature]: ...
-    def GetFaces(self)->Sequence[Face]:...
-    def GetEdges(self)->Sequence[Edge]:...
+    Null: Body
+    def GetFeatures(self) -> Sequence[Feature]: ...
+    def GetFaces(self) -> Sequence[Face]: ...
+    def GetEdges(self) -> Sequence[Edge]: ...
 
     # ('GetFaces', <method 'GetFaces' of 'NXOpen.Body' objects>)
     # ('GetEdges', <method 'GetEdges' of 'NXOpen.Body' objects>)
@@ -383,19 +349,10 @@ class ExpressionCollection(Iterable[Expression]):
 class Expression(NXObject):
     pass
 
-class Face(DisplayableObject):...
-class Edge(DisplayableObject):...
-
+class Face(DisplayableObject): ...
+class Edge(DisplayableObject): ...
 
 class Part(NXObject):
-    # Annotations
-    #
-    # @property
-    # def Arcs(self) -> NXOpen.ArcCollection:
-    #     pass
-    # @property
-    # def Axes(self) -> NXOpen.AxesCollection:
-    #     pass
     @property
     def Curves(self) -> CurveCollection: ...
     @property
@@ -410,235 +367,22 @@ class Part(NXObject):
     def CoordinateSystems(self) -> CoordinateSystemCollection: ...
     @property
     def Expressions(self) -> ExpressionCollection: ...
-    # @property
-    # def CoordinateSystems(self) -> NXOpen.BodyCollection:
-    #     pass
-    # @property
-    # def Notes(self) -> NXOpen.BodyCollection:
-    #     pass
-    # @property
-    # def DisplayedConstraints(self) -> NXOpen.Positioning.DisplayedConstraint:
-    #     pass
-    # @property
-    # def DrawingSheets(self) -> NXOpen.BodyCollection:
-    #     pass
-    # CanBeDisplayPart
-    # Close
-    # CloseAfterSave
-    # CloseModified
-    # CloseWholeTree
     @property
-    def ComponentAssembly(self) -> ComponentAssembly_:
-        pass
-    # CoordinateSystems
-    # CurrentFeature
-    # Curves
-    # Datums
-    # Dimensions
-    # Directions
-    # Displayed
+    def ComponentAssembly(self) -> ComponentAssembly_: ...
     @property
-    def DisplayedConstraints(self) -> DisplayedConstraintCollection:
-        pass
+    def DisplayedConstraints(self) -> DisplayedConstraintCollection: ...
     @property
-    def DrawingSheets(self) -> DrawingSheetCollection:
-        pass
-    # Ellipses
-    # Expressions
+    def DrawingSheets(self) -> DrawingSheetCollection: ...
     @property
-    def Features(self) -> FeatureCollection:
-        pass
+    def Features(self) -> FeatureCollection: ...
     @property
-    def FullPath(self)->str:...
-    # GetAttributeTitlesByType
-    # GetBooleanUserAttribute
-    # GetCollaborativeContentType
-    # GetComputationalTimeUserAttribute
-    # GetFamilyInstance
-    # GetHistoryInformation
-    # GetIncompleteStatus
-    # GetIntegerAttribute
-    # GetIntegerUserAttribute
-    # GetInterpartChildren
-    # GetInterpartParents
-    # GetMakeUniqueName
-    # GetMinimallyLoadedParts
-    # GetNextUserAttribute
-    # GetPartFamilyManager
-    # GetPdmReferenceAttributeValue
-    # GetPreviewImage
-    # GetRealAttribute
-    # GetRealUserAttribute
-    # GetReferenceAttribute
-    # GetStringAttribute
-    # GetStringUserAttribute
-    # GetTimeAttribute
-    # GetTimeUserAttribute
-    # GetTransientStatus
-    # GetUpdateStatusReport
-    # GetUserAttribute
-    # GetUserAttributeAsString
-    # GetUserAttributeCount
-    # GetUserAttributeLock
-    # GetUserAttributeSize
-    # GetUserAttributeSourceObjects
-    # GetUserAttributes
-    # GetUserAttributesAsStrings
-    # Grids
-    # HasAnyMinimallyLoadedChildren
-    # HasReuseTemplate
-    # HasUserAttribute
-    # HasWriteAccess
-    # HistoryEventInformation
-    # Hyperbolas
-    # ImageCaptureManager
-    # Images
-    # ImagesData
-    # ImportManager
-    # IncompleteStatus
-    # InfiniteLines
-    # InspectionSetup
-    # IsBookletPart
-    # IsDesignReviewPart
-    # IsFullyLoaded
-    # IsModified
-    # IsOccurrence
-    # IsReadOnly
-    # JournalIdentifier
-    # KinematicConfigurator
-    # Labels
-    # LayerCategories
+    def FullPath(self) -> str: ...
     @property
     def Layers(self) -> LayerManager: ...
-    # LayoutDrawingSheets
-    # Layouts
     @property
-    def Leaf(self) -> str:
-        pass
-    # Lights
-    # Lines
-    # LoadFeatureDataForSelection
-    # LoadFully
-    # LoadThisPartFully
-    # LoadThisPartPartially
-    # LocalDefinitionFolders
-    # LocalUntrimManager
-    # MakeAllFeaturesInactive
-    # MakeNoPartModuleActive
-    # Markers
-    # Markups
-    # MaterialManager
-    # MeasureManager
-    # MechatronicsManager
-    # ModelingViews
-    # MotionManager
-    # NXMatrices
-    # Name
-    # NewPartFamilyMemberData
-    # NewPartFamilyMemberValues
-    # NewPartFamilyTemplateManager
-    # Notes
-    # Null
-    # Offsets
-    # OmnicadManager
-    # OnestepUnforms
-    # Optimization
-    # OwningComponent
-    # OwningPart
-    # PDMPart
-    # PackagingCollection
-    # Parabolas
-    # ParameterLibraryManager
-    # ParameterTables
-    # PartFamilyAttrType
-    # PartFamilyAttributeData
-    # PartLoadState
-    # PartPreview
-    # PartPreviewMode
-    # PartUnits
-    # PenetrationManager
-    # PersistentResults
-    # PhysicsManager
-    # Planes
-    # PlasManager
-    # PlotManager
-    # PmiManager
-    # PmiSettingsManager
-    # PointClouds
-    # Points
-    # Polylines
-    # Preferences
-    # Print
-    # ProductInterface
-    # PropertiesManager
-    # Prototype
-    # ProxyObjectCollection
-    # ProxyOverrideObjectCollection
-    # RegenerateDisplayFacets
-    # ReinstateTransience
-    # Relations
-    # Relinkers
-    # RemoveMissingParentsFromEdgeBlend
-    # RemoveTransience
-    # Reopen
-    # ReopenAs
-    # RequirementChecks
-    # Requirements
-    # ResetTimestampToLatestFeature
-    # ReusableParts
-    # ReverseBlankAll
-    # RouteManager
-    # RuleManager
-    # SHEDObjs
-    # Save
-    # SaveAs
-    # SaveBookmark
-    # SaveComponents
-    # SaveDisplayFacets
-    # SaveOptions
-    # ScCollectors
-    # ScRuleFactory
-    # Scalars
-    # Sections
-    # SegmentManager
-    # SelPref
-    # SetAttribute
-    # SetBooleanUserAttribute
-    # SetMakeUniqueName
-    # SetName
-    # SetPdmReferenceAttribute
-    # SetReferenceAttribute
-    # SetTimeAttribute
-    # SetTimeUserAttribute
-    # SetUserAttribute
-    # SetUserAttributeLock
-    # SettingsManager
-    # ShipDimensions
-    # SketchEvaluators
-    # Sketches
-    # SmartDiagrammingManager
-    # SpinePointData
-    # Splines
-    # SubdivisionBodies
-    # Tag
-    # ToolingManager
-    # Tracelines
-    # TransientStatus
-    # TrueStudioObjs
-    # UVMappingCollection
-    # Undisplay
-    # UniqueIdentifier
-    # UnitCollection
-    # Units
-    # UserDefinedObjectManager
-    # UserDefinedTemplates
-    # Validations
-    # ViewAlignments
-    # ViewPreferences
-    # Views
-    # WCS
-    # Xforms
-    pass
+    def Leaf(self) -> str: ...
+    @property
+    def WCS(self) -> WCS: ...
 
 class PartCollection:
     # AddPartClosedHandler
@@ -1060,46 +804,38 @@ class Vector3d:
 # WCS
 class WCS:
     @property
-    def CoordinateSystem(self)->CartesianCoordinateSystem:
+    def CoordinateSystem(self) -> CartesianCoordinateSystem:
         """
         Getter for property: (NXOpen::CartesianCoordinateSystem ) CoordinateSystem. More...
         """
         pass
- 
-    def 	Origin (self):
+    def Origin(self):
         """Getter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
-    
-    def 	Origin (self, origin):
+    def Origin(self, origin):
         """Setter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
-    
-    def 	Rotate (self, rotation_axis, angle):
+    def Rotate(self, rotation_axis, angle):
         """Rotates the WCS about the specified axis. More..."""
         pass
-    
-    def 	Save (self):
+    def Save(self):
         """Saves the WCS. More..."""
         pass
-    
-    def 	SetCoordinateSystem (self, new_cs):
+    def SetCoordinateSystem(self, new_cs):
         """Changes the coordinate system of the WCS to a new coordinate system. More..."""
         pass
-    
-    def 	SetCoordinateSystemCartesianAtCsys (self, new_cs):
+    def SetCoordinateSystemCartesianAtCsys(self, new_cs):
         """Creates a WCS at a new coordinate system. More..."""
         pass
-    
-    def 	SetOriginAndMatrix (self, origin, matrix):
+    def SetOriginAndMatrix(self, origin, matrix):
         """Sets the origin and orientation matrix of the WCS. More..."""
         pass
-    
-    def 	Visibility (self):
+    def Visibility(self):
         """Getter for property: (bool) Visibility. More..."""
         pass
-    
-    def 	Visibility (self, is_visible):
+    def Visibility(self, is_visible):
         """Setter for property: (bool) Visibility. More..."""
         pass
+
 # WCSAxis
 # WCSAxisMemberType

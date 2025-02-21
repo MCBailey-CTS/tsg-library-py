@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Iterable
 
 from NXOpen import Body, Builder, NXObject, SelectNXObjectList
@@ -32,3 +33,13 @@ class Block(BodyFeature):
     pass
 
 class Cylinder(BodyFeature): ...
+
+class FeatureBooleanType(Enum):
+    Create: int
+    EmbossNormalSide: int
+    EmbossOppositeNormalSide: int
+    Intersect: int
+    Subtract: int
+    Unite: int
+
+class BooleanFeature(BodyFeature): ...

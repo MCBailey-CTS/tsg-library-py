@@ -12,7 +12,8 @@ from NXOpen import Session, TaggedObject
 from extensions__ import *
 import NXOpen.Drawings
 
-# for x in NXOpen.Body.__dict__.items():
-#     print_(x)
+for x in NXOpen.NXObjectAttributeType.__dict__.items():
+    # for x in dir(NXOpen.Features.Block):
+    print_(x)
 
 # session().SetUndoMark(NXOpen.)

@@ -1,6 +1,8 @@
 from typing import Sequence, Tuple
 import NXOpen
 
+class Assem: ...
+
 class Disp:
     def RegenerateDisplay(self) -> None: ...
 
@@ -16,6 +18,8 @@ class Vec3:
     ) -> Tuple[float, Sequence[float]]: ...
 
 class UFSession:
+    @property
+    def Assem(self) -> Assem: ...
     @staticmethod
     def GetUFSession() -> UFSession: ...
     @property
