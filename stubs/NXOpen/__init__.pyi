@@ -9,7 +9,7 @@ import NXOpen
 from NXOpen.Annotations import BaseNote
 import NXOpen.Assemblies
 from NXOpen.Drawings import DrawingSheetCollection
-from NXOpen.Features import FeatureCollection
+from NXOpen.Features import Feature, FeatureCollection
 from NXOpen.Layer import LayerManager
 from NXOpen.Positioning import DisplayedConstraintCollection
 from NXOpen.Assemblies import ComponentAssembly as ComponentAssembly_
@@ -321,6 +321,21 @@ class NXObject(TaggedObject):
 # Parabola
 
 class Body(DisplayableObject):
+    Null:Body
+    def GetFeatures(self)->Sequence[Feature]: ...
+    def GetFaces(self)->Sequence[Face]:...
+    def GetEdges(self)->Sequence[Edge]:...
+
+    # ('GetFaces', <method 'GetFaces' of 'NXOpen.Body' objects>)
+    # ('GetEdges', <method 'GetEdges' of 'NXOpen.Body' objects>)
+    # ('RemoveMergedRibImprintedEdges', <method 'RemoveMergedRibImprintedEdges' of 'NXOpen.Body' objects>)
+    # ('GetFirstFacetOnBody', <method 'GetFirstFacetOnBody' of 'NXOpen.Body' objects>)
+    # ('Density', <attribute 'Density' of 'NXOpen.Body' objects>)
+    # ('IsConvergentBody', <attribute 'IsConvergentBody' of 'NXOpen.Body' objects>)
+    # ('IsSheetBody', <attribute 'IsSheetBody' of 'NXOpen.Body' objects>)
+    # ('IsSolidBody', <attribute 'IsSolidBody' of 'NXOpen.Body' objects>)
+    # ('__doc__', '\nRepresents a Body\n\n\n\n\n.. versionadded:: NX3.0.0\n\n\n\n\n\n\n')
+    # ('Null', <NXOpen.Body object at 0x00000208B3CD04B0>)
     pass
 
 class CartesianCoordinateSystem(CoordinateSystem): ...
@@ -367,6 +382,10 @@ class ExpressionCollection(Iterable[Expression]):
 
 class Expression(NXObject):
     pass
+
+class Face(DisplayableObject):...
+class Edge(DisplayableObject):...
+
 
 class Part(NXObject):
     # Annotations
@@ -429,7 +448,8 @@ class Part(NXObject):
     @property
     def Features(self) -> FeatureCollection:
         pass
-    # FullPath
+    @property
+    def FullPath(self)->str:...
     # GetAttributeTitlesByType
     # GetBooleanUserAttribute
     # GetCollaborativeContentType

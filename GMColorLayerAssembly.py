@@ -6,68 +6,25 @@ from extensions__ import *
 from typing import Dict, List
 
 
-def main_component(component: Component, layer: int, color: int) -> None:
-    # need to set the {comp} to the {layer} first before you change displayed part
-    # foreach selected component, need to prompt the user for a layer, and color
-    # comp.SetLayerOption(-1)
-    prototype = component.Prototype
+def part_has_reference_set(part:Part, name:str)->bool:
+    return any(r.Name == name for r in part.GetAllReferenceSets())
 
-    assert isinstance(
-        prototype, Part
-    ), f"Component {component.DisplayName} is not opened"
+def part_get_reference_set(part:Part, name:str):#->ReferenceSet:
+    for r in part.GetAllReferenceSets():
+        if r.Name == name:
+            return r
+    raise Exception()
 
-    session().Parts.SetDisplay(component.Prototype, False, False)
-    display_part().Layers.SetState(layer, State.Selectable)
+def part_get_reference_set(part:Part, name:str):#->ReferenceSet:
+    for r in part.GetAllReferenceSets():
+        if r.Name == name:
+            return r
+    raise Exception()
 
-    solid_body_layer_1 = list(
-        filter(lambda b: b.Layer == 1, list(display_part().Bodies))
-    )
-
-    assert (
-        len(solid_body_layer_1) == 1
-    ), f"There were {len(solid_body_layer_1)} solid bodies in part {component.DisplayName}"
-
-    display_part().Features.GetParentFeatureOfBody(
-        solid_body_layer_1[0]
-    ).MakeCurrentFeature()
-
-    displayModification1 = session().DisplayManager.NewDisplayModification()
-    displayModification1.ApplyToAllFaces = True
-    displayModification1.ApplyToOwningParts = True
-    displayModification1.NewColor = color
-    displayModification1.NewLayer = layer
-    displayModification1.Apply([solid_body_layer_1[0]])
-    displayModification1.Dispose()
-    features = list(display_part().Features)
-    features[len(features) - 1].MakeCurrentFeature()
-
-
-def __main___old(layer: int, color: int) -> None:
-    components = select_components()
-    if len(components) == 0:
-        return
-    # return
-    # the color to change the body
-    # the layer to set the first and last solid body on layer 1 in a detail
-    original = display_part()
-    try:
-        # need to convert {components} to a set of parts incase they pick the user picks two components with the same prototype
-        for comp in components:
-            try:
-                main_component(comp, layer, color)
-            except Exception as ex:
-                print_(ex)
-    finally:
-        session().Parts.SetDisplay(original, False, False)
-
-    for comp in components:
-        comp.Layer = layer
-        comp.SetLayerOption(-1)
-        comp.RedisplayObject()
-
-    if display_part().Layers.WorkLayer != layer:
-        display_part().Layers.SetState(layer, State.Selectable)
-
+def part_crt_reference_set(part:Part, name:str):#->ReferenceSet:
+    refset = part.CreateReferenceSet()
+    refset.SetName(name)
+    return refset
 
 def hash_components_to_parts(components:List[Component])->List[Part]:
     dict_:Dict[str, Part] ={}
@@ -83,6 +40,17 @@ def color_layer_solid_body_1(part:Part, layer:int, color:int)->None:
     solid_body_layer_1 = list(
         filter(lambda b: b.Layer == 1, list(display_part().Bodies))
     )
+
+    if not part_has_reference_set(display_part(), 'PART'):
+        if part_has_reference_set(display_part(), 'BODY'):
+            refset = part_get_reference_set(display_part(), 'BODY')
+            refset.SetName('PART')
+        else:
+            refset = part_crt_reference_set(display_part(), 'PART')        
+            refset.AddObjectsToReferenceSet(solid_body_layer_1)
+
+    # do_
+    # ufsession.Modeling.Update()
 
     assert (
         len(solid_body_layer_1) == 1
@@ -153,9 +121,13 @@ def __main__(layer: int, color: int) -> None:
                         part_occs1:Tuple[List[int], int] = ufsession().Assem.AskOccsOfPart(ancestors[ancest].Tag, part.Tag)
 
                         for h in part_occs1[0]:
-                            cast_tagged_object(h).Layer = layer
-                            cast_tagged_object(h).SetLayerOption(-1)
-                            cast_tagged_object(h).RedisplayObject()
+                            cmp = cast_tagged_object(h)
+                            cmp.Layer = layer
+                            cmp.SetLayerOption(-1)
+                            cmp.DirectOwner.ReplaceReferenceSet(cmp, 'PART')
+                            cmp.RedisplayObject()
+
+
                     # print_(ancest)
                 finally:
                     session().Parts.SetDisplay(original, False, False)
