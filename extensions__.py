@@ -9,6 +9,7 @@ from NXOpen import (
     Line,
     Matrix3x3,
     NXObject,
+    NXObjectAttributeType,
     Part,
     Point,
     Point3d,
@@ -16,11 +17,12 @@ from NXOpen import (
     SmartObject,
     TaggedObject,
     Update,
+    UpdateOption,
     Vector3d,
 )
 from NXOpen.Assemblies import Component
 from NXOpen.Drawings import DrawingSheet
-from NXOpen.Features import Block, Cylinder, ExtractFace, Feature
+from NXOpen.Features import Block, BooleanFeature, Cylinder, ExtractFace, Feature
 from NXOpen.UF import UFSession as UFSession_
 
 
@@ -518,7 +520,7 @@ def part_get_expression(part: Part, name: str) -> Expression:
 #         }
 
 
-def part_get_modeling_view(part: Part, name: str) -> ModelingView:
+def part_get_modeling_view(part: Part, name: str):# -> ModelingView:
     #         public static ModelingView __FindModelingView(this BasePart part, string modelingViewName)
     #         {
     #             return part.__FindModelingViewOrNull(modelingViewName)
@@ -527,6 +529,9 @@ def part_get_modeling_view(part: Part, name: str) -> ModelingView:
     #                 );
     #         }
     raise NotImplementedError()
+
+def component_set_reference_set(component:Component, name:str)->None:
+    component.DirectOwner.ReplaceReferenceSet(component,name)
 
 
 def part_descendant_parts(part: Part) -> Sequence[Part]:
@@ -11075,7 +11080,7 @@ def nxobject_has_attribute(nxobject: NXObject, title: str) -> bool:
 
 def nxobject_del_attribute(nxobject: NXObject, title: str) -> None:
     return nxobject.DeleteUserAttribute(
-        NXObject.AttributeType.String, title, True, Update.Option.Now
+        NXObjectAttributeType.String, title, True, Update.Option.Now
     )
 
 
@@ -11083,7 +11088,7 @@ def nxobject_set_attribute(
     nxobject: NXObject,
     title: str,
     value: str,
-    option: Update.Option = Update.Option.Later,
+    option: UpdateOption = UpdateOption.Later,
 ) -> None:
     nxobject.SetUserAttribute(title, -1, value, option)
 

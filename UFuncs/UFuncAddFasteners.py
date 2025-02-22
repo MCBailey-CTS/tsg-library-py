@@ -5,6 +5,7 @@ from NXOpen.Features import ExtractFace
 import NXOpen.Features
 from NXOpen.Layer import State
 from extensions__ import *
+import NXOpen.UF
 
 
 def strip_wave_out():
@@ -107,8 +108,8 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
     else:
             subtract_ref_set = subtract_att
 
-    current = __child.ReferenceSet
-    __child.__ReferenceSet(subtract_ref_set)
+
+    component_set_reference_set(__child,subtract_ref_set)
 
     linked_body = CreateLinkedBody(work_part(), __child)
     linked_body.OwningPart.Layers.MoveDisplayableObjects(96, linked_body.GetBodies())
@@ -131,11 +132,10 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
             __child.RedisplayObject()
 
     if __child.Layer != 99 or subtract_att == "HANDLING" or subtract_att == "WIRE_TAP":
-        __child.__ReferenceSet("Empty")
+        component_set_reference_set(__child, 'Empty')
         work_part().__FindReferenceSet("BODY").RemoveObjectsFromReferenceSet([__child])
         return
-
-    __child.__ReferenceSet("BODY")
+    component_set_reference_set(__child, 'BODY')
     part_get_reference_set(work_part(), "BODY").AddObjectsToReferenceSet([__child])
 
 
@@ -153,24 +153,24 @@ def InsertWireTaps() -> None:
     x = 1 if display_part().PartUnits == NXOpen.BasePart.Units.Inches else 25.4
     offset2 = [3.00 * x, 0.875 * x, 0.00]
     mappedOffset1 = ufsession().Csys.MapPoint(
-        NXOpen.UFConstants.UF_CSYS_ROOT_WCS_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_WCS_COORDS,
         [1.00 * x, 0.875 * x, 0.00],
-        NXOpen.UFConstants.UF_CSYS_ROOT_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_COORDS,
     )
     mappedOffset2 = ufsession().Csys.MapPoint(
-        NXOpen.UFConstants.UF_CSYS_ROOT_WCS_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_WCS_COORDS,
         offset2,
-        NXOpen.UFConstants.UF_CSYS_ROOT_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_COORDS,
     )
     mappedToWork1 = ufsession().Csys.MapPoint(
-        NXOpen.UFConstants.UF_CSYS_ROOT_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_COORDS,
         mappedOffset1,
-        NXOpen.UFConstants.UF_CSYS_WORK_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_WORK_COORDS,
     )
     mappedToWork2 = ufsession().Csys.MapPoint(
-        NXOpen.UFConstants.UF_CSYS_ROOT_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_ROOT_COORDS,
         mappedOffset2,
-        NXOpen.UFConstants.UF_CSYS_WORK_COORDS,
+        NXOpen.UF.UFConstants.UF_CSYS_WORK_COORDS,
     )
     basePoint1 = Point3d(mappedToWork1[0], mappedToWork1[1], mappedToWork1[2])
     basePoint2 = Point3d(mappedToWork2[0], mappedToWork2[1], mappedToWork2[2])

@@ -52,7 +52,8 @@ class ReferenceSet(DisplayableObject):
     # ('__doc__', 'Represents a :py:class:`NXOpen.ReferenceSet`.  \n\n\nInput to this class can be PSM facet objects.\nThis is no KF creat
     # ion\n\n\n.. versionadded:: NX6.0.0\n\n\n\n\n\n\n')
     # ('Null', <NXOpen.ReferenceSet object at 0x0000029C91A04C60>)
-    def AddObjectsToReferenceSet(objects: Sequence[NXObject]) -> None: ...
+    def AddObjectsToReferenceSet(self, objects: Sequence[NXObject]) -> None: ...
+    def RemoveObjectsToReferenceSet(self, objects: Sequence[NXObject]) -> None: ...
 
 class NXObjectAttributeType(enum.Enum):
     Any: int
@@ -65,14 +66,21 @@ class NXObjectAttributeType(enum.Enum):
     String: int
     Time: int
 
+class UpdateOption(enum.Enum):
+        Later: int
+        Now: int
+
+class PartUnits(enum.Enum):
+    Inches:int
+    Millimeters:int
+    Mix:int
+
 class Update:
     def DoUpdate(self, mark: int) -> None: ...
     def AddObjectsToDeleteList(self, objects: Sequence[TaggedObject]) -> None: ...
     def ClearDeleteList(self) -> None: ...
 
-    class Option(enum.Enum):
-        Later: int
-        Now: int
+    
 
 class Builder(TaggedObject):
     def Commit(self) -> Optional[NXObject]:
@@ -98,6 +106,11 @@ class SelectNXObjectList(TaggedObject):
 class Curve(DisplayableObject):
     def GetLength(self) -> float: ...
     def IsReference(self) -> bool: ...
+
+class WCSAxis(enum.Enum):
+    XAxis:int
+    YAxis:int
+    ZAxis:int
 
 # CurveChainRule
 # CurveCollection
@@ -147,6 +160,11 @@ class Point(SmartObject): ...
 
 class PointCollection(Iterable[Point]):
     def __iter__(self): ...  # type: ignore
+
+    def CreatePoint(self, coordinates:List[float])->Point: ...
+
+class View(NXObject):...
+class ModelingView(View):...
 
 class DisplayManager:
     def NewDisplayModification(self) -> DisplayModification:
@@ -258,7 +276,7 @@ class NXMatrixCollection(Iterable[NXMatrix]):
     def __iter__(self): ...  # type: ignore
 
 class NXObject(TaggedObject):
-    def DeleteUserAttribute(self, title: str, index: int) -> None: ...
+    def DeleteUserAttribute(self, title: str, type_:NXObjectAttributeType, delete_entire_array:bool, option:UpdateOption) -> None: ...
     def GetStringUserAttribute(self, title: str, index: int) -> None: ...
     # GetUserAttributeAsString
     # GetUserAttributes
@@ -352,6 +370,9 @@ class Expression(NXObject):
 class Face(DisplayableObject): ...
 class Edge(DisplayableObject): ...
 
+class BasePart(Part):
+    ...
+
 class Part(NXObject):
     @property
     def Curves(self) -> CurveCollection: ...
@@ -360,7 +381,9 @@ class Part(NXObject):
     @property
     def Bodies(self) -> BodyCollection: ...
     @property
-    def Points(self) -> BodyCollection: ...
+    def Points(self) -> PointCollection: ...
+    @property
+    def ModelingViews(self) -> ModelingViewCollection: ...
     @property
     def Notes(self) -> NoteCollection: ...
     @property
@@ -499,6 +522,7 @@ class PartCleanupDeleteGroups(enum.Enum):
 # Point
 
 class Point3d:
+    def __init__(self, x:float=None,y:float=None,z:float=None):...
     @property
     def X(self) -> float:
         pass
@@ -544,6 +568,9 @@ class Selection:
     ) -> Tuple[SelectionResponse, List[TaggedObject]]:
         pass
 
+class ModelingViewCollection(Iterable[ModelingView]):
+    def __iter__(self): ... # type: ignore
+
 # message	(string) Cue line message to display
 # title	(string) Dialog title
 # scope	(NXOpen::Selection::SelectionScope ) Selection scope
@@ -553,11 +580,24 @@ class Selection:
 # mask_array	(NXOpen::Selection::MaskTriple ) Modifies the list of object types that can be selected. How it modifies the list of object types is determined by the SelectionAction parameter.
 
 class SmartObject(DisplayableObject):
-    pass
+#     ('UpdateOption', <class 'NXOpen.SmartObjectUpdateOption'>)
+# ('VisibilityOption', <class 'NXOpen.SmartObjectVisibilityOption'>)
+# ('__new__', <built-in method __new__ of type object at 0x00007FFFCEBEE940>)
+# ('RemoveParameters', <method 'RemoveParameters' of 'NXOpen.SmartObject' objects>)
+# ('ReplaceParameters', <method 'ReplaceParameters' of 'NXOpen.SmartObject' objects>)
+# ('Evaluate', <method 'Evaluate' of 'NXOpen.SmartObject' objects>)
+# ('SetVisibility', <method 'SetVisibility' of 'NXOpen.SmartObject' objects>)
+    def ProtectFromDelete(self)->None:...
+    def ReleaseDeleteProtection(self)->None:...
+# ('Update', <attribute 'Update' of 'NXOpen.SmartObject' objects>)
+# ('Visibility', <attribute 'Visibility' of 'NXOpen.SmartObject' objects>)
+
+class SessionMarkVisibility:
+    AnyVisibility:int
+    Invisible:int
+    Visible:int
 
 class Session(TaggedObject):
-    class SetUndoMarkVisibility:
-        Visible: Session.SetUndoMarkVisibility
     @property
     def ListingWindow(self) -> ListingWindow:
         pass

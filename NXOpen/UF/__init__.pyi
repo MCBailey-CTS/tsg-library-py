@@ -1,7 +1,11 @@
 from typing import Sequence, Tuple
 import NXOpen
 
-class Assem: ...
+class Assem: 
+    def AskOccsOfPart(self, parent_part:int, descedant_part:int)->Sequence[int]:...
+
+class Csys:
+    pass
 
 class Disp:
     def RegenerateDisplay(self) -> None: ...
@@ -17,6 +21,10 @@ class Vec3:
         self, vec: Sequence[float], tolerance: float
     ) -> Tuple[float, Sequence[float]]: ...
 
+class UFConstants:
+    UF_CSYS_ROOT_WCS_COORDS:int
+    UF_CSYS_ROOT_COORDS:int
+
 class UFSession:
     @property
     def Assem(self) -> Assem: ...
@@ -28,3 +36,5 @@ class UFSession:
     def Obj(self) -> Obj: ...
     @property
     def Vec3(self) -> Vec3: ...
+    @property
+    def Csys(self)->Csys:...
