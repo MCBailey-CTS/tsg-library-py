@@ -1,8 +1,7 @@
 import traceback
 from GMCleanAssembly import delete_objects
-from NXOpen import ReferenceSet
 from NXOpen.Assemblies import ReplaceComponentBuilder
-from NXOpen.Features import BooleanFeature, ExtractFace
+from NXOpen.Features import ExtractFace
 import NXOpen.Features
 from NXOpen.Layer import State
 from extensions__ import *
@@ -61,29 +60,6 @@ def WaveIn():
     except Exception as ex:
         print_(ex)
         traceback.print_exc()
-
-
-def CreateLinkedBody(part: Part, descendant: Component) -> ExtractFace:
-    raise Exception()
-
-
-def part_get_reference_set(part: Part, name: str) -> ReferenceSet:
-    for ref in part.GetAllReferenceSets():
-        if ref.Name == name:
-            return ref
-    return None
-
-
-def component_is_loaded(component: Component) -> bool:
-    return isinstance(component.Prototype, Part)
-
-
-def feature_is_broken(feature: Feature) -> bool:
-    raise Exception()
-
-
-def feature_xform(feature: Feature) -> int:
-    raise Exception()
 
 
 def WaveIn1(__child: Component, solid_body_layer_1: Body):
@@ -163,63 +139,6 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
 
     __child.__ReferenceSet("BODY")
     part_get_reference_set(work_part(), "BODY").AddObjectsToReferenceSet([__child])
-
-
-def _GetProtoPartOcc(owningPart: Part, partOcc: Component) -> Component:
-    instance = ufsession().Assem.AskInstOfPartOcc(partOcc.Tag)
-    prototypeChildPartOcc = ufsession().Assem.AskPartOccOfInst(
-        owningPart.ComponentAssembly.RootComponent.Tag, instance
-    )
-    return cast_tagged_object(prototypeChildPartOcc)
-
-
-def SubtractLinkedBody(
-    owningPart: Part, subtractBody: Body, linkedBody: ExtractFace
-) -> BooleanFeature:
-    booleanBuilder = owningPart.Features.CreateBooleanBuilderUsingCollector(
-        Feature.Null
-    )
-    try:
-        booleanBuilder.Target = subtractBody
-        collector = owningPart.ScCollectors.CreateCollector()
-        rules = [owningPart.ScRuleFactory.CreateRuleBodyDumb(linkedBody.GetBodies())]
-        collector.ReplaceRules(rules, False)
-        booleanBuilder.ToolBodyCollector = collector
-        booleanBuilder.Operation = Feature.BooleanType.Subtract
-        return booleanBuilder.Commit()
-    finally:
-        booleanBuilder.Destroy()
-
-
-def component_members(component: Component) -> Sequence[NXObject]:
-    raise NotImplementedError()
-
-
-def CreateLinkedBody(owningPart: Part, child: Component) -> ExtractFace:
-    toolBodies = [
-        obj
-        for obj in component_members(child)
-        if isinstance(obj, Body) and obj.IsSolidBody
-    ]
-    linkedBodyBuilder = owningPart.Features.CreateExtractFaceBuilder(
-        NXOpen.Features.Feature.Null
-    )
-    try:
-        linkedBodyBuilder.Associative = True
-        linkedBodyBuilder.FeatureOption = (
-            NXOpen.Features.ExtractFaceBuilder.FeatureOptionType.OneFeatureForAllBodies
-        )
-        linkedBodyBuilder.FixAtCurrentTimestamp = False
-        linkedBodyBuilder.ParentPart = (
-            NXOpen.Features.ExtractFaceBuilder.ParentPartType.OtherPart
-        )
-        linkedBodyBuilder.Type = NXOpen.Features.ExtractFaceBuilder.ExtractType.Body
-        linkedBodyBuilder.ExtractBodyCollector.ReplaceRules(
-            [owningPart.ScRuleFactory.CreateRuleBodyDumb(toolBodies)], False
-        )
-        return linkedBodyBuilder.Commit()
-    finally:
-        linkedBodyBuilder.Destroy()
 
 
 def InsertWireTaps() -> None:
@@ -317,49 +236,10 @@ def SubstituteFasteners(nxPart: Part) -> None:
         print(f"Substituted fasteners {original_display_name} -> {nxPart.Leaf}")
 
 
-def MakePlanView(csys) -> None:
-    l1 = "L1"
-    top = "Top"
-    plan = "PLAN"
-    set_display_part(work_part())
-    planView = part_get_modeling_view(work_part(), "PLAN")
-    if planView is not None:
-        layout = work_part().Layouts.FindObject(l1)
-        modelingView1 = work_part().ModelingViews.WorkView
-        modelingView2 = work_part().ModelingViews.FindObject(top)
-        layout.ReplaceView(modelingView1, modelingView2, True)
-        tempView = work_part().ModelingViews.FindObject(plan)
-        delete_objects([tempView])
-    ufsession().View.SetViewMatrix("", 3, csys.Tag, None)
-    modelingView1 = display_part().Views.SaveAs(
-        display_part().ModelingViews.WorkView, plan, False, False
-    )
-    modelingView2 = display_part().ModelingViews.FindObject(top)
-    display_part().Layouts.FindObject(l1).ReplaceView(
-        modelingView1, modelingView2, True
-    )
-    delete_objects([csys])
-
-
-def GetLinkedBody(owning_part: Part, child: Component):
-    for feature in list(owning_part.Features):
-        if feature.FeatureType != "LINKED_BODY":
-            continue
-        xform = ufsession().Wave.AskLinkXform(feature.Tag)
-        if xform == NXOpen.Tag.Null:
-            continue
-        fromPartOcc = ufsession().So.AskAssyCtxtPartOcc(
-            xform, owning_part.ComponentAssembly.RootComponent.Tag
-        )
-        if fromPartOcc == child.Tag:
-            return feature
-    return None
-
-
 def WaveOut1(child: Component):
     if child.Parent.Tag != child.OwningPart.ComponentAssembly.RootComponent.Tag:
         raise Exception("Can only wave out immediate children.")
-    linkedBody = GetLinkedBody(child.OwningPart, child)
+    linkedBody = AddFastenersGetLinkedBody(child.OwningPart, child)
     delete_objects([linkedBody])
 
 
@@ -374,7 +254,7 @@ def WaveOut():
                 if not is_fastener(__child):
                     continue
 
-                link = GetLinkedBody(work_part(), __child)
+                link = AddFastenersGetLinkedBody(work_part(), __child)
                 WaveOut1(__child)
                 delete_objects(link)
             except:
@@ -386,20 +266,8 @@ def WaveOut():
             continue
         if not is_fastener(child):
             continue
-        protoPartOcc = _GetProtoPartOcc(work_part(), child)
+        protoPartOcc = GetProtoPartOcc(work_part(), child)
         WaveOut(protoPartOcc)
-
-
-def to_matrix3x3(xvec: Vector3d, yvec: Vector3d) -> Matrix3x3:
-    raise Exception()
-
-
-def axisx(matrix: Matrix3x3) -> Vector3d:
-    raise NotImplementedError()
-
-
-def axisy(matrix: Matrix3x3) -> Vector3d:
-    raise NotImplementedError()
 
 
 def SetWcsToWorkPart() -> None:
