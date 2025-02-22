@@ -48,8 +48,7 @@ def WaveIn():
             work_part().Layers.SetState(96, State.Visible)
             solid_body_layer_1 = part_get_dynamic_block(work_part()).GetBodies()[0]
 
-        if work_part().ComponentAssembly.RootComponent is None:
-            return
+        if work_part().ComponentAssembly.RootComponent is None:return
 
         for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
             try:
@@ -99,14 +98,13 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
     subtract_att = __child.__GetAttribute("subtract")
     subtract_ref_set
 
-    match (subtract_att):
-        case "HANDLING", "WIRE_TAP":
+    if subtract_att =="HANDLING" or subtract_att == 'SHORT-TAP':
             subtract_ref_set = "SHORT-TAP"
-        case "BLIND_OPP":
+    elif subtract_att == 'BLIND_OPP':
             subtract_ref_set = "CBORE_BLIND_OPP"
-        case "CLR_DRILL":
+    elif subtract_att == 'CLR_DRILL' :
             subtract_ref_set = "CLR_HOLE"
-        case _:
+    else:
             subtract_ref_set = subtract_att
 
     current = __child.ReferenceSet
@@ -125,13 +123,13 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
         )
         traceback.print_exc()
 
-    match (subtract_att):
-        case "HANDLING", "WIRE_TAP":
+    if subtract_att == 'HANDLING' or subtract_att == 'WIRE_TAP':
             __child.Layer = 98
             __child.RedisplayObject()
-        case "TOOLING":
+    elif subtract_att == 'TOOLING':
             __child.Layer = 97
             __child.RedisplayObject()
+
     if __child.Layer != 99 or subtract_att == "HANDLING" or subtract_att == "WIRE_TAP":
         __child.__ReferenceSet("Empty")
         work_part().__FindReferenceSet("BODY").RemoveObjectsFromReferenceSet([__child])
