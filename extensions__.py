@@ -3,6 +3,7 @@ import NXOpen
 from NXOpen import (
     WCS,
     Body,
+    CartesianCoordinateSystem,
     Curve,
     Expression,
     Line,
@@ -20,6 +21,15 @@ from NXOpen.Assemblies import Component
 from NXOpen.Drawings import DrawingSheet
 from NXOpen.Features import Block, Cylinder, Feature
 from NXOpen.UF import UFSession as UFSession_
+
+
+class WithLockUpdates:
+    def __enter__(self):
+        session().UpdateManager.SetUpdateLock(True)
+
+    def __exit__(self):
+        session().UpdateManager.SetUpdateLock(False)
+        ufsession().GetUFSession().Modl.Update()
 
 
 def session() -> NXOpen.Session:
@@ -98,15 +108,66 @@ def component_ancestors(component: Component) -> List[Component]:
     return ancestors
 
 
+def set_display_part(part: Part) -> None:
+    session().Parts.SetDisplay(part, False, False)
 
-def set_display_part(part:Part)->None:
-    session().Parts.SetDisplay(part,False,False)
 
-def part_get_modeling_view(part:Part,name:str):
+def part_get_modeling_view(part: Part, name: str):
     for view in list(part.ModelingViews):
         if view.Name == name:
             return view
     return None
+
+
+def is_shcs(part: Part) -> bool:
+    raise Exception()
+
+
+def is_dwl(part: Part) -> bool:
+    raise Exception()
+
+
+def is_jck_screw(part: Part) -> bool:
+    raise Exception()
+
+
+def is_jck_screw_tsg(part: Part) -> bool:
+    raise Exception()
+
+
+def is_fastener(part: Part) -> bool:
+    raise Exception()
+
+
+def matrix3x3_identity():
+    raise Exception()
+
+
+def part_has_dynamic_block(part: Part) -> bool:
+    raise Exception()
+
+
+def part_get_dynamic_block(part: Part) -> Block:
+    raise Exception()
+
+
+def block_get_origin(block: Block) -> Point3d:
+    ...
+
+
+def block_get_orientation(block: Block) -> Matrix3x3:
+    ...
+
+
+def point3d_equals_point3d(pnt0: Point3d, pnt1: Point3d) -> bool:
+    raise Exception()
+
+
+def map_csys_to_csys(
+    origin: Point3d, csys0: CartesianCoordinateSystem, csys1: CartesianCoordinateSystem
+) -> Point3d:
+    raise Exception()
+
 
 # public enum SdpsStatus
 # {
@@ -252,8 +313,6 @@ def part_try_drawing_sheet(
     return (False, None)
 
 
-
-
 def part_has_drawing_sheet(part: Part, name: str) -> bool:
     for sheet in list(part.DrawingSheets):
         if sheet == name:
@@ -290,7 +349,7 @@ def part_get_expression(part: Part, name: str) -> Expression:
 #         }
 
 
-def part_get_modeling_view(part:Part, name:str)->ModelingView:
+def part_get_modeling_view(part: Part, name: str) -> ModelingView:
     #         public static ModelingView __FindModelingView(this BasePart part, string modelingViewName)
     #         {
     #             return part.__FindModelingViewOrNull(modelingViewName)
@@ -439,11 +498,11 @@ def is_display_part(part: Part) -> bool:
 #         }
 
 
-def part_is_modified(part:Part)->bool:
-#         public static bool __IsModified(this BasePart basePart)
-#         {
-#             return ufsession_.Part.IsModified(basePart.Tag);
-#         }
+def part_is_modified(part: Part) -> bool:
+    #         public static bool __IsModified(this BasePart basePart)
+    #         {
+    #             return ufsession_.Part.IsModified(basePart.Tag);
+    #         }
     raise NotImplementedError()
 
 
@@ -2280,53 +2339,54 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             }
 #         }
 
+
 def part_cre_constraint_distance_occ_pro(
-        part:Part,
-        occ_plane,#:DatumPlane, 
-        pro_plane,#:DatumPlane, 
-        distance_or_expression:str
-    ):# ->ComponentConstraint:
+    part: Part,
+    occ_plane,  #:DatumPlane,
+    pro_plane,  #:DatumPlane,
+    distance_or_expression: str,
+):  # ->ComponentConstraint:
+    #         public static ComponentConstraint __ConstrainOccProtoDistance(
+    #             this BasePart part,
+    #             DatumPlane occPlane,
+    #             DatumPlane protoPlane,
+    #             string distanceOrExpressionName
+    #         )
+    #         {
+    #             if (__work_part_.Tag != __display_part_.Tag)
+    #                 throw new Exception("Display part must be Work part");
 
-#         public static ComponentConstraint __ConstrainOccProtoDistance(
-#             this BasePart part,
-#             DatumPlane occPlane,
-#             DatumPlane protoPlane,
-#             string distanceOrExpressionName
-#         )
-#         {
-#             if (__work_part_.Tag != __display_part_.Tag)
-#                 throw new Exception("Display part must be Work part");
+    #             if (!occPlane.IsOccurrence)
+    #                 throw new Exception("Occurrence plane for constraint was actually a prototype.");
 
-#             if (!occPlane.IsOccurrence)
-#                 throw new Exception("Occurrence plane for constraint was actually a prototype.");
+    #             if (protoPlane.IsOccurrence)
+    #                 throw new Exception("Prototype plane for constraint was actually an occurrence.");
 
-#             if (protoPlane.IsOccurrence)
-#                 throw new Exception("Prototype plane for constraint was actually an occurrence.");
-
-#             part.__AssertIsDisplayPart();
-#             UndoMarkId markId3 = session_.SetUndoMark(MarkVisibility.Visible, "Start");
-#             ComponentPositioner componentPositioner1 = part.ComponentAssembly.Positioner;
-#             componentPositioner1.ClearNetwork();
-#             componentPositioner1.BeginAssemblyConstraints();
-#             Network componentNetwork1 = componentPositioner1.EstablishNetwork();
-#             ComponentConstraint componentConstraint1 = (ComponentConstraint)
-#                 componentPositioner1.CreateConstraint(true);
-#             componentConstraint1.ConstraintType = Constraint.Type.Distance;
-#             componentConstraint1.__CreateConstRefOcc(occPlane);
-#             componentConstraint1.__CreateConstRefProto(protoPlane);
-#             componentConstraint1.SetExpression(distanceOrExpressionName);
-#             componentNetwork1.AddConstraint(componentConstraint1);
-#             componentNetwork1.Solve();
-#             componentPositioner1.ClearNetwork();
-#             session_.UpdateManager.AddToDeleteList(componentNetwork1);
-#             session_.UpdateManager.DoUpdate(markId3);
-#             componentPositioner1.EndAssemblyConstraints();
-#             session_.DisplayManager.BlankObjects(
-#                 new DisplayableObject[] { componentConstraint1.GetDisplayedConstraint() }
-#             );
-#             return componentConstraint1;
-#         }
+    #             part.__AssertIsDisplayPart();
+    #             UndoMarkId markId3 = session_.SetUndoMark(MarkVisibility.Visible, "Start");
+    #             ComponentPositioner componentPositioner1 = part.ComponentAssembly.Positioner;
+    #             componentPositioner1.ClearNetwork();
+    #             componentPositioner1.BeginAssemblyConstraints();
+    #             Network componentNetwork1 = componentPositioner1.EstablishNetwork();
+    #             ComponentConstraint componentConstraint1 = (ComponentConstraint)
+    #                 componentPositioner1.CreateConstraint(true);
+    #             componentConstraint1.ConstraintType = Constraint.Type.Distance;
+    #             componentConstraint1.__CreateConstRefOcc(occPlane);
+    #             componentConstraint1.__CreateConstRefProto(protoPlane);
+    #             componentConstraint1.SetExpression(distanceOrExpressionName);
+    #             componentNetwork1.AddConstraint(componentConstraint1);
+    #             componentNetwork1.Solve();
+    #             componentPositioner1.ClearNetwork();
+    #             session_.UpdateManager.AddToDeleteList(componentNetwork1);
+    #             session_.UpdateManager.DoUpdate(markId3);
+    #             componentPositioner1.EndAssemblyConstraints();
+    #             session_.DisplayManager.BlankObjects(
+    #                 new DisplayableObject[] { componentConstraint1.GetDisplayedConstraint() }
+    #             );
+    #             return componentConstraint1;
+    #         }
     pass
+
 
 #         /// <summary>
 #         ///     Creates a TrimBody feature by trimming with a face
@@ -2408,7 +2468,8 @@ def part_cre_constraint_distance_occ_pro(
 #             }
 #         }
 
-def part_fit(part:Part)->None:
+
+def part_fit(part: Part) -> None:
     part.ModelingViews.WorkView.Fit()
 
 
@@ -2710,13 +2771,12 @@ def part_fit(part:Part)->None:
 #         }
 
 
-def part_get_units_in(part:Part):#->Unit:
-    return part.UnitCollection.FindObject('Inch')
-    
+def part_get_units_in(part: Part):  # ->Unit:
+    return part.UnitCollection.FindObject("Inch")
 
-def part_get_units_mm(part:Part):#->Unit:
-    return part.UnitCollection.FindObject('MilliMeter')
 
+def part_get_units_mm(part: Part):  # ->Unit:
+    return part.UnitCollection.FindObject("MilliMeter")
 
 
 #         public static OffsetFace __CreateOffsetFace(
@@ -2762,7 +2822,6 @@ def part_get_units_mm(part:Part):#->Unit:
 #                 height = builder.Height.Value;
 #             }
 #         }
-
 
 
 #         public static Line __CreateLine(this BasePart part, Point3d start, Point3d end)
@@ -4393,8 +4452,10 @@ def multiply_vector(vec: Vector3d, scale: float) -> Vector3d:
 #        );
 #    }
 
-def vector3d_dot_product(vec0:Vector3d, vec1:Vector3d)->float:
+
+def vector3d_dot_product(vec0: Vector3d, vec1: Vector3d) -> float:
     return vec0.X * vec1.X + vec0.Y * vec1.Y + vec0.Z * vec1.Z
+
 
 #    public static Matrix3x3 _CreateOrientationXVectorZVector(
 #        this Vector3d xVector,
@@ -4458,9 +4519,11 @@ def vector3d_dot_product(vec0:Vector3d, vec1:Vector3d)->float:
 #        //return _MirrorMap(new Vector(vector), mirrorPlane, originalComp, newComp);
 #    }
 
+
 #    [Obsolete]
-def mirror_vector3d(original:Vector3d, plane)->Vector3d:
+def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
     raise NotImplementedError()
+
 
 #    public static double[] _Array(this Vector3d vector3D)
 #    {

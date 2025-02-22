@@ -16,6 +16,7 @@ def part_get_reference_set(part: Part, name: str):  # ->ReferenceSet:
             return r
     raise Exception()
 
+
 def part_crt_reference_set(part: Part, name: str):  # ->ReferenceSet:
     refset = part.CreateReferenceSet()
     refset.SetName(name)
