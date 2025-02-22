@@ -3,7 +3,7 @@ from NXOpen.Assemblies import Component
 from NXOpen.Layer import State
 import NXOpen.UF
 from extensions__ import *
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 
 def part_has_reference_set(part: Part, name: str) -> bool:
@@ -15,14 +15,6 @@ def part_get_reference_set(part: Part, name: str):  # ->ReferenceSet:
         if r.Name == name:
             return r
     raise Exception()
-
-
-def part_get_reference_set(part: Part, name: str):  # ->ReferenceSet:
-    for r in part.GetAllReferenceSets():
-        if r.Name == name:
-            return r
-    raise Exception()
-
 
 def part_crt_reference_set(part: Part, name: str):  # ->ReferenceSet:
     refset = part.CreateReferenceSet()

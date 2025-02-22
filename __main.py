@@ -17,3 +17,6 @@ for x in NXOpen.NXObjectAttributeType.__dict__.items():
     print_(x)
 
 # session().SetUndoMark(NXOpen.)
+
+# convert all Nxopen to a single file
+# with classes and sub classes

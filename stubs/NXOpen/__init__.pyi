@@ -383,6 +383,8 @@ class Part(NXObject):
     def Leaf(self) -> str: ...
     @property
     def WCS(self) -> WCS: ...
+    def CreateReferenceSet(self) -> ReferenceSet: ...
+    def GetAllReferenceSets(self) -> Sequence[ReferenceSet]: ...
 
 class PartCollection:
     # AddPartClosedHandler
@@ -812,7 +814,7 @@ class WCS:
     def Origin(self):
         """Getter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
-    def Origin(self, origin):
+    def Orientation(self, origin):
         """Setter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
     def Rotate(self, rotation_axis, angle):

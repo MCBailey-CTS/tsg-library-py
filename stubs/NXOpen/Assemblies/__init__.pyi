@@ -2,16 +2,11 @@ from typing import List, Optional, Sequence, Union
 from NXOpen import DisplayableObject, NXObject, Part
 
 class Component(DisplayableObject):
-    def GetChildren(self) -> Sequence[Component]:
-        pass
+    def GetChildren(self) -> Sequence[Component]:...
     @property
-    def DisplayName(self) -> str:
-        """Returns the DisplayName of the component object"""
-        pass
+    def DisplayName(self) -> str:...
     @property
-    def Name(self) -> str:
-        """Returns the name of the component object"""
-        pass
+    def Name(self) -> str:...
     def SetLayerOption(self, layer: int) -> None: ...
     @property
     def IsSuppressed(self) -> bool: ...
@@ -19,6 +14,9 @@ class Component(DisplayableObject):
     def Parent(self) -> Component: ...
     def Suppress(self) -> None: ...
     def Unsuppress(self) -> None: ...
+    @property
+    def DirectOwner(self)->ComponentAssembly:...
+
 
 class ComponentAssembly:
     @property

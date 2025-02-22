@@ -98,6 +98,16 @@ def component_ancestors(component: Component) -> List[Component]:
     return ancestors
 
 
+
+def set_display_part(part:Part)->None:
+    session().Parts.SetDisplay(part,False,False)
+
+def part_get_modeling_view(part:Part,name:str):
+    for view in list(part.ModelingViews):
+        if view.Name == name:
+            return view
+    return None
+
 # public enum SdpsStatus
 # {
 #     //
@@ -242,10 +252,6 @@ def part_try_drawing_sheet(
     return (False, None)
 
 
-#         public static string __AskDetailOp(this BasePart part)
-#         {
-#             return part.Leaf.__AskDetailOp();
-#         }
 
 
 def part_has_drawing_sheet(part: Part, name: str) -> bool:
@@ -283,24 +289,28 @@ def part_get_expression(part: Part, name: str) -> Expression:
 #                 .SingleOrDefault(view => view.Name == modelingViewName);
 #         }
 
-#         public static ModelingView __FindModelingView(this BasePart part, string modelingViewName)
-#         {
-#             return part.__FindModelingViewOrNull(modelingViewName)
-#                 ?? throw new Exception(
-#                     $"Could not find modeling view in part \"{part.Leaf}\" with name \"{modelingViewName}\"."
-#                 );
-#         }
 
-#         public static IEnumerable<BasePart> __DescendantParts(this BasePart nxPart)
-#         {
-#             return nxPart.ComponentAssembly.RootComponent?
-#                 .__Descendants(true, true)
-#                 .Distinct(new EqualityDisplayName())
-#                 .Select(c => c.Prototype)
-#                 .OfType<BasePart>()
-#                 .ToArray()
-#                 ?? new[] { nxPart };
-#         }
+def part_get_modeling_view(part:Part, name:str)->ModelingView:
+    #         public static ModelingView __FindModelingView(this BasePart part, string modelingViewName)
+    #         {
+    #             return part.__FindModelingViewOrNull(modelingViewName)
+    #                 ?? throw new Exception(
+    #                     $"Could not find modeling view in part \"{part.Leaf}\" with name \"{modelingViewName}\"."
+    #                 );
+    #         }
+    raise NotImplementedError()
+
+
+def part_descendant_parts(part: Part) -> Sequence[Part]:
+    # return nxPart.ComponentAssembly.RootComponent?
+    # .__Descendants(true, true)
+    # .Distinct(new EqualityDisplayName())
+    # .Select(c => c.Prototype)
+    # .OfType<BasePart>()
+    # .ToArray()
+    # ?? new[] { nxPart };
+    raise NotImplementedError()
+
 
 #         public static bool __IsCasting(this BasePart part)
 #         {
@@ -428,10 +438,13 @@ def is_display_part(part: Part) -> bool:
 #             ufsession_.Part.Reopen(basePart.Tag, (int)scope, (int)mode, out _);
 #         }
 
+
+def part_is_modified(part:Part)->bool:
 #         public static bool __IsModified(this BasePart basePart)
 #         {
 #             return ufsession_.Part.IsModified(basePart.Tag);
 #         }
+    raise NotImplementedError()
 
 
 #         public static DatumCsys __AbsoluteDatumCsys(this BasePart basePart)
@@ -494,6 +507,8 @@ def part_create_text_feature(
 #             );
 #         }
 
+
+# def part_cre_category(part)
 #         /// <summary>Creates a layer category with a given name</summary>
 #         /// <param name="name">Name of layer category</param>
 #         /// <param name="description">Description of layer category</param>
@@ -2265,6 +2280,13 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             }
 #         }
 
+def part_cre_constraint_distance_occ_pro(
+        part:Part,
+        occ_plane,#:DatumPlane, 
+        pro_plane,#:DatumPlane, 
+        distance_or_expression:str
+    ):# ->ComponentConstraint:
+
 #         public static ComponentConstraint __ConstrainOccProtoDistance(
 #             this BasePart part,
 #             DatumPlane occPlane,
@@ -2304,6 +2326,7 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             );
 #             return componentConstraint1;
 #         }
+    pass
 
 #         /// <summary>
 #         ///     Creates a TrimBody feature by trimming with a face
@@ -2385,10 +2408,9 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             }
 #         }
 
-#         public static void __Fit(this BasePart part)
-#         {
-#             part.ModelingViews.WorkView.Fit();
-#         }
+def part_fit(part:Part)->None:
+    part.ModelingViews.WorkView.Fit()
+
 
 #         public static void __RightClickOpenAssemblyWhole(this BasePart part)
 #         {
@@ -2408,46 +2430,6 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             );
 #         }
 
-#         public static Component __AddComponent(
-#             this BasePart part,
-#             string path,
-#             string referenceSet = "Entire Part",
-#             string componentName = null,
-#             Point3d? origin = null,
-#             Matrix3x3? orientation = null,
-#             int layer = 1
-#         )
-#         {
-#             return part.__AddComponent(
-#                 session_.__FindOrOpen(path),
-#                 referenceSet,
-#                 componentName,
-#                 origin ?? _Point3dOrigin,
-#                 orientation ?? _Matrix3x3Identity,
-#                 layer
-#             );
-#         }
-
-#         public static Component __AddComponent(
-#             this BasePart part,
-#             BasePart prototype,
-#             string referenceSet = "Entire Part",
-#             string componentName = null,
-#             Point3d? origin = null,
-#             Matrix3x3? orientation = null,
-#             int layer = 1
-#         )
-#         {
-#             return part.ComponentAssembly.AddComponent(
-#                 prototype,
-#                 referenceSet,
-#                 componentName,
-#                 origin ?? _Point3dOrigin,
-#                 orientation ?? _Matrix3x3Identity,
-#                 layer,
-#                 out _
-#             );
-#         }
 
 #         /// <summary>Constructs a NXOpen.Arc from center, axes, radius, angles</summary>
 #         /// <param name="center">Center point (in absolute coordinates)</param>
@@ -2728,17 +2710,14 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #         }
 
 
-#         public static bool __TryGetRefset(this BasePart part, string name, out ReferenceSet refset)
-#         {
-#             refset = part.GetAllReferenceSets().SingleOrDefault(r => r.Name == name);
-#             return !(refset is null);
-#         }
+def part_get_units_in(part:Part):#->Unit:
+    return part.UnitCollection.FindObject('Inch')
+    
 
-#         public static NXOpen.Unit __UnitIn(this BasePart part) =>
-#             part.UnitCollection.FindObject("Inch");
+def part_get_units_mm(part:Part):#->Unit:
+    return part.UnitCollection.FindObject('MilliMeter')
 
-#         public static NXOpen.Unit __UnitMm(this BasePart part) =>
-#             part.UnitCollection.FindObject("MilliMeter");
+
 
 #         public static OffsetFace __CreateOffsetFace(
 #             this BasePart part,
@@ -2784,31 +2763,7 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #             }
 #         }
 
-#         public static Line[] __Lines(this BasePart part, Func<Line, bool> predicate)
-#         {
-#             return part.Lines.ToArray().Where(predicate).ToArray();
-#         }
 
-#         public static Curve[] __Curves(this BasePart part, Func<Curve, bool> predicate)
-#         {
-#             return part.Curves.ToArray().Where(predicate).ToArray();
-#         }
-
-#         public static Point[] __Points(this BasePart part, Func<Point, bool> predicate)
-#         {
-#             return part.Points.ToArray().Where(predicate).ToArray();
-#         }
-
-#         public static void __Status(this BasePart part, int status)
-#         {
-#             ufsession_.Part.SetStatus(part.Tag, status);
-#         }
-
-#         public static int __Status(this BasePart part)
-#         {
-#             ufsession_.Part.AskStatus(part.Tag, out int status);
-#             return status;
-#         }
 
 #         public static Line __CreateLine(this BasePart part, Point3d start, Point3d end)
 #         {
@@ -4438,10 +4393,8 @@ def multiply_vector(vec: Vector3d, scale: float) -> Vector3d:
 #        );
 #    }
 
-#    public static double _DotProduct(this Vector3d vector1, Vector3d vector2)
-#    {
-#        return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
-#    }
+def vector3d_dot_product(vec0:Vector3d, vec1:Vector3d)->float:
+    return vec0.X * vec1.X + vec0.Y * vec1.Y + vec0.Z * vec1.Z
 
 #    public static Matrix3x3 _CreateOrientationXVectorZVector(
 #        this Vector3d xVector,
@@ -4506,11 +4459,8 @@ def multiply_vector(vec: Vector3d, scale: float) -> Vector3d:
 #    }
 
 #    [Obsolete]
-#    public static Vector3d _Mirror(this Vector3d original, Plane plane)
-#    {
-#        throw new NotImplementedException();
-#        //return Vector.op_Implicit(_Mirror(new Vector(original), plane));
-#    }
+def mirror_vector3d(original:Vector3d, plane)->Vector3d:
+    raise NotImplementedError()
 
 #    public static double[] _Array(this Vector3d vector3D)
 #    {
@@ -7976,8 +7926,6 @@ def line_copy(line: Line) -> Line:
 #   }
 
 
-
-
 #   public static ResetWorkLayer __UsingResetWorkLayer(this Session _)
 #   {
 #       return new ResetWorkLayer();
@@ -11295,9 +11243,11 @@ def matrix3x3_to_sequence(matrix: Matrix3x3) -> Sequence[float]:
 #       return integerString;
 #   }
 
-def math_pow(number:float, power:float)->float:
-#       return System.Math.Pow(number, power);
+
+def math_pow(number: float, power: float) -> float:
+    #       return System.Math.Pow(number, power);
     raise NotImplementedError()
+
 
 #   #endregion
 
@@ -11415,341 +11365,3976 @@ def math_pow(number:float, power:float)->float:
 #             throw new NotImplementedException();
 #         }
 
-class UFuncAddFasteners:
 
-    #  [UFunc(_UFunc.ufunc_add_fasteners)]
-    # public partial class AddFasteners : _UFuncForm
-    # {
-    #     //public const string AddFastenersSizeFile2 = @"U:\nxFiles\UfuncFiles\AddFastenerSizes.txt";
-    #     private static BasePart.Units _unit = BasePart.Units.Millimeters;
-    #     private int WorkPartChangedRegister;
-    #     public static int _translucency = -1;
-    #     private int _1x_2x = 2;
-
-    #     public AddFasteners() => InitializeComponent();
-
-    #     public bool IsFormMetric => menuItemUnits.Text == @"MM";
-
-    #     public void WorkPartChanged(BasePart basePart = null)
+class UFuncAddPierceComponents:
+    #     public partial class AddPierceComponents : _UFuncForm
     #     {
-    #         try
-    #         {
-    #             SetFormToWorkPart();
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
+    #         private static List<Tuple<Component, Face>> _addedComponents;
 
-    #     private void SetFormToWorkPart()
-    #     {
-    #         try
+    #         public AddPierceComponents()
     #         {
-    #             if (__display_part_ is null)
-    #                 return;
+    #             InitializeComponent();
+    #         }
 
-    #             bool hasSolidBodyOnLayer1 = __work_part_.Bodies
+    #         internal static string PunchDetail { get; set; }
+
+    #         internal static string ButtonDetail { get; set; }
+
+    #         internal static string RetainerDetail { get; set; }
+
+    #         private void btnSelect_Click(object sender, EventArgs e)
+    #         {
+    #             try
+    #             {
+    #                 Hide();
+
+    #                 #region Revision • 1.1 – 2017 / 11 / 28
+
+    #                 string[] controls = session_.Parts.ToArray().Select(part => part.FullPath)
+    #                     .Where(s => s.Contains("strip-control")).ToArray();
+    #                 switch (controls.Length)
+    #                 {
+    #                     case 0:
+    #                         print("There is no strip control loaded. Please load one before continuing.");
+    #                         return;
+    #                     case 1:
+    #                         break;
+    #                     default:
+    #                         print("More than one strip control is loaded:");
+    #                         controls.ToList().ForEach(print);
+    #                         return;
+    #                 }
+
+    #                 #endregion
+
+    #                 ButtonDetail = txtButton.Text;
+    #                 PunchDetail = txtPunch.Text;
+    #                 RetainerDetail = txtRetainer.Text;
+    #                 using (session_.__UsingDisplayPartReset())
+    #                 {
+    #                     if (chkAssembly.Checked)
+    #                         SameAssembly(rdoMetric.Checked, chkButton.Checked, chkPunch.Checked, chkRetainer.Checked);
+    #                     else
+    # #pragma warning disable CS0612 // Type or member is obsolete
+    #                         DifferentAssemblies(rdoMetric.Checked, chkButton.Checked, chkPunch.Checked,
+    #                             chkRetainer.Checked);
+    # #pragma warning restore CS0612 // Type or member is obsolete
+    #                 }
+    #             }
+    #             catch (Exception ex)
+    #             {
+    #                 ex.__PrintException();
+    #             }
+    #             finally
+    #             {
+    #                 Show();
+    #             }
+    #         }
+
+    #         public static string GetNextDetailNumber(Part snapUspLsp)
+    #         {
+    #             string detailDirectory = Path.GetDirectoryName(snapUspLsp.FullPath);
+    #             string partLeaf = snapUspLsp.Leaf.ToLower();
+    #             Regex shortRegex = new Regex("^([0-9]+)-([0-9]{3,})-(lsp|usp)([0-9]{1})$");
+    #             Match match = shortRegex.Match(partLeaf);
+    #             if (match.Success)
+    #             {
+    #                 string customerJobNumber = match.Groups[1].Value;
+    #                 string partOp = match.Groups[2].Value;
+    #                 string uspLsp = match.Groups[3].Value;
+    #                 int uspLspOp = int.Parse(match.Groups[4].Value);
+    #                 bool isLower = uspLsp == "lsp";
+    #                 int detailNumber = isLower
+    #                     ? GetLspDetailNumberShort(uspLspOp)
+    #                     : GetUspDetailNumberShort(uspLspOp);
+    #                 string newDisplayName;
+    #                 do
+    #                 {
+    #                     newDisplayName = $"{customerJobNumber}-{partOp}-{detailNumber++}";
+
+    #                     if (snapUspLsp.ComponentAssembly.RootComponent.GetChildren()
+    #                         .Any(component => component.DisplayName == newDisplayName))
+    #                         continue;
+
+    #                     string newFullPath = $"{detailDirectory}\\{newDisplayName}.prt";
+
+    #                     if (File.Exists(newFullPath))
+    #                         continue;
+
+    #                     if (isLower && detailNumber > 499)
+    #                         throw new Exception("Exceeded the detail numbers for the Lower");
+
+    #                     if (detailNumber > 990)
+    #                         throw new Exception("Exceeded the detail numbers for the Upper");
+
+    #                     return newFullPath;
+    #                 }
+    #                 while (true);
+    #             }
+
+    #             Regex longRegex = new Regex("^([0-9]{4,5})-([0-9]{3,})-(lsp|usp)([0-9]{3})$");
+    #             match = longRegex.Match(partLeaf);
+    #             if (!match.Success) throw new ArgumentException("Part is not a valid Usp or Lsp.", nameof(snapUspLsp));
+    #             {
+    #                 string customerJobNumber = match.Groups[1].Value;
+    #                 string partOp = match.Groups[2].Value;
+    #                 string uspLsp = match.Groups[3].Value;
+    #                 int uspLspOp = int.Parse(match.Groups[4].Value);
+    #                 bool isLower = uspLsp == "lsp";
+    #                 int detailNumber = isLower
+    #                     ? GetLspDetailNumberLong(uspLspOp)
+    #                     : GetUspDetailNumberLong(uspLspOp);
+    #                 string newDisplayName;
+    #                 do
+    #                 {
+    #                     newDisplayName = $"{customerJobNumber}-{partOp}-{detailNumber++}";
+
+    #                     if (snapUspLsp.ComponentAssembly.RootComponent.GetChildren()
+    #                         .Any(component => component.DisplayName == newDisplayName))
+    #                         continue;
+
+    #                     string newFullPath = $"{detailDirectory}\\{newDisplayName}.prt";
+
+    #                     if (File.Exists(newFullPath))
+    #                         continue;
+
+    #                     if (isLower && detailNumber > 499)
+    #                         throw new Exception("Exceeded the detail numbers for the Lower");
+
+    #                     if (detailNumber > 990)
+    #                         throw new Exception("Exceeded the detail numbers for the Upper");
+
+    #                     return newFullPath;
+    #                 }
+    #                 while (true);
+    #             }
+    #         }
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Button Metric.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartButtonMetric => "G:\\0Library\\Button\\Smart Button Metric.prt";
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Button English.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartButtonEnglish => "G:\\0Library\\Button\\Smart Button English.prt";
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Punch Metric.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartPunchMetric => "G:\\0Library\\PunchPilot\\Metric\\Smart Punch Metric.prt";
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Punch English.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartPunchEnglish => "G:\\0Library\\PunchPilot\\English\\Smart Punch English.prt";
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Ball Lock Retainer Metric.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartBallLockRetainerMetric =>
+    #             "G:\\0Library\\Retainers\\Metric\\Smart Ball Lock Retainer Metric.prt";
+
+    #         /// <summary>
+    #         ///     The path to the "Smart Ball Lock Retainer English.prt" file in G:\\0Library.
+    #         /// </summary>
+    #         public static string SmartBallLockRetainerEnglish =>
+    #             "G:\\0Library\\Retainers\\English\\Smart Ball Lock Retainer English.prt";
+
+    #         /// <summary>
+    #         ///     Returns the name of the reference set to be used for AddPierceComponents.
+    #         /// </summary>
+    #         public static string SlugRefsetName => "SLUG BUTTON ALIGN";
+
+    #         // ReSharper disable once StringLiteralTypo
+    #         public static string RetainerAlignPunchFaceName => "ALIGNPUNCH";
+
+    #         // ReSharper disable once StringLiteralTypo
+    #         public static string PunchTopFaceName => "PUNCHTOPFACE";
+
+    #         public static string PiercedP => "PIERCED_P";
+
+    #         public static string PiercedW => "PIERCED_W";
+
+    #         public static string PiercedType => "PIERCED_TYPE";
+
+    #         public static Regex PiercedFaceRegex => new Regex("^PIERCED_([0-9]{1,})$");
+
+    #         public static int GetUspDetailNumberShort(int number)
+    #         {
+    #             switch (number)
+    #             {
+    #                 case 1:
+    #                     return 600;
+    #                 case 2:
+    #                     return 700;
+    #                 case 3:
+    #                     return 800;
+    #                 case 4:
+    #                     return 900;
+    #                 case 5:
+    #                     return 650;
+    #                 case 6:
+    #                     return 750;
+    #                 case 7:
+    #                     return 850;
+    #                 case 8:
+    #                     return 950;
+    #                 case 9:
+    #                     return 675;
+    #                 case 10:
+    #                     return 775;
+    #                 case 11:
+    #                     return 875;
+    #                 case 12:
+    #                     return 975;
+    #                 case 13:
+    #                     return 680;
+    #                 case 14:
+    #                     return 780;
+    #                 case 15:
+    #                     return 880;
+    #                 default:
+    #                     return 881;
+    #             }
+    #         }
+
+    #         public static int GetLspDetailNumberShort(int number)
+    #         {
+    #             switch (number)
+    #             {
+    #                 case 1:
+    #                     return 100;
+    #                 case 2:
+    #                     return 200;
+    #                 case 3:
+    #                     return 300;
+    #                 case 4:
+    #                     return 400;
+    #                 case 5:
+    #                     return 150;
+    #                 case 6:
+    #                     return 250;
+    #                 case 7:
+    #                     return 350;
+    #                 case 8:
+    #                     return 450;
+    #                 case 9:
+    #                     return 175;
+    #                 case 10:
+    #                     return 275;
+    #                 case 11:
+    #                     return 375;
+    #                 case 12:
+    #                     return 475;
+    #                 case 13:
+    #                     return 180;
+    #                 case 14:
+    #                     return 280;
+    #                 case 15:
+    #                     return 380;
+    #                 default:
+    #                     return 381;
+    #             }
+    #         }
+
+    #         public static int GetUspDetailNumberLong(int number)
+    #         {
+    #             switch (number)
+    #             {
+    #                 case 10:
+    #                     return 600;
+    #                 case 20:
+    #                     return 700;
+    #                 case 30:
+    #                     return 800;
+    #                 case 40:
+    #                     return 900;
+    #                 case 50:
+    #                     return 650;
+    #                 case 60:
+    #                     return 750;
+    #                 case 70:
+    #                     return 850;
+    #                 case 80:
+    #                     return 950;
+    #                 case 90:
+    #                     return 675;
+    #                 case 100:
+    #                     return 775;
+    #                 case 110:
+    #                     return 875;
+    #                 case 120:
+    #                     return 975;
+    #                 case 130:
+    #                     return 680;
+    #                 case 140:
+    #                     return 780;
+    #                 case 150:
+    #                     return 880;
+    #                 default:
+    #                     return 881;
+    #             }
+    #         }
+
+    #         public static int GetLspDetailNumberLong(int number)
+    #         {
+    #             switch (number)
+    #             {
+    #                 case 10:
+    #                     return 100;
+    #                 case 20:
+    #                     return 200;
+    #                 case 30:
+    #                     return 300;
+    #                 case 40:
+    #                     return 400;
+    #                 case 50:
+    #                     return 150;
+    #                 case 60:
+    #                     return 250;
+    #                 case 70:
+    #                     return 350;
+    #                 case 80:
+    #                     return 450;
+    #                 case 90:
+    #                     return 175;
+    #                 case 100:
+    #                     return 275;
+    #                 case 110:
+    #                     return 375;
+    #                 case 120:
+    #                     return 475;
+    #                 case 130:
+    #                     return 180;
+    #                 case 140:
+    #                     return 280;
+    #                 case 150:
+    #                     return 380;
+    #                 default:
+    #                     return 381;
+    #             }
+    #         }
+
+    #         /// <summary>
+    #         ///     Gets the current detail number of all the children of <paramref name="snapComponent" /> who passes the Regex
+    #         ///     <see cref="Constants.Regex_Detail" />, or returns -1 if no valid children are found.
+    #         /// </summary>
+    #         /// <param name="snapComponent">The component.</param>
+    #         /// <returns>The highest/current detail or -1 if <paramref name="snapComponent" /> doesn't have any child who are valid.</returns>
+    #         public static int GetCurrentDetailNumberOfChildren(Component snapComponent)
+    #         {
+    #             int[] validDetailNumbers = snapComponent.GetChildren()
+    #                 .Select(component => component.DisplayName)
+    #                 .Select(s => Regex.Match(s, RegexDetail))
+    #                 .Where(match => match.Success)
+    #                 .Select(match => int.Parse(match.Groups[3].Value))
+    #                 .ToArray();
+
+    #             return validDetailNumbers.Length >= 0
+    #                 ? -1
+    #                 : validDetailNumbers.Max();
+    #         }
+
+    #         /// <summary>
+    #         ///     Checks to see if a face is named properly for AddPierceComponents.
+    #         /// </summary>
+    #         /// <param name="snapFace">The face whose name is to be checked.</param>
+    #         /// <remarks>
+    #         ///     The integer that is tagged at the end of the face name will be used to find the
+    #         ///     <see cref="NXOpen.Features. DatumCsys" /> that
+    #         ///     is associated with the face.
+    #         /// </remarks>
+    #         /// <exception cref="ArgumentNullException">When <paramref name="snapFace" /> is null.</exception>
+    #         /// <returns>True if the name of the face starts with "PIERCED_FACE_" followed immediately by a non-negative integer.</returns>
+    #         public static bool IsFaceNameValid(Face snapFace)
+    #         {
+    #             if (snapFace == null) throw new ArgumentNullException(nameof(snapFace));
+    #             return PiercedFaceRegex.IsMatch(snapFace.Name);
+    #         }
+
+    #         /// <summary>
+    #         ///     Gets the integer used to find a <see cref="NXOpen.Features. DatumCsys" />.
+    #         /// </summary>
+    #         /// <param name="snapFace">The face to parse an integer from it's name.</param>
+    #         /// <exception cref="ArgumentNullException">When <paramref name="snapFace" /> is null.</exception>
+    #         /// <exception cref="FormatException">If <paramref name="snapFace" />.Name isn't valid.</exception>
+    #         /// <returns>Returns integer that corresponds to a <see cref="NXOpen.Features. DatumCsys" />. </returns>
+    #         public static int GetFaceNameInteger(Face snapFace)
+    #         {
+    #             if (snapFace == null) throw new ArgumentNullException(nameof(snapFace));
+    #             Match match = PiercedFaceRegex.Match(snapFace.Name);
+    #             if (!match.Success) throw new FormatException("\"" + snapFace.Name + "\" is invalid.");
+    #             return int.Parse(match.Groups[1].Value);
+    #         }
+
+    #         /// <summary>
+    #         ///     Creates a new a snapButton and adds it to the current __work_part_.
+    #         /// </summary>
+    #         /// <remarks>
+    #         ///     Adds the snapButton using the <paramref name="csys" /> layer, Origin, and Orientation as parameters for the
+    #         ///     added snapButton.
+    #         /// </remarks>
+    #         /// <param name="buttonUnit">The unit type of the added component.</param>
+    #         /// <param name="csys">The csys whose parameters will be used for the added component.</param>
+    #         /// <exception cref="ArgumentNullException"><paramref name="csys" /> is null.</exception>
+    #         /// <returns>The added snapButton.</returns>
+    #         public static Component AddButton(BasePart.Units buttonUnit, CoordinateSystem csys)
+    #         {
+    #             if (csys == null) throw new ArgumentNullException(nameof(csys));
+    #             double multiplier;
+
+    #             string buttonPath;
+    #             switch (buttonUnit)
+    #             {
+    #                 case BasePart.Units.Inches:
+    #                     buttonPath = SmartButtonEnglish;
+    #                     multiplier = 1.0;
+    #                     break;
+    #                 case BasePart.Units.Millimeters:
+    #                     buttonPath = SmartButtonMetric;
+    #                     multiplier = 25.4;
+    #                     break;
+    #                 default:
+    #                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
+    #             }
+
+    #             CartesianCoordinateSystem absCys = __display_part_.__CreateCsys();
+    #             CartesianCoordinateSystem tempCsys = __display_part_.__CreateCsys(csys.Origin, csys.Orientation.Element);
+    #             Point3d mappedOrigin = csys.Origin.__MapCsysToCsys(absCys, tempCsys);
+    #             mappedOrigin = new Point3d(mappedOrigin.X, mappedOrigin.Y, mappedOrigin.Z + 6 / multiplier);
+    #             Point3d newOrigin = mappedOrigin.__MapCsysToCsys(tempCsys, absCys);
+    #             return __work_part_.ComponentAssembly.AddComponent(buttonPath, "ALIGN",
+    #                 Path.GetFileNameWithoutExtension(buttonPath), newOrigin, csys.Orientation.Element, csys.Layer, out _);
+    #         }
+
+    #         public static Component AddPunch(BasePart.Units buttonUnit, CoordinateSystem csys)
+    #         {
+    #             if (csys == null) throw new ArgumentNullException(nameof(csys));
+    #             string punchPath;
+    #             switch (buttonUnit)
+    #             {
+    #                 case BasePart.Units.Inches:
+    #                     punchPath = SmartPunchEnglish;
+    #                     break;
+    #                 case BasePart.Units.Millimeters:
+    #                     punchPath = SmartPunchMetric;
+    #                     break;
+    #                 default:
+    #                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
+    #             }
+
+    #             return AddComponent(punchPath, csys, "ALIGN");
+    #         }
+
+    #         public static Component AddRetainer(BasePart.Units buttonUnit, CoordinateSystem csys)
+    #         {
+    #             if (csys == null) throw new ArgumentNullException(nameof(csys));
+    #             string retainerPath;
+    #             switch (buttonUnit)
+    #             {
+    #                 case BasePart.Units.Inches:
+    #                     retainerPath = SmartBallLockRetainerEnglish;
+    #                     break;
+    #                 case BasePart.Units.Millimeters:
+    #                     retainerPath = SmartBallLockRetainerMetric;
+    #                     break;
+    #                 default:
+    #                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
+    #             }
+
+    #             return AddComponent(retainerPath, csys, "MATE");
+    #         }
+
+    #         private static Component AddComponent(string path, CoordinateSystem csys, string referenceSet)
+    #         {
+    #             CartesianCoordinateSystem absCys = __display_part_.__CreateCsys();
+    #             CartesianCoordinateSystem tempCsys = __display_part_.__CreateCsys(csys.Origin, csys.Orientation.Element);
+    #             Point3d mappedOrigin = csys.Origin.__MapCsysToCsys(absCys, tempCsys);
+    #             Point3d newOrigin = mappedOrigin.__MapCsysToCsys(tempCsys, absCys);
+
+    #             return __work_part_.ComponentAssembly.AddComponent(
+    #                 path,
+    #                 referenceSet,
+    #                 Path.GetFileNameWithoutExtension(path),
+    #                 newOrigin,
+    #                 csys.Orientation.Element,
+    #                 csys.Layer,
+    #                 out _);
+    #         }
+
+    #         private static bool IsUsp(Part snapPart)
+    #         {
+    #             return snapPart.Leaf.Contains("usp");
+    #         }
+
+    #         private static void GetPartPaths(bool isMetric, out string buttonPath, out string retainerPath,
+    #             out string punchPath)
+    #         {
+    #             string directory = Path.GetDirectoryName(__display_part_.FullPath);
+
+    #             var details = (from file in Directory.GetFiles(directory, "*.prt", SearchOption.TopDirectoryOnly)
+    #                            where file.__IsDetail()
+    #                            let detailNumber = file.__AskDetailNumber()
+    #                            select new { file, detailNumber }).ToArray();
+
+    #             if (string.IsNullOrEmpty(ButtonDetail))
+    #             {
+    #                 buttonPath = isMetric ? SmartButtonMetric : SmartButtonEnglish;
+    #             }
+    #             else
+    #             {
+    #                 var argDetail = details.SingleOrDefault(arg => arg.file == ButtonDetail)
+    #                                 ??
+    #                                 throw new InvalidOperationException("Could not find a detail with # \'" + ButtonDetail +
+    #                                                                     "\' in folderWithCtsNumber \'" + directory + "\'.");
+
+    #                 Part tempPart = session_.__FindOrOpen(argDetail.file);
+
+    #                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
+    #                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
+
+    #                 string expectedLibraryAttributeValue = Path.GetFileNameWithoutExtension(isMetric
+    #                     ? SmartButtonMetric
+    #                     : SmartButtonEnglish);
+    #                 string libraryAttributeValue =
+    #                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
+
+    #                 if (expectedLibraryAttributeValue != libraryAttributeValue)
+    #                     throw new InvalidOperationException(
+    #                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
+
+    #                 buttonPath = tempPart.FullPath;
+    #             }
+
+    #             if (string.IsNullOrEmpty(PunchDetail))
+    #             {
+    #                 punchPath = isMetric ? SmartPunchMetric : SmartPunchEnglish;
+    #             }
+    #             else
+    #             {
+    #                 var argDetail = details.SingleOrDefault(arg => arg.file == PunchDetail)
+    #                                 ??
+    #                                 throw new InvalidOperationException("Could not find a detail with # \'" + PunchDetail +
+    #                                                                     "\' in folderWithCtsNumber \'" + directory + "\'.");
+
+    #                 Part tempPart = session_.__FindOrOpen(argDetail.file);
+
+    #                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
+    #                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
+
+    #                 string expectedLibraryAttributeValue =
+    #                     Path.GetFileNameWithoutExtension(isMetric
+    #                         ? SmartPunchMetric
+    #                         : SmartPunchEnglish);
+    #                 string libraryAttributeValue =
+    #                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
+
+    #                 if (expectedLibraryAttributeValue != libraryAttributeValue)
+    #                     throw new InvalidOperationException(
+    #                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
+
+    #                 punchPath = tempPart.FullPath;
+    #             }
+
+    #             if (string.IsNullOrEmpty(RetainerDetail))
+    #             {
+    #                 retainerPath = isMetric
+    #                     ? SmartBallLockRetainerMetric
+    #                     : SmartBallLockRetainerEnglish;
+    #             }
+    #             else
+    #             {
+    #                 var argDetail = details.SingleOrDefault(arg => arg.file == RetainerDetail)
+    #                                 ??
+    #                                 throw new InvalidOperationException("Could not find a detail with # \'" +
+    #                                                                     RetainerDetail + "\' in folderWithCtsNumber \'" +
+    #                                                                     directory + "\'.");
+
+    #                 Part tempPart = session_.__FindOrOpen(argDetail.file);
+
+    #                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
+    #                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
+
+    #                 string expectedLibraryAttributeValue =
+    #                     Path.GetFileNameWithoutExtension(isMetric
+    #                         ? SmartBallLockRetainerMetric
+    #                         : SmartBallLockRetainerEnglish);
+    #                 string libraryAttributeValue =
+    #                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
+
+    #                 if (expectedLibraryAttributeValue != libraryAttributeValue)
+    #                     throw new InvalidOperationException(
+    #                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
+
+    #                 retainerPath = tempPart.FullPath;
+    #             }
+    #         }
+
+    #         private static void ConfirmStripControlAndEExpression()
+    #         {
+    #             string[] stripControls = session_.Parts
+    #                 .OfType<Part>()
+    #                 .Select(part => part.Leaf.ToLower())
+    #                 .Where(s => s.Contains("strip-control"))
+    #                 .ToArray();
+
+    #             if (stripControls.Length < 1)
+    #                 throw new InvalidOperationException("You need to have a strip control loaded.");
+
+    #             string[] expressions = __display_part_.Expressions
     #                 .ToArray()
-    #                 .Where(__b => __b.IsSolidBody)
-    #                 .Where(__b => __b.Layer == 1)
-    #                 .ToArray().Length == 1;
+    #                 .Select(expression => expression.Name.ToLower())
+    #                 .Where(s => s == "e")
+    #                 .ToArray();
 
-    #             bool hasDynamicBlock = __work_part_.__HasDynamicBlock() || hasSolidBodyOnLayer1;
-    #             menuItemUnits.Enabled = hasDynamicBlock;
-    #             chkCycleAdd.Enabled = hasDynamicBlock;
-    #             btnOrigin.Enabled = hasDynamicBlock;
-    #             btnWireTaps.Enabled = hasDynamicBlock;
-    #             chkReverseCycleAdd.Enabled = hasDynamicBlock;
-    #             mnu2x.Enabled = hasDynamicBlock;
-    #             toolStripMenuItem1.Enabled = hasDynamicBlock;
-    #             ChangEnabled(hasDynamicBlock, listBoxSelection, grpFastenerType, btnOk, btnChangeRefSet, chkSubstitute,
-    #                 btnPlanView);
+    #             if (expressions.Length < 1)
+    #                 throw new InvalidOperationException("Unable to find an expression with the name of \'e\'.");
     #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #         finally
-    #         {
-    #             if (!(__display_part_ is null))
-    #                 __display_part_.Preferences.Workplane.ShowGrid = false;
 
-    #             mnuStrMainMenu.Enabled = true;
-    #             menuItemFile.Enabled = true;
-    #             btnSelectComponent.Enabled = true;
-    #             btnReset.Enabled = true;
-    #         }
-    #     }
-
-    #     private void StripWaveOut_Click(object sender, EventArgs e)
-    #     {
-    #         try
+    #         public static void SameAssembly(bool isMetric, bool addButton, bool addPunch, bool addRetainer)
     #         {
-    #             UFSession uf = ufsession_;
+    #             ConfirmStripControlAndEExpression();
+    #             _addedComponents = new List<Tuple<Component, Face>>();
+    #             GetPartPaths(isMetric, out string buttonPath, out string retainerPath, out string punchPath);
+    #             Regex uspLspRegex = new Regex("^[0-9]{4,5}-([0-9]{3})-[l|u]sp([0-9]{1,})$");
+    #             string _display_part_DisplayName = Path.GetFileNameWithoutExtension(__display_part_.FullPath);
+    #             if (_display_part_DisplayName == null) throw new NullReferenceException("_display_part_DisplayName");
+    #             Match nameMatch = uspLspRegex.Match(_display_part_DisplayName);
+    #             if (!nameMatch.Success)
+    #                 throw new FormatException(_display_part_DisplayName + " is not a valid usp or lsp.");
+    #             GFolder folder = GFolder.create_or_null(__work_part_);
+    #             if (folder is null)
+    #                 throw new InvalidOperationException("The current displayed part does not reside within a GFolder.");
+    #             string op = nameMatch.Groups[1].Value;
+    #             int uspLspNumberAsInteger = int.Parse(nameMatch.Groups[2].Value);
+    #             Part uspLspPart = session_.__FindOrOpen(_display_part_DisplayName);
 
-    #             foreach (Feature feat in __work_part_.Features.ToArray())
-    #                 try
+    #             /////////////////////////////////////////////
+    #             /////////////////////////////////////////////
+
+    #             __SetUndoMark(MarkVisibility.Visible, "FastClass");
+
+    #             try
+    #             {
+    #                 Face[] faces = Ui.Selection.SelectManyFaces();
+
+    #                 IDictionary<string, List<Face>> dictionaryShape =
+    #                     faces.__ToILookIDict(face => face.GetStringUserAttribute("PIERCED_TYPE", -1));
+
+    #                 foreach (string keyShape in dictionaryShape.Keys)
     #                 {
-    #                     if (!(feat is ExtractFace link))
-    #                         continue;
+    #                     List<Face> shapeFaces = dictionaryShape[keyShape];
+    #                     // Revision • 1.2 – 2017 / 12 / 07
+    #                     IDictionary<double, List<Face>> dictionaryP = shapeFaces.__ToILookIDict(face =>
+    #                         System.Math.Round(face.GetRealUserAttribute("PIERCED_P", -1), 4));
+    #                     foreach (double keyP in dictionaryP.Keys)
+    #                     {
+    #                         List<Face> pFaces = dictionaryP[keyP];
+    #                         // Revision • 1.2 – 2017 / 12 / 07
+    #                         IDictionary<double, List<Face>> dictionaryW = pFaces.__ToILookIDict(face =>
+    #                             System.Math.Round(face.GetRealUserAttribute("PIERCED_W", -1), 4));
+    #                         foreach (double keyW in dictionaryW.Keys)
+    #                         {
+    #                             string partOfThePath = $"{folder.dir_op(op)}\\{folder.CustomerNumber}-{op}-";
+    #                             int currentLowerDetailNumber =
+    #                                 GetCurrentDetailNumberOfChildren(uspLspPart.__RootComponent());
+    #                             if (currentLowerDetailNumber == -1)
+    #                                 // Revision • 1.2 – 2017 / 12 / 07
+    #                                 currentLowerDetailNumber = IsUsp(uspLspPart)
+    #                                     ? !folder.is_cts_job()
+    #                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
+    #                                         : GetUspDetailNumberShort(uspLspNumberAsInteger)
+    #                                     : !folder.is_cts_job()
+    #                                         ? GetLspDetailNumberLong(uspLspNumberAsInteger)
+    #                                         : GetLspDetailNumberShort(uspLspNumberAsInteger);
+    #                             string newButtonPath = buttonPath.StartsWith("G:\\0Library")
+    #                                 ? GetNewPartPath(partOfThePath, buttonPath, currentLowerDetailNumber)
+    #                                 : buttonPath;
+    #                             string newRetainerPath = retainerPath.StartsWith("G:\\0Library")
+    #                                 ? GetNewPartPath(partOfThePath, retainerPath, currentLowerDetailNumber)
+    #                                 : retainerPath;
+    #                             string newPunchPath = punchPath.StartsWith("G:\\0Library")
+    #                                 ? GetNewPartPath(partOfThePath, punchPath, currentLowerDetailNumber)
+    #                                 : punchPath;
+    #                             foreach (Face faceW in dictionaryW[keyW])
+    #                             {
+    #                                 Component button = null, punch = null, retainer = null;
+    #                                 Component layoutComponent = faceW.OwningComponent;
+    #                                 string originalRefset = layoutComponent.ReferenceSet;
+    #                                 layoutComponent.__ReferenceSet(SlugRefsetName);
+    #                                 Expression expression = __display_part_.Expressions
+    #                                     .ToArray()
+    #                                     .SingleOrDefault(tempExpression => tempExpression.Name == "e");
+    #                                 int layer = uspLspPart.Leaf.Contains("lsp") ? 1 : 101;
 
-    #                     if (!link.__IsLinkedBody())
-    #                         continue;
+    #                                 if (addPunch)
+    #                                     punch = AddComponentAndConstrain(faceW, newPunchPath, uspLspPart, "ALIGN", layer,
+    #                                         expression);
 
-    #                     uf.Wave.IsLinkBroken(link.Tag, out bool is_broken);
+    #                                 if (addRetainer)
+    #                                     retainer = AddComponentAndConstrain(faceW, newRetainerPath, uspLspPart, "MATE",
+    #                                         layer);
 
-    #                     if (is_broken)
-    #                         continue;
+    #                                 if (addButton)
+    #                                     button = AddComponentAndConstrain(faceW, newButtonPath, uspLspPart, "ALIGN", layer,
+    #                                         expression);
 
-    #                     uf.Wave.AskLinkXform(link.Tag, out Tag xform);
+    #                                 if (retainer != null && punch != null)
+    #                                     ConstrainPunchAndRetainer(punch, retainer);
 
-    #                     uf.So.AskAssyCtxtPartOcc(xform, __work_part_.__RootComponent().Tag, out Tag from_part_occ);
+    #                                 List<Component> listComps = new List<Component>();
 
-    #                     if (from_part_occ == NXOpen.Tag.Null)
-    #                         continue;
+    #                                 if (button != null)
+    #                                     listComps.Add(button);
 
-    #                     double[] point = new double[3];
+    #                                 if (retainer != null)
+    #                                     listComps.Add(retainer);
 
-    #                     uf.So.AskPointOfXform(xform, point);
+    #                                 if (punch != null)
+    #                                     listComps.Add(punch);
 
-    #                     Component from_comp = (Component)session_.__GetTaggedObject(from_part_occ);
-
-    #                     Point3d origin = point.__ToPoint3d();
-
-    #                     if (!from_comp.__Origin().__IsEqualTo(origin))
-    #                         continue;
-
-    #                     session_.__DeleteObjects(link);
+    #                                 ChangeRefsets("BODY", listComps.ToArray());
+    #                                 layoutComponent.__ReferenceSet(originalRefset);
+    #                             }
+    #                         }
+    #                     }
     #                 }
-    #                 catch (Exception ex)
+    #             }
+    #             finally
+    #             {
+    # #pragma warning disable CS0612 // Type or member is obsolete
+    #                 PrintResults(isMetric);
+    # #pragma warning restore CS0612 // Type or member is obsolete
+    #             }
+    #         }
+
+    #         [Obsolete]
+    #         public static void DifferentAssemblies(bool isMetric, bool addButton, bool addPunch, bool addRetainer)
+    #         {
+    #             GFolder folder = GFolder.create_or_null(__work_part_)
+    #                              ??
+    #                              throw new InvalidOperationException(
+    #                                  "The current work part does not reside within a job folder.");
+
+    #             ConfirmStripControlAndEExpression();
+    #             _addedComponents = new List<Tuple<Component, Face>>();
+    #             GetPartPaths(isMetric, out string buttonPath, out string retainerPath, out string punchPath);
+
+    #             string _display_part_DisplayName = Path.GetFileNameWithoutExtension(__display_part_.FullPath)
+    #                                                ??
+    #                                                throw new NullReferenceException("_display_part_DisplayName");
+
+    #             Match nameMatch = Regex.Match(_display_part_DisplayName, RegexLspUsp);
+
+    #             if (!nameMatch.Success)
+    #                 throw new FormatException($"{_display_part_DisplayName} is not a valid usp or lsp.");
+
+    #             string op = nameMatch.Groups["opNum"].Value;
+    #             string uspLspNumberAsString = nameMatch.Groups["extraOpNum"].Value;
+    #             int uspLspNumberAsInteger = int.Parse(uspLspNumberAsString);
+    #             string lspName = $"{folder.CustomerNumber}-{op}-lsp{uspLspNumberAsString}";
+    #             string uspName = $"{folder.CustomerNumber}-{op}-usp{uspLspNumberAsString}";
+    #             BasePart lspPart = session_.Parts.ToArray().SingleOrDefault(part => part.FullPath.Contains(lspName));
+    #             BasePart uspPart = session_.Parts.ToArray().SingleOrDefault(part => part.FullPath.Contains(uspName));
+
+    #             if (addButton && lspPart == null)
+    #                 throw new InvalidOperationException($"Could not find part \"{lspName}\" loaded in your session.");
+
+    #             if ((addPunch || addRetainer) && uspPart == null)
+    #                 throw new InvalidOperationException("Could not find part " + "\"" + uspName +
+    #                                                     "\" loaded in your session.");
+
+    #             /////////////////////////////////////////////
+    #             /////////////////////////////////////////////
+
+    #             __SetUndoMark(MarkVisibility.Visible, "FastClass");
+    #             try
+    #             {
+    #                 Face[] faces = Ui.Selection.SelectManyFaces();
+
+    #                 IDictionary<string, List<Face>> dictionaryShape =
+    #                     faces.__ToILookIDict(face => face.GetStringUserAttribute("PIERCED_TYPE", -1));
+
+    #                 foreach (string keyShape in dictionaryShape.Keys)
     #                 {
-    #                     ex.__PrintException();
+    #                     List<Face> shapeFaces = dictionaryShape[keyShape];
+    #                     // Revision • 1.2 – 2017 / 12 / 01
+    #                     IDictionary<double, List<Face>> dictionaryP = shapeFaces.__ToILookIDict(face =>
+    #                         System.Math.Round(face.GetRealUserAttribute("PIERCED_P", -1), 4));
+    #                     foreach (double keyP in dictionaryP.Keys)
+    #                     {
+    #                         List<Face> pFaces = dictionaryP[keyP];
+    #                         // Revision • 1.2 – 2017 / 12 / 01
+    #                         IDictionary<double, List<Face>> dictionaryW = pFaces.__ToILookIDict(face =>
+    #                             System.Math.Round(face.GetRealUserAttribute("PIERCED_W", -1), 4));
+    #                         foreach (double keyW in dictionaryW.Keys)
+    #                         {
+    #                             string partOfThePath = $"{folder.dir_op(op)}\\{folder.CustomerNumber}-{op}-";
+    #                             string newPunchPath = null, newRetainerPath = null, newButtonPath = null;
+    #                             if (lspPart != null)
+    #                             {
+    #                                 int currentLowerDetailNumber =
+    #                                     GetCurrentDetailNumberOfChildren(lspPart.ComponentAssembly.RootComponent);
+    #                                 if (currentLowerDetailNumber == -1)
+    #                                     // Revision • 1.2 – 2017 / 12 / 07
+    #                                     currentLowerDetailNumber = !folder.is_cts_job()
+    #                                         ? GetLspDetailNumberLong(uspLspNumberAsInteger)
+    #                                         : GetLspDetailNumberShort(uspLspNumberAsInteger);
+    #                                 newButtonPath = buttonPath.StartsWith("G:\\0Library")
+    #                                     ? GetNewPartPath(partOfThePath, buttonPath, currentLowerDetailNumber)
+    #                                     : buttonPath;
+    #                             }
+
+    #                             if (uspPart != null)
+    #                             {
+    #                                 int currentUpperDetailNumber =
+    #                                     GetCurrentDetailNumberOfChildren(uspPart.ComponentAssembly.RootComponent);
+    #                                 if (currentUpperDetailNumber == -1)
+    #                                     // Revision • 1.2 – 2017 / 12 / 07
+    #                                     currentUpperDetailNumber = !folder.is_cts_job()
+    #                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
+    #                                         : GetUspDetailNumberShort(uspLspNumberAsInteger);
+
+    #                                 newRetainerPath = retainerPath.StartsWith("G:\\0Library")
+    #                                     ? GetNewPartPath(partOfThePath, retainerPath, currentUpperDetailNumber)
+    #                                     : retainerPath;
+    #                                 currentUpperDetailNumber =
+    #                                     GetCurrentDetailNumberOfChildren(uspPart.ComponentAssembly.RootComponent);
+    #                                 if (currentUpperDetailNumber == -1)
+    #                                     // Revision • 1.2 – 2017 / 12 / 07
+    #                                     currentUpperDetailNumber = !folder.is_cts_job()
+    #                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
+    #                                         : GetUspDetailNumberShort(uspLspNumberAsInteger);
+    #                                 newPunchPath = punchPath.StartsWith("G:\\0Library")
+    #                                     ? GetNewPartPath(partOfThePath, punchPath, currentUpperDetailNumber)
+    #                                     : punchPath;
+    #                             }
+
+    #                             foreach (Face faceW in dictionaryW[keyW])
+    #                             {
+    #                                 Component button = null, punch = null, retainer = null;
+    #                                 Component layoutComponent = faceW.OwningComponent;
+    #                                 string originalRefset = layoutComponent.ReferenceSet;
+    #                                 layoutComponent.__ReferenceSet(SlugRefsetName);
+    #                                 Expression expression = __display_part_.Expressions
+    #                                     .ToArray()
+    #                                     .SingleOrDefault(tempExpression => tempExpression.Name == "e");
+
+    #                                 if (addPunch)
+    #                                     punch = AddComponentAndConstrain(faceW, newPunchPath, (Part)uspPart, "ALIGN", 101,
+    #                                         expression);
+
+    #                                 // Revision • 1.3 – 2017 / 12 / 28
+    #                                 if (addRetainer)
+    #                                     retainer = AddComponentAndConstrain(faceW, newRetainerPath, (Part)uspPart, "MATE",
+    #                                         101);
+
+    #                                 // Revision • 1.3 – 2017 / 12 / 28
+    #                                 if (addButton)
+    #                                     button = AddComponentAndConstrain(faceW, newButtonPath, (Part)lspPart, "ALIGN", 1,
+    #                                         expression);
+
+    #                                 if (retainer != null && punch != null)
+    #                                     ConstrainPunchAndRetainer(punch, retainer);
+
+    #                                 List<Component> listComps = new List<Component>();
+
+    #                                 if (button != null)
+    #                                     listComps.Add(button);
+
+    #                                 if (retainer != null)
+    #                                     listComps.Add(retainer);
+
+    #                                 if (punch != null)
+    #                                     listComps.Add(punch);
+
+    #                                 ChangeRefsets("BODY", listComps.ToArray());
+    #                                 layoutComponent.__ReferenceSet(originalRefset);
+    #                             }
+    #                         }
+    #                     }
     #                 }
+    #             }
+    #             finally
+    #             {
+    #                 PrintResults(isMetric);
+    #             }
     #         }
-    #         catch (Exception ex)
+
+    #         [Obsolete]
+    #         private static void PrintResults(bool isMetric)
     #         {
-    #             ex.__PrintException();
+    #             throw new NotImplementedException();
+    #             //try
+    #             //{
+    #             //    print_("Results:");
+    #             //    BasePart stripControl = session_.Parts.ToArray().Single(part => part.Leaf.Contains("strip-control"));
+    #             //    Expression materialThicknessExp = stripControl.Expressions.ToArray()
+    #             //        .SingleOrDefault(expression => expression.Name == "M");
+    #             //    if (materialThicknessExp == null)
+    #             //        print_("Unable to find Material Thickness.");
+    #             //    else
+    #             //        print_("Material Thickness (M): " + materialThicknessExp.RightHandSide);
+
+    #             //    if (_addedComponents == null)
+    #             //    {
+    #             //        print_("  addedComponents was null");
+    #             //        return;
+    #             //    }
+
+    #             //    if (_addedComponents.Count <= 0)
+    #             //    {
+    #             //        print_("  addedComponents was empty");
+    #             //        return;
+    #             //    }
+
+    #             //    IOrderedEnumerable<Tuple<Component, Face>> trimmedTuples = _addedComponents
+    #             //        .DistinctBy(tup => tup.Item1.DisplayName)
+    #             //        .OrderBy(tuple => tuple, new Comparer());
+
+    #             //    double divider = isMetric ? 1.0 : 25.4;
+
+    #             //    foreach (Tuple<NXOpen.Assemblies.Component, NXOpen.Face> tuple in trimmedTuples)
+    #             //    {
+    #             //        const string circle = "Circle";
+    #             //        const string roundedRectangle = "RoundedRectangle";
+    #             //        double p = Math.Round(tuple.Item1.GetRealUserAttribute(PiercedP, -1) / divider, 4);
+    #             //        double w = Math.Round(tuple.Item1.GetRealUserAttribute(PiercedW, -1) / divider, 4);
+    #             //        string type = tuple.Item1.GetStringUserAttribute(PiercedType, -1);
+    #             //        switch (type)
+    #             //        {
+    #             //            case circle:
+    #             //                print_($"{tuple.Item1.DisplayName}, P = {p}");
+    #             //                break;
+    #             //            case roundedRectangle:
+    #             //                double radius = tuple.Item2.GetEdges().Select(edge => Snap.NX.Edge.Wrap(edge.Tag)).OfType<Snap.NX.Edge.Arc>().First().Geometry.Radius;
+    #             //                print_($"{tuple.Item1.DisplayName}, P = {p}, W = {w}, R = {radius}");
+    #             //                break;
+    #             //            default:
+    #             //                print_($"{tuple.Item1.DisplayName}, P = {p}, W = {w}");
+    #             //                break;
+    #             //        }
+    #             //    }
+    #             //    throw new NotImplementedException();
+    #             //}
+    #             //catch (Exception ex)
+    #             //{
+    #             //    ex.__PrintException();
+    #             //}
     #         }
-    #         finally
+
+    #         private static void ConstrainPunchAndRetainer(Component punch, Component retainer)
     #         {
-    #             WorkPartChanged();
+    #             __display_part_ = (Part)punch.OwningComponent.Prototype;
+    #             __work_part_ = __display_part_;
+    #             Constraints.ConstrainFixPunch(punch);
+    #             Constraints.ConstrainZAxes(__work_part_, punch, retainer);
+    #             Constraints.ConstrainFaces(__work_part_, punch, retainer);
+    #             Constraints.ConstrainAlignBallSetAndPlane(punch, retainer);
+    #         }
+
+    #         private static void ChangeRefsets(string refsetName, params Component[] components)
+    #         {
+    #             components?.Where(component => component != null).ToList()
+    #                 .ForEach(component => component.__ReferenceSet(refsetName));
+    #         }
+
+    #         private static string GetNewPartPath(string partOfThePath, string originalPartPath,
+    #             int currentUpperDetailNumber)
+    #         {
+    #             string newPath = "";
+    #             for (int i = 0; i < 1000; i++)
+    #             {
+    #                 newPath = partOfThePath + (currentUpperDetailNumber + i) + ".prt";
+    #                 if (File.Exists(newPath)) continue;
+    #                 File.Copy(originalPartPath, newPath);
+    #                 break;
+    #             }
+
+    #             return newPath;
+    #         }
+
+    #         public static Component AddComponentAndConstrain(
+    #             Face snapFace,
+    #             string path,
+    #             Part part,
+    #             string referenceSet,
+    #             int layer,
+    #             Expression zOffsetExpression = null)
+    #         {
+    #             __display_part_ = part;
+    #             __work_part_ = __display_part_;
+    #             snapFace.Unhighlight();
+    #             int integer = GetFaceNameInteger(snapFace);
+
+    #             // Revision • 1.2 – 2017 / 12 / 07
+    #             Component layout = snapFace.OwningComponent;
+    #             DatumAxis xAxis = layout.__Members().OfType<DatumAxis>()
+    #                 .Single(axis => axis.Name == "PIERCED_AXIS_X_" + integer);
+    #             DatumAxis yAxis = layout.__Members().OfType<DatumAxis>()
+    #                 .Single(axis => axis.Name == "PIERCED_AXIS_Y_" + integer);
+    #             DatumAxis zAxis = layout.__Members().OfType<DatumAxis>()
+    #                 .Single(axis => axis.Name == "PIERCED_AXIS_Z_" + integer);
+    #             Matrix3x3 orientation = xAxis.Direction.__ToMatrix3x3(yAxis.Direction);
+    #             Point3d newOrigin = xAxis.Origin;
+    #             if (zOffsetExpression != null)
+    #                 newOrigin = new Point3d(xAxis.Origin.X, xAxis.Origin.Y, xAxis.Origin.Z + zOffsetExpression.Value);
+
+    #             Component addedComponent = part.ComponentAssembly.AddComponent(
+    #                 path,
+    #                 referenceSet,
+    #                 Path.GetFileNameWithoutExtension(path),
+    #                 newOrigin,
+    #                 orientation,
+    #                 layer,
+    #                 out _);
+
+    #             addedComponent.SetUserAttribute(PiercedP, -1,
+    #                 snapFace.GetStringUserAttribute(PiercedP, -1), NXOpen.Update.Option.Now);
+
+    #             addedComponent.SetUserAttribute(PiercedW, -1,
+    #                 snapFace.GetStringUserAttribute(PiercedW, -1), NXOpen.Update.Option.Now);
+
+    #             addedComponent.SetUserAttribute(PiercedType, -1,
+    #                 snapFace.GetStringUserAttribute(PiercedType, -1), NXOpen.Update.Option.Now);
+
+    #             addedComponent.__ReferenceSet(referenceSet);
+
+    #             using (new ReferenceSetReset(addedComponent))
+    #             {
+    #                 addedComponent.__ReferenceSet("BODY");
+    #                 Part owningPart = addedComponent.OwningComponent.__Prototype();
+    #                 ReferenceSet bodyReferenceSet = owningPart.__FindReferenceSetOrNull("BODY");
+    #                 bodyReferenceSet?.AddObjectsToReferenceSet(new NXObject[] { addedComponent });
+    #             }
+
+    #             DatumAxis zAxisComponent = addedComponent.__Members()
+    #                 .OfType<DatumAxis>()
+    #                 .Single(axis => axis.Direction.__IsEqual(__Vector3dZ()));
+
+    #             DisplayedConstraint constraint = Constraints.CreateAlign(__work_part_, zAxisComponent, zAxis);
+    #             session_.__DeleteObjects(constraint);
+
+    #             if (!addedComponent.GetStringUserAttribute("LIBRARY", -1).ToLower().Contains("retainer"))
+    #                 _addedComponents.Add(new Tuple<Component, Face>(addedComponent, snapFace));
+
+    #             return addedComponent;
+    #         }
+
+    #         [Obsolete]
+    #         public static class Selection
+    #         {
+    #             // ReSharper disable once ReturnTypeCanBeEnumerable.Global
+    #             [Obsolete]
+    #             public static Face[] SelectFaces()
+    #             {
+    #                 //const string message = "Select Faces";
+    #                 //const int scope = UFConstants.UF_UI_SEL_SCOPE_ANY_IN_ASSEMBLY;
+    #                 //UFUi.SelInitFnT initialProcess = InitialProcess;
+    #                 //IntPtr userData = IntPtr.Zero;
+    #                 //Tag[] objects = null;
+    #                 //try
+    #                 //{
+    #                 //    TheUFSession.Ui.LockUgAccess(UFConstants.UF_UI_FROM_CUSTOM);
+    #                 //    TheUFSession.Ui.SelectWithClassDialog(message, message, scope, initialProcess, userData, out _,
+    #                 //        out _, out objects);
+    #                 //}
+    #                 //catch (Exception ex)
+    #                 //{
+    #                 //    ex.__PrintException();
+    #                 //}
+    #                 //finally
+    #                 //{
+    #                 //    TheUFSession.Ui.UnlockUgAccess(UFConstants.UF_UI_FROM_CUSTOM);
+    #                 //}
+
+    #                 //return objects == null || objects.Length == 0 ? new NXOpen.Face[0] : objects.Select(tag => Snap.NX.Face.Wrap(tag).NXOpenFace).ToArray();
+
+    #                 throw new NotImplementedException();
+    #             }
+
+    #             private static int InitialProcess(IntPtr select, IntPtr userData)
+    #             {
+    #                 UFUi.Mask mask = new UFUi.Mask
+    #                 {
+    #                     object_type = UFConstants.UF_face_type,
+    #                     object_subtype = 0,
+    #                     solid_type = 0
+    #                 };
+    #                 ufsession_.Ui.SetSelMask(select, UFUi.SelMaskAction.SelMaskClearAndEnableSpecific, 1, new[] { mask });
+    #                 ufsession_.Ui.SetSelProcs(select, FilterProcess, null /* SelectionCallback*/, userData);
+    #                 return UFConstants.UF_UI_SEL_SUCCESS;
+    #             }
+
+    #             private static int FilterProcess(Tag _object, int[] type, IntPtr userData, IntPtr select)
+    #             {
+    #                 var snapFace = _object.__To<Face>();
+
+    #                 if (!snapFace.Name.StartsWith("PIERCED_"))
+    #                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
+
+    #                 if (!snapFace.IsOccurrence)
+    #                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
+
+    #                 if (!snapFace.__IsPlanar())
+    #                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
+
+    #                 return snapFace.__NormalVector().__IsEqual(__Vector3dZ().__Negate())
+    #                     ? NXOpen.UF.UFConstants.UF_UI_SEL_REJECT
+    #                     : NXOpen.UF.UFConstants.UF_UI_SEL_ACCEPT;
+    #             }
+    #         }
+
+    #         private class Comparer : IComparer<Tuple<Component, Face>>
+    #         {
+    #             #region Implementation of IComparer<in Tuple<Component,Face>>
+
+    #             public int Compare(Tuple<Component, Face> x, Tuple<Component, Face> y)
+    #             {
+    #                 if (x == null) throw new ArgumentNullException(nameof(x));
+    #                 if (y == null) throw new ArgumentNullException(nameof(y));
+    #                 return string.Compare(x.Item1.DisplayName, y.Item1.DisplayName, StringComparison.Ordinal);
+    #             }
+
+    #             #endregion
+    #         }
+
+    #         public static class Constraints
+    #         {
+    #             /// <summary>
+    #             ///     The path to the "Smart Button Metric.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartButtonMetric => "G:\\0Library\\Button\\Smart Button Metric.prt";
+
+    #             /// <summary>
+    #             ///     The path to the "Smart Button English.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartButtonEnglish => "G:\\0Library\\Button\\Smart Button English.prt";
+
+    #             /// <summary>
+    #             ///     The path to the "Smart Punch Metric.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartPunchMetric => "G:\\0Library\\PunchPilot\\Metric\\Smart Punch Metric.prt";
+
+    #             /// <summary>
+    #             ///     The path to the "Smart Punch English.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartPunchEnglish => "G:\\0Library\\PunchPilot\\English\\Smart Punch English.prt";
+
+    #             /// <summary>
+    #             ///     The path to the "Smart Ball Lock Retainer Metric.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartBallLockRetainerMetric =>
+    #                 "G:\\0Library\\Retainers\\Metric\\Smart Ball Lock Retainer Metric.prt";
+
+    #             /// <summary>
+    #             ///     The path to the "Smart Ball Lock Retainer English.prt" file in G:\\0Library.
+    #             /// </summary>
+    #             public static string SmartBallLockRetainerEnglish =>
+    #                 "G:\\0Library\\Retainers\\English\\Smart Ball Lock Retainer English.prt";
+
+    #             /// <summary>
+    #             ///     Returns the name of the reference set to be used for AddPierceComponents.
+    #             /// </summary>
+    #             public static string SlugRefsetName => "SLUG BUTTON ALIGN";
+
+    #             // ReSharper disable once StringLiteralTypo
+    #             public static string RetainerAlignPunchFaceName => "ALIGNPUNCH";
+
+    #             // ReSharper disable once StringLiteralTypo
+    #             public static string PunchTopFaceName => "PUNCHTOPFACE";
+
+    #             // ReSharper disable once InconsistentNaming
+    #             public static string Pierced_P => "PIERCED_P";
+
+    #             // ReSharper disable once InconsistentNaming
+    #             public static string Pierced_W => "PIERCED_W";
+
+    #             // ReSharper disable once InconsistentNaming
+    #             public static string Pierced_Type => "PIERCED_TYPE";
+
+    #             public static Regex PiercedFaceRegex => new Regex("^PIERCED_([0-9]{1,})$");
+
+    #             public static DisplayedConstraint CreateAlign(
+    #                 Part part,
+    #                 NXObject movableObject,
+    #                 NXObject nonMovableObject)
+    #             {
+    #                 return CreateTouchAlignImpl(part, Constraint.Alignment.CoAlign, movableObject, nonMovableObject);
+    #             }
+
+    #             public static void ConstrainZAxes(Part part, Component punch, Component retainer)
+    #             {
+    #                 punch.__ReferenceSet("ALIGN");
+    #                 retainer.__ReferenceSet("MATE");
+    #                 DatumAxis retainerZAxis = (DatumAxis)retainer.__Members().Single(o => o.Name == "ZAXIS");
+    #                 CartesianCoordinateSystem punchCartesian = punch.__Members().OfType<CartesianCoordinateSystem>().Single();
+    #                 var punchOrientation = punchCartesian.Orientation.Element;
+
+    #                 DatumAxis punchZAxis = punch.__Members()
+    #                     .OfType<DatumAxis>()
+    #                     .Single(axis => new Vector3d(axis.Direction.X, axis.Direction.Y, axis.Direction.Z)
+    #                         .__IsEqual(punchOrientation.__AxisZ()));
+
+    #                 DisplayedConstraint constraint = CreateAlign(part, retainerZAxis, punchZAxis);
+    #                 constraint.__Layer(254);
+    #             }
+
+    #             public static DisplayedConstraint CreateTouchAlignImpl(
+    #                 Part part,
+    #                 Constraint.Alignment alignmentType,
+    #                 NXObject movableObject, NXObject nonMovableObject)
+    #             {
+    #                 ComponentAssembly componentAssembly = part.ComponentAssembly;
+    #                 ComponentPositioner positioner = componentAssembly.Positioner;
+    #                 positioner.ClearNetwork();
+    #                 positioner.PrimaryArrangement = componentAssembly.Arrangements.FindObject("Arrangement 1");
+    #                 positioner.BeginAssemblyConstraints();
+    #                 ComponentNetwork componentNetwork = (ComponentNetwork)positioner.EstablishNetwork();
+    #                 componentNetwork.MoveObjectsState = true;
+    #                 componentNetwork.NetworkArrangementsMode = ComponentNetwork.ArrangementsMode.Existing;
+    #                 ComponentConstraint constraint = (ComponentConstraint)positioner.CreateConstraint(true);
+    #                 constraint.ConstraintAlignment = alignmentType;
+    #                 constraint.ConstraintType = Constraint.Type.Touch;
+    #                 constraint.CreateConstraintReference(movableObject.OwningComponent, movableObject, false, false, false);
+    #                 constraint.CreateConstraintReference(nonMovableObject.OwningComponent, nonMovableObject, false, false,
+    #                     false);
+    #                 componentNetwork.Solve();
+    #                 positioner.ClearNetwork();
+    #                 session_.__DeleteObjects(componentNetwork);
+    #                 positioner.EndAssemblyConstraints();
+    #                 return constraint.GetDisplayedConstraint();
+    #             }
+
+    #             public static DisplayedConstraint CreateTouch(Part part, NXObject movableObject, NXObject nonMovableObject)
+    #             {
+    #                 return CreateTouchAlignImpl(part, Constraint.Alignment.ContraAlign, movableObject, nonMovableObject);
+    #             }
+
+    #             public static void ConstrainFaces(Part part, Component punch, Component retainer)
+    #             {
+    #                 punch.__ReferenceSet("ALIGN");
+    #                 retainer.__ReferenceSet("MATE");
+
+    #                 Face punchFace = punch.__Members()
+    #                     .OfType<Face>()
+    #                     .Single(face => face.Name == PunchTopFaceName);
+
+    #                 Face retainerFace = retainer.__Members()
+    #                     .OfType<Face>()
+    #                     .Single(face => face.Name == RetainerAlignPunchFaceName);
+
+    #                 DisplayedConstraint constraint = CreateTouch(part, retainerFace, punchFace);
+    #                 constraint.__Layer(254);
+    #             }
+
+    #             public static DisplayedConstraint CreateParallelConstraint(NXObject movableObject, NXObject geometry)
+    #             {
+    #                 ComponentPositioner positioner = _WorkPart.ComponentAssembly.Positioner;
+    #                 positioner.ClearNetwork();
+    #                 positioner.PrimaryArrangement = _WorkPart.ComponentAssembly.Arrangements.FindObject("Arrangement 1");
+    #                 positioner.BeginAssemblyConstraints();
+    #                 ComponentNetwork componentNetwork = (ComponentNetwork)positioner.EstablishNetwork();
+    #                 componentNetwork.MoveObjectsState = true;
+    #                 componentNetwork.NetworkArrangementsMode = 0;
+    #                 Constraint constraint = positioner.CreateConstraint(true);
+    #                 ComponentConstraint componentConstraint = (ComponentConstraint)constraint;
+    #                 componentConstraint.ConstraintType = (Constraint.Type)5;
+    #                 componentConstraint.CreateConstraintReference(movableObject.OwningComponent, movableObject, false, false, false);
+    #                 componentConstraint.CreateConstraintReference(geometry.OwningComponent, geometry, false, false, false);
+    #                 componentNetwork.Solve();
+    #                 positioner.ClearNetwork();
+    #                 componentNetwork.__Delete();
+    #                 positioner.DeleteNonPersistentConstraints();
+    #                 positioner.EndAssemblyConstraints();
+    #                 return constraint.GetDisplayedConstraint();
+    #                 throw new NotImplementedException();
+    #             }
+
+    #             public static void ConstrainAlignBallSetAndPlane(Component punch, Component retainer)
+    #             {
+    #                 punch.__ReferenceSet("MATE");
+    #                 retainer.__ReferenceSet("MATE");
+    #                 DatumPlane retainerXZPlane = (DatumPlane)retainer.__Members().Single(o => o.Name == "XZPLANE");
+    #                 DatumPlane punchBallSeatPlane = (DatumPlane)punch.__Members().Single(o => o.Name == "BALL_SEAT_ANGLE");
+    #                 DisplayedConstraint constraint = CreateParallelConstraint(retainerXZPlane, punchBallSeatPlane);
+    #                 constraint.__Layer(254);
+    #             }
+
+    #             public static void ConstrainFixPunch(Component punch)
+    #             {
+    #                 DisplayedConstraint constraint = CreateFixedConstraint(punch);
+    #                 constraint.__Layer(254);
+    #             }
+
+    #             public static DisplayedConstraint CreateFixedConstraint(Component component)
+    #             {
+    #                 ComponentPositioner positioner = __work_part_.ComponentAssembly.Positioner;
+    #                 positioner.ClearNetwork();
+    #                 positioner.PrimaryArrangement = __work_part_.ComponentAssembly.Arrangements.FindObject("Arrangement 1");
+    #                 positioner.BeginAssemblyConstraints();
+    #                 ComponentConstraint constraint = (ComponentConstraint)positioner.CreateConstraint(true);
+    #                 constraint.ConstraintType = (Constraint.Type)3;
+    #                 constraint.CreateConstraintReference(component, component, false, false, false);
+    #                 positioner.EndAssemblyConstraints();
+    #                 return constraint.GetDisplayedConstraint();
+    #             }
+    #         }
+
+    #         #region Obsolete Methods, look before you delete.
+
+    #         public static DatumAxis GetZAxisOccurenceOfSlug(Face face)
+    #         {
+    #             int integer = GetFaceNameInteger(face);
+    #             return face.OwningComponent.__Members()
+    #                 .OfType<DatumAxis>()
+    #                 .Single(plane => plane.Name == "PIERCED_AXIS_Z_" + integer);
+    #         }
+
+    #         public static DatumPlane GetYZPlaneOccurenceOfSlug(Face face)
+    #         {
+    #             int integer = GetFaceNameInteger(face);
+    #             return face.OwningComponent.__Members()
+    #                 .OfType<DatumPlane>()
+    #                 .Single(plane => plane.Name == "PIERCED_PLANE_YZ_" + integer);
+    #         }
+
+    #         [Obsolete(nameof(NotImplementedException))]
+    #         public static DatumAxis GetZAxisOccurence(Component snapButton)
+    #         {
+    #             //NXOpen.CoordinateSystem tempCsys = snapButton.__Members().OfType<NXOpen.CoordinateSystem>().Single();
+    #             //IEnumerable<NXOpen.DatumAxis> DatumAxis = snapButton.__Members()
+    #             //    .OfType<NXOpen.DatumAxis>();
+    #             //foreach (NXOpen.DatumAxis axis in DatumAxis)
+    #             //    if (((NXOpen.Assemblies.Component)(tempCsys.Tag)).orientation.z_vec._IsEqualTo(axis.Direction))
+    #             //        return axis;
+    #             //throw new ArgumentException("End Exception");
+    #             throw new NotImplementedException();
+    #         }
+
+    #         [Obsolete(nameof(NotImplementedException))]
+    #         public static DatumPlane GetYZPlaneOccurence(Component snapButton)
+    #         {
+    #             //NXOpen.CoordinateSystem tempCsys = snapButton.__Members().OfType<NXOpen.CoordinateSystem>().Single();
+    #             //IEnumerable<NXOpen.DatumPlane> planes = snapButton.__Members()
+    #             //    .OfType<NXOpen.DatumPlane>();
+    #             //foreach (NXOpen.DatumPlane plane in planes)
+    #             //    if (((NXOpen.Assemblies.Component)(tempCsys.Tag)).orientation.z_vec._IsEqualTo(plane.Normal))
+    #             //        return plane;
+
+    #             //throw new ArgumentException("End Exception");
+    #             throw new NotImplementedException();
+    #         }
+
+    #         public static Face GetTopFaceOfPunch(Component snapPunch)
+    #         {
+    #             // ReSharper disable once StringLiteralTypo
+    #             return snapPunch.__Members().OfType<Face>().Single(face => face.Name == "PUNCHTOPFACE");
+    #         }
+
+    #         public static Face GetAlignFaceOfRetainer(Component snapPunch)
+    #         {
+    #             // ReSharper disable once StringLiteralTypo
+    #             return snapPunch.__Members().OfType<Face>().Single(face => face.Name == "ALIGNPUNCH");
+    #         }
+
+    #         internal static string EditInteger(int integer)
+    #         {
+    #             if (integer < 0)
+    #                 throw new ArgumentOutOfRangeException(nameof(integer));
+    #             if (integer < 10)
+    #                 return "00" + integer;
+    #             if (integer < 100)
+    #                 return "0" + integer;
+    #             return integer.ToString();
+    #         }
+
+    #         public static Part _Prototype(Component component) => component.Prototype as Part ?? throw new Exception();
+
+    #         [Obsolete]
+    #         internal static DatumAxis GetZAxisOccurenceOfRetainer(Component retainer)
+    #         {
+    #             //string retainerRefset = retainer.ReferenceSet;
+
+    #             //print_(retainer.__Prototype().GetAllReferenceSets().Single(set => set.Name == retainerRefset).AskMembersInReferenceSet()
+    #             //    .OfType<NXOpen.CoordinateSystem>().Count());
+
+    #             //Snap.NX.CoordinateSystem tempCsys = retainer.__Members().Select(obj => (Snap.NX.NXObject)obj).OfType<Snap.NX.CoordinateSystem>().Single();
+    #             //IEnumerable<NXOpen.DatumAxis> k = retainer.__Members()
+    #             //    .OfType<NXOpen.DatumAxis>();
+    #             //foreach (NXOpen.DatumAxis axis in k)
+    #             //    if (new NXOpen.Vector3d(axis.Direction.X, axis.Direction.Y, axis.Direction.Z).__IsEqualTo(tempCsys.AxisZ))
+    #             //        return axis;
+
+    #             //throw new ArgumentException("End Exception");
+
+    #             throw new NotImplementedException();
+    #         }
+
+    #         #endregion
+
+    #         private void AddPierceComponents_Load(object sender, EventArgs e)
+    #         {
+    #             Text = AssemblyFileVersion;
+    #             Location = Properties.Settings.Default.add_pierce_components_form_window_location;
+    #         }
+
+    #         private void AddPierceComponents_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+    #         {
+    #             Properties.Settings.Default.add_pierce_components_form_window_location = Location;
+    #             Properties.Settings.Default.Save();
     #         }
     #     }
+    pass
 
-    #     private void MenuUnits_Click(object sender, EventArgs e)
+
+class UFuncAssemblyExportDesignData:
+    #  public partial class AssemblyExportDesignData : _UFuncForm
+    #  {
+    #      public AssemblyExportDesignData()
+    #      {
+    #          InitializeComponent();
+    #      }
+
+    #      public static Part _WorkPart => Session.GetSession().Parts.Work;
+
+    #      private void ResetForm()
+    #      {
+    #          if (__display_part_ is null)
+    #          {
+    #              Enabled = false;
+    #              return;
+    #          }
+
+    #          Enabled = true;
+
+    #          if (!rdoChange.Checked && !rdoRto.Checked && !rdoReview50.Checked && !rdoReview90.Checked &&
+    #              !rdoReview100.Checked && !rdoOther.Checked)
+    #              rdoReview50.Checked = true;
+
+    #          GFolder folder = GFolder.create_or_null(_WorkPart);
+
+    #          if (folder is null)
+    #              return;
+
+    #          if (folder.CustomerNumber.Length == 6)
+    #          {
+    #              if (rdoRto.Checked || rdoChange.Checked)
+    #              {
+    #                  txtFolderName.Text = "";
+    #                  txtFolderName.Enabled = false;
+    #                  return;
+    #              }
+
+    #              txtFolderName.Enabled = true;
+
+    #              return;
+    #          }
+
+    #          txtFolderName.Enabled = true;
+    #      }
+
+    #      private void BtnData_Clicked(object sender, EventArgs e)
+    #      {
+    #          Hide();
+
+    #          try
+    #          {
+    #              if (sender == btnDesignAccept)
+    #                  Export_Design();
+    #              else if (sender == btnSelectComponents)
+    #                  ManualExport(false);
+    #              else if (sender == btnSelectAll)
+    #                  ManualExport(true);
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+    #          finally
+    #          {
+    #              print("Complete");
+    #              Show();
+    #          }
+
+    #          //stopwatch.Stop();
+
+    #          //print_($"Time: {stopwatch.Elapsed.TotalMinutes:f2}");
+    #      }
+
+    #      private void ManualExport(bool selectAll)
+    #      {
+    #          Part __display_part_ = Session.GetSession().Parts.Display;
+
+    #          List<Component> components = selectAll
+    #              ? __display_part_.ComponentAssembly.RootComponent.__Descendants().ToList()
+    #              : Selection.SelectManyComponents().ToList();
+
+    #          if (components.Count == 0)
+    #              return;
+
+    #          components.Add(__display_part_.ComponentAssembly.RootComponent);
+
+    #          if (chk4ViewDwg.Checked)
+    #              try
+    #              {
+    #                  ExportDwg4Views(components);
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+
+    #          Export1.Design(
+    #              __display_part_,
+    #              components.ToArray(),
+    #              null,
+    #              false,
+    #              false,
+    #              chk4ViewPDF.Checked,
+    #              false,
+    #              chkDetailStep.Checked,
+    #              chkSee3DData.Checked,
+    #              chkBurnout.Checked,
+    #              chkParasolids.Checked,
+    #              chkCastings.Checked,
+    #              chkPrintData.Checked,
+    #              rdoChange.Checked);
+    #      }
+
+    #      private void ExportDwg4Views(List<Component> components)
+    #      {
+    #          GFolder folder = GFolder.Create(__display_part_.FullPath);
+
+    #          Part[] parts = components.Select(c => c.Prototype)
+    #              .OfType<Part>()
+    #              .Where(p => p.__HasDrawingSheet("4-VIEW"))
+    #              .Distinct()
+    #              .ToArray();
+
+    #          var parts_to_export = from part in parts
+    #                                where part.__IsPartDetail()
+    #                                let op = part.__AskDetailOp()
+    #                                let match = Regex.Match(part.Leaf, "^(\\d+-\\d+)-\\d+$")
+    #                                where match.Success
+    #                                let dir = $"{folder.dir_op(op)}\\{match.Groups[1].Value}-dwg-4-views"
+    #                                let output = $"{dir}\\{part.Leaf}.dwg"
+    #                                select new
+    #                                {
+    #                                    input_part = part.FullPath,
+    #                                    output_part = output,
+    #                                };
+
+    #          foreach (var p in parts_to_export)
+    #              try
+    #              {
+    #                  string dir = Path.GetDirectoryName(p.output_part);
+
+    #                  if (!Directory.Exists(dir))
+    #                      Directory.CreateDirectory(dir);
+
+    #                  DxfdwgCreator dwgCreator = session_.DexManager.CreateDxfdwgCreator();
+
+    #                  using (session_.__UsingBuilderDestroyer(dwgCreator))
+    #                  {
+    #                      dwgCreator.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
+    #                      dwgCreator.SettingsFile = "C:\\Program Files\\Siemens\\NX1899\\dxfdwg\\dxfdwg.def";
+    #                      dwgCreator.OutputFileType = DxfdwgCreator.OutputFileTypeOption.Dwg;
+    #                      dwgCreator.InputFile = p.input_part;
+    #                      dwgCreator.OutputFile = p.output_part;
+    #                      dwgCreator.DrawingList = "4-VIEW";
+    #                      dwgCreator.ProcessHoldFlag = true;
+    #                      dwgCreator.Commit();
+
+    #                  }
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #      }
+
+    #      private void Export_Design()
+    #      {
+    #          Component[] components;
+
+    #          bool isRto = false;
+
+    #          if (rdoRto.Checked)
+    #          {
+    #              isRto = true;
+    #              components = __display_part_.ComponentAssembly.RootComponent.__Descendants().ToArray();
+    #          }
+    #          else if (rdoChange.Checked)
+    #          {
+    #              isRto = true;
+    #              components = Selection.SelectManyComponents();
+    #          }
+    #          else if (rdoReview50.Checked || rdoReview90.Checked || rdoReview100.Checked || rdoOther.Checked)
+    #          {
+    #              isRto = false;
+    #              components = __display_part_.ComponentAssembly.RootComponent.__Descendants().ToArray();
+    #          }
+    #          else
+    #          {
+    #              throw new ArgumentException();
+    #          }
+
+    #          if (components.Length == 0)
+    #              return;
+
+    #          Export1.Design(
+    #              __display_part_,
+    #              components,
+    #              txtFolderName.Text,
+    #              isRto || rdoChange.Checked,
+    #              true,
+    #              print4Views: isRto && chkPrintDesign.Checked,
+    #              isChange: rdoChange.Checked);
+    #      }
+
+    #      private void Rdo_CheckedChanged(object sender, EventArgs e)
+    #      {
+    #          try
+    #          {
+    #              chkPrintDesign.Enabled = rdoRto.Checked || rdoChange.Checked;
+
+    #              btnDesignAccept.Text = rdoChange.Checked
+    #                  ? "Select"
+    #                  : "Execute";
+
+    #              if (__display_part_ is null)
+    #                  return;
+
+    #              GFolder folder = GFolder.create_or_null(_WorkPart);
+
+    #              if (folder is null)
+    #                  return;
+
+    #              switch (folder.CustomerNumber.Length)
+    #              {
+    #                  case 6:
+    #                      txtFolderName.Enabled = !rdoChange.Checked && !rdoRto.Checked;
+    #                      break;
+    #                  default:
+    #                      txtFolderName.Enabled = true;
+    #                      break;
+    #              }
+
+    #              string folderName = $"{TodaysDate}-----{__display_part_.Leaf}-----";
+
+    #              if (sender == rdoReview50)
+    #                  txtFolderName.Text = folderName + @"50% Review";
+
+    #              else if (sender == rdoReview90)
+    #                  txtFolderName.Text = folderName + @"90% Review";
+
+    #              else if (sender == rdoReview100)
+    #                  txtFolderName.Text = folderName + @"100% Review";
+
+    #              else if (sender == rdoRto)
+    #                  txtFolderName.Text = folderName + @"RTO";
+
+    #              else if (sender == rdoOther)
+    #                  txtFolderName.Text = folderName + @"-----";
+
+    #              else if (sender == rdoChange)
+    #                  txtFolderName.Text = folderName + @"-----";
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+    #      }
+
+    #      private void TabControl_Selected(object sender, TabControlEventArgs e)
+    #      {
+    #          if (tabControl.SelectedTab == tabDesign)
+    #              Size = new Size(275, 249);
+    #          else if (tabControl.SelectedTab == tabData)
+    #              Size = new Size(182, 385);
+    #      }
+
+    #      private void AssemblyExportDesignDataForm_Load(object sender, EventArgs e)
+    #      {
+    #          Text = $"{AssemblyFileVersion} - Assembly Export";
+    #          ResetForm();
+    #          Location = Settings.Default.assembly_export_design_data_form_window_location;
+    #      }
+
+    #      private void AssemblyExportDesignDataForm_FormClosed(object sender, FormClosedEventArgs e)
+    #      {
+    #          Settings.Default.assembly_export_design_data_form_window_location = Location;
+    #          Settings.Default.Save();
+    #      }
+
+    #      public class Export1
+    #      {
+    #          private const string ExportImportExe =
+    #              @"U:\NX110\Concept\NX110library\Ufunc\ExportImportData\ExportImportData.exe";
+
+    #          private const string Step214Ug = @"C:\Program Files\Siemens\NX 11.0\STEP214UG\step214ug.exe";
+
+    #          public const string _printerCts = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
+
+    #          // sql
+    #          public static readonly int[] Layers = { 1, 94, 100, 111, 200, 230 };
+
+    #          public static void Design(
+    #              Part topLevelAssembly,
+    #              Component[] __components,
+    #              string outgoingDirectoryName = null,
+    #              bool isRto = false,
+    #              bool zipAssembly = false,
+    #              bool pdf4Views = false,
+    #              bool stp999 = false,
+    #              bool stpDetails = false,
+    #              bool stpSee3DData = false,
+    #              bool dwgBurnout = false,
+    #              bool parasolid = false,
+    #              bool paraCasting = false,
+    #              bool print4Views = false,
+    #              bool isChange = false)
+    #          {
+    #              using (session_.__UsingDisplayPartReset())
+    #              {
+    #                  //using (session_.__UsingSuppressDisplay())
+    #                  {
+    #                      ufsession_.Ui.SetPrompt("Filtering components to export.");
+    #                      GFolder folder = GFolder.Create(topLevelAssembly.FullPath);
+
+    #                      if (!__components.All(comp => comp.OwningPart.Tag == topLevelAssembly.Tag))
+    #                          throw new InvalidOperationException(
+    #                              "All valid components must be under the top level display part.");
+
+    #                      bool isSixDigit = folder.CustomerNumber.Length == 6;
+    #                      HashSet<Part> hashedParts = new HashSet<Part>();
+
+    #                      foreach (Component comp in __components)
+    #                      {
+    #                          if (!(comp.Prototype is Part part))
+    #                              continue;
+
+    #                          hashedParts.Add(part);
+    #                      }
+
+    #                      Part[] validParts = hashedParts.ToArray();
+
+    #                      // sql
+    #                      const string sevenZip = @"C:\Program Files\7-Zip\7z.exe";
+
+    #                      if (!File.Exists(sevenZip))
+    #                          throw new FileNotFoundException($"Could not find \"{sevenZip}\".");
+
+    #                      string parentFolder = isSixDigit
+    #                          ? folder.DirDesignInformation
+    #                          : folder.DirOutgoing;
+
+    #                      string exportDirectory = string.IsNullOrEmpty(outgoingDirectoryName)
+    #                          ? null
+    #                          : $"{parentFolder}\\{outgoingDirectoryName}";
+
+    #                      if (!(isRto && isSixDigit) && zipAssembly && exportDirectory != null && Directory.Exists(exportDirectory))
+    #                          switch (MessageBox.Show($@"{exportDirectory} already exisits, would you like to overwrite it?",
+    #                                      @"Warning", MessageBoxButtons.YesNo))
+    #                          {
+    #                              case DialogResult.Yes:
+    #                                  Directory.Delete(exportDirectory, true);
+    #                                  break;
+    #                              default:
+    #                                  return;
+    #                          }
+
+    #                      if (!(isRto && isSixDigit))
+    #                          if (!string.IsNullOrEmpty(outgoingDirectoryName))
+    #                              Directory.CreateDirectory(exportDirectory);
+
+    #                      // If this is an RTO, then we need to delete the data files in the appropriate op folders.
+    #                      if (isRto && !isChange)
+    #                          try
+    #                          {
+    #                              DeleteOpFolders(__display_part_, folder);
+    #                          }
+    #                          catch (Exception ex)
+    #                          {
+    #                              ex.__PrintException();
+    #                          }
+
+    #                      if (exportDirectory != null)
+    #                          Directory.CreateDirectory(exportDirectory);
+
+    #                      Regex detailRegex = new Regex(RegexDetail, RegexOptions.IgnoreCase);
+    #                      validParts = validParts.Distinct(new EqualityLeaf()).ToArray();
+
+    #                      IDictionary<string, ISet<Part>> exportDict = SortPartsForExport(validParts);
+
+    #                      //#pragma warning disable CS0612 // Type or member is obsolete
+    #                      //                        if (!CheckSizeDescriptions(exportDict["PDF_4-VIEW"]))
+    #                      //                            switch (MessageBox.Show(
+    #                      //                                        "At least one block did not match its' description. Would you like to continue?",
+    #                      //                                        "Warning", MessageBoxButtons.YesNo))
+    #                      //                            {
+    #                      //                                case DialogResult.Yes:
+    #                      //                                    break;
+    #                      //                                default:
+    #                      //                                    return;
+    #                      //                            }
+    #                      //#pragma warning restore CS0612 // Type or member is obsolete
+
+    #                      __display_part_.__Save();
+
+    #                      Stopwatch stop_watch = new Stopwatch();
+
+    #                      stop_watch.Start();
+
+    #                      try
+    #                      {
+    #                          /////////////////////
+    #                          Process assemblyProcess = null;
+
+    #                          // Sets up the strip.
+    #                          if (isRto || stpDetails || zipAssembly)
+    #                              using (session_.__UsingDisplayPartReset())
+    #                                  SetUpStrip(folder);
+
+    #                          UpdateParts(
+    #                              isRto,
+    #                              pdf4Views, stpDetails, exportDict["PDF_4-VIEW"],
+    #                              print4Views, exportDict["PDF_4-VIEW"],
+    #                              dwgBurnout, exportDict["DWG_BURNOUT"],
+    #                              stp999, exportDict["STP_999"],
+    #                              stpSee3DData, exportDict["STP_SEE3D"],
+    #                              paraCasting, exportDict["X_T_CASTING"],
+    #                              __components);
+
+    #                          Dictionary<string, Process> dict = new Dictionary<string, Process>();
+
+    #                          if (isRto && detailRegex.IsMatch(topLevelAssembly.Leaf))
+    #                          {
+    #                              string stpPath = CreatePath(folder, topLevelAssembly, "-Step-Assembly", ".stp");
+
+    #                              string dir = Path.GetDirectoryName(stpPath);
+
+    #                              if (!Directory.Exists(dir))
+    #                                  Directory.CreateDirectory(dir);
+
+    #                              AssemblyExportDesignDataStp(topLevelAssembly.FullPath, stpPath, FilePathExternalStepAssemblyDef);
+    #                          }
+
+    #                          // Prints the parts with 4-Views.
+    #                          if (print4Views)
+    #                              using (session_.__UsingDisplayPartReset())
+    #                              {
+    #                                  PrintPdfs(exportDict["PDF_4-VIEW"]);
+    #                              }
+
+    #                          // Gets the processes that will create the pdf 4-Views.
+    #                          if (isRto || pdf4Views)
+    #                              foreach (Part part in exportDict["PDF_4-VIEW"])
+    #                                  try
+    #                                  {
+    #                                      if (part.Leaf.EndsWith("000"))
+    #                                          continue;
+
+    #                                      string pdfPath = CreatePath(folder, part, "-Pdf-4-Views", ".pdf");
+
+    #                                      string dir = Path.GetDirectoryName(pdfPath);
+
+    #                                      if (!Directory.Exists(dir))
+    #                                          Directory.CreateDirectory(dir);
+
+    #                                      if (File.Exists(pdfPath))
+    #                                          File.Delete(pdfPath);
+
+    #                                      print($"PDF 4-VIEW -> {pdfPath}");
+    #                                      AssemblyExportDesignDataPdf(part, "4-VIEW", pdfPath);
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #                          // If this is a RTO then
+    #                          if (isRto || stpDetails)
+    #                              foreach (Part part in exportDict["PDF_4-VIEW"])
+    #                              {
+    #                                  string stpPath = CreatePath(folder, part, "-Step-Details", ".stp");
+
+    #                                  string dir = Path.GetDirectoryName(stpPath);
+
+    #                                  if (!Directory.Exists(dir))
+    #                                      Directory.CreateDirectory(dir);
+
+    #                                  if (File.Exists(stpPath))
+    #                                      File.Delete(stpPath);
+
+    #                                  print($"Step Details -> {part.FullPath}");
+    #                                  AssemblyExportDesignDataStp(part.FullPath, stpPath, FilePathExternalStepDetailDef);
+    #                              }
+
+    #                          if (zipAssembly && !(isRto || stpDetails))
+    #                              try
+    #                              {
+    #                                  string path = $"{exportDirectory}\\{topLevelAssembly.Leaf}.stp";
+
+    #                                  string dir = Path.GetDirectoryName(path);
+
+    #                                  if (!Directory.Exists(dir))
+    #                                      Directory.CreateDirectory(dir);
+
+    #                                  print($"{nameof(AssemblyExportDesignDataStp)} - {topLevelAssembly}");
+
+    #                                  AssemblyExportDesignDataStp(topLevelAssembly.FullPath, path, FilePathExternalStepDetailDef);
+    #                              }
+    #                              catch (Exception ex)
+    #                              {
+    #                                  ex.__PrintException();
+    #                              }
+
+    #                          // Gets the processes that create stp see 3d data.
+    #                          if (isRto || stpSee3DData)
+    #                              foreach (Part part in exportDict["STP_SEE3D"])
+    #                                  try
+    #                                  {
+    #                                      string output = CreatePath(folder, part, "-Step-See-3D-Data", ".stp");
+
+    #                                      string dir = Path.GetDirectoryName(output);
+
+    #                                      if (!Directory.Exists(dir))
+    #                                          Directory.CreateDirectory(dir);
+
+    #                                      print($"STEP See 3d - {part.FullPath}");
+
+    #                                      AssemblyExportDesignDataStp(part.FullPath, output, @"U:\nxFiles\Step Translator\ExternalStep_Detail.def");
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #                          // Gets the processes that create stp 999 details.
+    #                          if (isRto || stp999)
+    #                              foreach (Part part in exportDict["STP_999"])
+    #                                  try
+    #                                  {
+    #                                      string output = CreatePath(folder, part, "-Step-999", ".stp");
+
+    #                                      string dir = Path.GetDirectoryName(output);
+
+    #                                      if (!Directory.Exists(dir))
+    #                                          Directory.CreateDirectory(dir);
+
+    #                                      print($"999 - {part.FullPath}");
+    #                                      AssemblyExportDesignDataStp(part.FullPath, output, @"U:\nxFiles\Step Translator\ExternalStep_Detail.def");
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #                          // Gets the processes that create burnout dwgs.
+    #                          if (isRto || dwgBurnout)
+    #                              foreach (Part part in exportDict["DWG_BURNOUT"])
+    #                                  try
+    #                                  {
+    #                                      string output = CreatePath(folder, part, "-Dwg-Burnouts", ".dwg");
+
+    #                                      string dir = Path.GetDirectoryName(output);
+
+    #                                      if (!Directory.Exists(dir))
+    #                                          Directory.CreateDirectory(dir);
+
+    #                                      print($"BURNOUT - {part.FullPath}");
+
+    #                                      AssemblyExportDesignDataDwg(part.FullPath, "BURNOUT", output);
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #                          //if (dwg4Views)
+    #                          //    foreach (Part part in hashedParts)
+    #                          //        try
+    #                          //        {
+    #                          //            string output = CreatePath(folder, part, "-Dwg-4-Views", ".dwg");
+
+    #                          //            string dir = Path.GetDirectoryName(output);
+
+    #                          //            if (!Directory.Exists(dir))
+    #                          //                Directory.CreateDirectory(dir);
+
+    #                          //            //print($"BURNOUT - {part.FullPath}");
+
+    #                          //            Dwg(part.FullPath, "4-VIEW", output);
+    #                          //        }
+    #                          //        catch (Exception ex)
+    #                          //        {
+    #                          //            ex.__PrintException();
+    #                          //        }
+
+    #                          // Creates casting parasolids.
+    #                          if (isRto || paraCasting)
+    #                              foreach (Part castingPart in exportDict["X_T_CASTING"])
+    #                                  try
+    #                                  {
+    #                                      print($"{nameof(CreateCasting)} - {castingPart.FullPath}");
+    #                                      CreateCasting(castingPart, folder);
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #                          HashSet<string> expectedFiles = new HashSet<string>(dict.Keys);
+
+    #                          HashSet<string> directoriesToExport = new HashSet<string>(expectedFiles.Select(Path.GetDirectoryName));
+
+    #                          CreateDirectoriesDeleteFiles(expectedFiles);
+
+    #                          string zipPath = $"{exportDirectory}\\{topLevelAssembly.Leaf}_NX.7z";
+
+    #                          if ((isRto && !isSixDigit) || (zipAssembly && !isRto))
+    #                          {
+    #                              print(nameof(Assembly));
+    #                              assemblyProcess = Assembly(topLevelAssembly, false, zipPath);
+    #                              assemblyProcess.Start();
+    #                          }
+
+    #                          prompt("Validating Stp Files.");
+
+    #                          print(nameof(WriteStpCyanFiles));
+    #                          WriteStpCyanFiles(expectedFiles);
+
+    #                          prompt("Zipping up data folders.");
+
+    #                          // Gets all the data folders that were created and zips them up and places them in the proper outgoingData folderWithCtsNumber if this is an RTO.
+    #                          if (isRto && !isSixDigit)
+    #                          {
+    #                              print(nameof(ZipUpDataFolders));
+    #                              ZipUpDataFolders(directoriesToExport, exportDirectory);
+    #                          }
+
+    #                          if (isRto && !isSixDigit)
+    #                          {
+    #                              print(nameof(ZipupDirectories));
+    #                              ZipupDirectories(sevenZip, directoriesToExport, zipPath);
+    #                          }
+
+    #                          foreach (string file_key in dict.Keys)
+    #                              try
+    #                              {
+    #                                  Process process = dict[file_key];
+
+    #                                  if (File.Exists(file_key))
+    #                                      continue;
+
+    #                                  print($"Recreating: {file_key}");
+    #                                  prompt($"Recreating: {file_key}");
+
+    #                                  process.Start();
+
+    #                                  process.WaitForExit();
+    #                              }
+    #                              catch (Exception ex)
+    #                              {
+    #                                  ex.__PrintException();
+    #                              }
+
+    #                          // Checks to make sure that any expected data files were actually created.
+    #                          if (expectedFiles.Count > 0)
+    #                          {
+    #                              print(nameof(ErrorCheck));
+    #                              ErrorCheck(isRto, zipAssembly, expectedFiles);
+    #                          }
+
+    #                          // Moves the sim report to the out going folderWithCtsNumber if one exists.
+    #                          if (isRto && !isSixDigit && !(exportDirectory is null))
+    #                          {
+    #                              print(nameof(MoveSimReport));
+    #                              MoveSimReport(folder, exportDirectory);
+    #                          }
+
+    #                          // Moves the stock list to the outgoing folderWithCtsNumber if one exists.
+    #                          if (isRto && !isSixDigit && !(exportDirectory is null))
+    #                          {
+    #                              print(nameof(MoveStocklist));
+    #                              MoveStocklist(folder, topLevelAssembly.Leaf, exportDirectory);
+    #                          }
+
+    #                          if (!(exportDirectory is null))
+    #                          {
+    #                              print(nameof(ZipupDataDirectories));
+    #                              ZipupDataDirectories(exportDirectory, assemblyProcess);
+    #                          }
+
+    #                          /////////////////////////
+    #                      }
+    #                      finally
+    #                      {
+    #                          stop_watch.Stop();
+
+    #                          print($"{stop_watch.Elapsed.Minutes}:{stop_watch.Elapsed.Seconds}");
+    #                      }
+    #                  }
+    #              }
+    #          }
+
+    #          public static void DeleteOpFolders(Part part, GFolder folder)
+    #          {
+    #              if (folder is null)
+    #                  throw new ArgumentException();
+
+    #              // Matches the {part.Leaf} to 000 regex.
+    #              Match top_match = Regex.Match(part.Leaf, RegexOp000Holder, RegexOptions.IgnoreCase);
+
+    #              // If the {match} is not a success, then {part} is not a "000".
+    #              if (!top_match.Success)
+    #                  throw new Exception($"Part \"{part.FullPath}\" is not a 000.");
+
+    #              // Gets the op of the {part}.
+    #              string op = top_match.Groups["opNum"].Value;
+
+    #              // The set that holds the data directories to delete.
+    #              HashSet<string> directoriesToDelete = new HashSet<string>();
+
+    #              switch (op)
+    #              {
+    #                  // Matches the 900 000's.
+    #                  case "900":
+    #                      {
+    #                          directoriesToDelete.Add($"{folder.dir_op("900")}\\{folder.CustomerNumber}-900-Step-Assembly");
+
+    #                          foreach (Component component in part.ComponentAssembly.RootComponent.GetChildren())
+    #                          {
+    #                              Match match = Regex.Match(component.DisplayName, RegexLwr);
+
+    #                              if (!match.Success)
+    #                                  continue;
+
+    #                              string assembly_op = match.Groups["opNum"].Value;
+
+    #                              if (assembly_op.Length % 2 != 0)
+    #                                  continue;
+
+    #                              for (int i = 0; i < assembly_op.Length - 1; i += 2)
+    #                              {
+    #                                  string temp_op = assembly_op[i] + "" + assembly_op[i + 1] + "0";
+
+    #                                  string directory = folder.dir_op(temp_op);
+
+    #                                  directoriesToDelete.Add(
+    #                                      $"{directory}\\{folder.CustomerNumber}-{temp_op}-Parasolids-Castings");
+    #                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Pdf-4-Views");
+    #                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-Details");
+    #                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-Assembly");
+    #                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Dwg-Burnouts");
+    #                                  directoriesToDelete.Add(
+    #                                      $"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-See-3D-Data");
+    #                              }
+    #                          }
+    #                      }
+    #                      break;
+
+    #                  // This matches all the regular op 010, 020, 030 and so 000's.
+    #                  case var _ when op.Length == 3:
+    #                      {
+    #                          // Gets the assembly folderWithCtsNumber correpsonding to the {assemblyOp000}.
+    #                          string assemblyFolder = folder.dir_op(op);
+
+    #                          // If the directory {assemblyFolder} doesn't exist, then we want to throw.
+    #                          if (!Directory.Exists(assemblyFolder))
+    #                              throw new DirectoryNotFoundException($"Could not find directory \"{assemblyFolder}\".");
+
+    #                          foreach (string directory in Directory.GetDirectories(assemblyFolder))
+    #                          {
+    #                              string dirName = Path.GetFileName(directory);
+
+    #                              if (dirName == null)
+    #                                  continue;
+
+    #                              if (!dirName.StartsWith($"{folder.CustomerNumber}-{op}"))
+    #                                  continue;
+
+    #                              // Adds the {directory} to the {directoriesToDelete}.
+    #                              directoriesToDelete.Add(directory);
+    #                          }
+    #                      }
+    #                      break;
+
+    #                  // Matches the assembly holder by ensuring that the op has an even amount of characters.
+    #                  case var _ when op.Length % 2 == 0:
+    #                      {
+    #                          // A list to hold the ops.
+    #                          List<string> opList = new List<string>();
+
+    #                          // Gets the character array of the {assemblyHolder}.
+    #                          char[] charArray = op.ToCharArray();
+
+    #                          // Grab the op characters two at a time.
+    #                          for (int i = 0; i < charArray.Length; i += 2)
+    #                              opList.Add(charArray[i] + "" + charArray[i + 1] + "0");
+
+    #                          foreach (string assemblyOp in opList)
+    #                          {
+    #                              // Gets the assembly folderWithCtsNumber correpsonding to the {assemblyOp000}.
+    #                              string assemblyFolder = folder.dir_op(assemblyOp);
+
+    #                              // If the directory {assemblyFolder} doesn't exist, then we want to throw.
+    #                              if (!Directory.Exists(assemblyFolder))
+    #                                  throw new DirectoryNotFoundException($"Could not find directory \"{assemblyFolder}\".");
+
+    #                              foreach (string directory in Directory.GetDirectories(assemblyFolder))
+    #                              {
+    #                                  string dirName = Path.GetFileName(directory);
+
+    #                                  if (dirName == null)
+    #                                      continue;
+
+    #                                  if (!dirName.StartsWith($"{folder.CustomerNumber}-{assemblyOp}"))
+    #                                      continue;
+
+    #                                  // Adds the {directory} to the {directoriesToDelete}.
+    #                                  directoriesToDelete.Add(directory);
+    #                              }
+    #                          }
+    #                      }
+    #                      break;
+    #              }
+
+    #              foreach (string dir in directoriesToDelete)
+    #                  if (Directory.Exists(dir))
+    #                      Directory.Delete(dir, true);
+    #          }
+
+    #          public static void WriteStpCyanFiles(IEnumerable<string> expectedFiles)
+    #          {
+    #              foreach (string expected in expectedFiles)
+    #              {
+    #                  if (!expected.EndsWith(".stp") || !File.Exists(expected))
+    #                      continue;
+
+    #                  string fileText = File.ReadAllText(expected);
+
+    #                  if (!fileText.Contains("Cyan"))
+    #                      continue;
+
+    #                  File.WriteAllText(expected, fileText.Replace("Cyan", "cyan"));
+    #              }
+    #          }
+
+    #          public static void CreateDirectoriesDeleteFiles(IEnumerable<string> expectedFiles)
+    #          {
+    #              foreach (string file in expectedFiles)
+    #                  try
+    #                  {
+    #                      string directory = Path.GetDirectoryName(file);
+    #                      Directory.CreateDirectory(directory ?? throw new Exception());
+    #                      File.Delete(file);
+    #                  }
+    #                  catch (Exception ex)
+    #                  {
+    #                      ex.__PrintException();
+    #                  }
+    #          }
+
+    #          [Obsolete]
+    #          public static bool CheckSizeDescriptions(IEnumerable<Part> partsInBom)
+    #          {
+    #              //bool allPassed = true;
+    #              //foreach (Part part in partsInBom)
+    #              //    try
+    #              //    {
+    #              //        if (!SizeDescription1.Validate(part, out string message))
+    #              //        {
+    #              //            if (message == "Part does not contain a Dynamic Block.")
+    #              //                continue;
+    #              //            allPassed = false;
+    #              //            print_($"{part.Leaf}:\n{message}\n");
+    #              //        }
+    #              //    }
+    #              //    catch (Exception ex)
+    #              //    {
+    #              //        ex.__PrintException();
+    #              //    }
+
+    #              //return allPassed;
+
+    #              throw new NotImplementedException();
+    #          }
+
+    #          public static string CreatePath(GFolder folder, Part part, string directoryTag, string extension)
+    #          {
+    #              string directory =
+    #                  $"{folder.DirJob}\\{folder.CustomerNumber}-{part.__AskDetailOp()}\\{folder.CustomerNumber}-{part.__AskDetailOp()}{directoryTag}";
+    #              string stpPath = $"{directory}\\{part.Leaf}{extension}";
+    #              return stpPath;
+    #          }
+
+    #          public static void SetLayers()
+    #          {
+    #              __display_part_.Layers.SetState(1, NXOpen.Layer.State.WorkLayer);
+
+    #              for (int i = 2; i <= 256; i++)
+    #                  if (Layers.Contains(i))
+    #                      __display_part_.Layers.SetState(i, NXOpen.Layer.State.Selectable);
+    #                  else
+    #                      __display_part_.Layers.SetState(i, NXOpen.Layer.State.Hidden);
+    #          }
+
+    #          public static void CreateCasting(Part part, GFolder folder)
+    #          {
+    #              using (session_.__UsingDisplayPartReset())
+    #              {
+    #                  __display_part_ = part;
+
+    #                  string op = part.__AskDetailOp();
+
+    #                  string castingDirectory =
+    #                      $"{folder.DirJob}\\{folder.CustomerNumber}-{op}\\{folder.CustomerNumber}-{op}-Parasolids-Castings";
+
+    #                  if (!Directory.Exists(castingDirectory))
+    #                      Directory.CreateDirectory(castingDirectory);
+
+    #                  print($"Casting Step - {part.FullPath}");
+    #                  CreateCastingStep(part, castingDirectory);
+
+    #                  string castingPath = $"{castingDirectory}\\{part.Leaf}.x_t";
+
+    #                  if (File.Exists(castingPath))
+    #                      File.Delete(castingPath);
+
+    #                  List<Tag> tagBodies = part.Bodies
+    #                      .ToArray()
+    #                      .OfType<Body>()
+    #                      .Where(body => body.Layer == 1)
+    #                      .Select(body => body.Tag)
+    #                      .ToList();
+
+    #                  if (tagBodies.Count == 0)
+    #                  {
+    #                      print($"Did not find any solid bodies on layer 1 in part {part.Leaf}");
+
+    #                      return;
+    #                  }
+
+    #                  if (!(part.ComponentAssembly.RootComponent is null))
+    #                      foreach (Component child in part.ComponentAssembly.RootComponent.GetChildren())
+    #                      {
+    #                          if (child.IsSuppressed)
+    #                              continue;
+
+    #                          if (child.Layer != 96)
+    #                              continue;
+
+    #                          if (child.ReferenceSet == "Empty")
+    #                              continue;
+
+    #                          foreach (Body __body in child.__Members().OfType<Body>().Where(__b => __b.IsSolidBody))
+    #                              tagBodies.Add(__body.Tag);
+    #                      }
+
+    #                  string castingFile =
+    #                      $"{folder.DirJob}\\{folder.CustomerNumber}-{op}\\{folder.CustomerNumber}-{op}-Parasolids-Castings\\{part.Leaf}.x_t";
+
+    #                  ufsession_.Ps.ExportData(tagBodies.ToArray(), castingFile);
+    #              }
+
+    #              string FullPath = part.FullPath;
+
+    #              part.Close(BasePart.CloseWholeTree.False, BasePart.CloseModified.CloseModified, null);
+
+    #              session_.__FindOrOpen(FullPath);
+    #          }
+
+    #          private static void CreateCastingStep(Part part, string castingDirectory)
+    #          {
+    #              try
+    #              {
+    #                  string step_path = $"{castingDirectory}\\{part.Leaf}.stp";
+
+    #                  if (File.Exists(step_path))
+    #                      File.Delete(step_path);
+
+    #                  using (session_.__UsingLockUgUpdates())
+
+    #                  {
+    #                      foreach (Component child in __display_part_.ComponentAssembly.RootComponent.GetChildren())
+    #                      {
+    #                          // sql
+    #                          if (child.Layer == 96)
+    #                              continue;
+
+    #                          if (child.IsSuppressed)
+    #                              continue;
+
+    #                          child.Suppress();
+    #                      }
+    #                  }
+
+    #                  Session theSession = Session.GetSession();
+    #                  Part workPart = theSession.Parts.Work;
+    #                  Part displayPart = theSession.Parts.Display;
+    #                  // ----------------------------------------------
+    #                  //   Menu: File->Export->STEP...
+    #                  // ----------------------------------------------
+    #                  Session.UndoMarkId markId1;
+    #                  markId1 = theSession.SetUndoMark(Session.MarkVisibility.Visible, "Start");
+
+    #                  StepCreator stepCreator1;
+    #                  stepCreator1 = theSession.DexManager.CreateStepCreator();
+
+    #                  // sql
+    #                  stepCreator1.ExportAs = StepCreator.ExportAsOption.Ap214;
+
+    #                  stepCreator1.BsplineTol = 0.001;
+
+    #                  stepCreator1.SettingsFile = "C:\\Program Files\\Siemens\\NX1899\\step214ug\\ugstep214.def";
+
+    #                  stepCreator1.BsplineTol = 0.001;
+
+    #                  stepCreator1.InputFile = part.FullPath;
+
+    #                  theSession.SetUndoMarkName(markId1, "Export STEP File Dialog");
+
+    #                  Session.UndoMarkId markId2;
+    #                  markId2 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "Export STEP File");
+
+    #                  theSession.DeleteUndoMark(markId2, null);
+
+    #                  Session.UndoMarkId markId3;
+    #                  markId3 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "Export STEP File");
+
+    #                  stepCreator1.OutputFile = step_path;
+
+    #                  stepCreator1.FileSaveFlag = false;
+
+    #                  stepCreator1.LayerMask = "1,96";
+
+    #                  stepCreator1.ProcessHoldFlag = true;
+
+    #                  NXObject nXObject1;
+    #                  nXObject1 = stepCreator1.Commit();
+
+    #                  theSession.DeleteUndoMark(markId3, null);
+
+    #                  theSession.SetUndoMarkName(markId1, "Export STEP File");
+
+    #                  stepCreator1.Destroy();
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static void SetLayersInBlanksAndLayoutsAndAddDummies(Part snapStrip010)
+    #          {
+    #              if (!Regex.IsMatch(snapStrip010.Leaf, RegexStrip, RegexOptions.IgnoreCase))
+    #                  throw new ArgumentException(@"Must be an op 010 strip.", nameof(snapStrip010));
+
+    #              using (session_.__UsingDisplayPartReset())
+    #              {
+    #                  // sql
+    #                  Regex blankNameRegex = new Regex("^BLANK-([0-9]{1,})$");
+
+    #                  Regex layoutNameRegex = new Regex("^LAYOUT-([0-9]{1,})$");
+
+    #                  Part layoutPart = __display_part_.ComponentAssembly.RootComponent.__Descendants()
+    #                      .Select(component => component.Prototype)
+    #                      .OfType<Part>()
+    #                      .FirstOrDefault(component => Regex.IsMatch(component.Leaf, RegexLayout, RegexOptions.IgnoreCase));
+
+    #                  Part blankPart = __display_part_.ComponentAssembly.RootComponent.__Descendants()
+    #                      .Select(component => component.Prototype)
+    #                      .OfType<Part>()
+    #                      .FirstOrDefault(component => Regex.IsMatch(component.Leaf, RegexBlank, RegexOptions.IgnoreCase));
+
+    #                  HashSet<int> layoutLayers = new HashSet<int>();
+
+    #                  HashSet<int> blankLayers = new HashSet<int>();
+
+    #                  foreach (Component child in __display_part_.ComponentAssembly.RootComponent.__Descendants())
+    #                  {
+    #                      if (!(child.Prototype is Part))
+    #                          continue;
+
+    #                      if (child.IsSuppressed)
+    #                          continue;
+
+    #                      Match blankMatch = blankNameRegex.Match(child.Name);
+    #                      Match layoutMatch = layoutNameRegex.Match(child.Name);
+
+    #                      if (blankMatch.Success)
+    #                      {
+    #                          int layer = int.Parse(blankMatch.Groups[1].Value) + 10;
+    #                          blankLayers.Add(layer);
+    #                      }
+
+    #                      if (!layoutMatch.Success) continue;
+    #                      {
+    #                          int layer = int.Parse(layoutMatch.Groups[1].Value) * 10;
+    #                          layoutLayers.Add(layer);
+    #                          layoutLayers.Add(layer + 1);
+    #                      }
+    #                  }
+
+    #                  if (blankLayers.Count != 0 && blankPart != null)
+    #                  {
+    #                      __display_part_ = blankPart;
+    #                      __work_part_ = __display_part_;
+    #                      AddDummy(blankPart, blankLayers);
+    #                      ufsession_.Ui.SetPrompt($"Saving: {blankPart.Leaf}.");
+    #                      Session.GetSession().Parts.Display
+    #                          .Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
+    #                  }
+
+    #                  if (layoutLayers.Count != 0 && layoutPart != null)
+    #                  {
+    #                      __display_part_ = layoutPart;
+    #                      __work_part_ = __display_part_;
+    #                      AddDummy(layoutPart, layoutLayers);
+    #                      ufsession_.Ui.SetPrompt($"Saving: {layoutPart.Leaf}.");
+    #                      session_.Parts.Display.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
+    #                  }
+    #              }
+
+    #              snapStrip010.__Save();
+    #          }
+
+    #          private static void AddDummy(Part part, IEnumerable<int> layers)
+    #          {
+    #              ufsession_.Ui.SetPrompt($"Setting layers in {__display_part_.Leaf}.");
+    #              int[] layerArray = layers.ToArray();
+    #              __display_part_.Layers.SetState(1, NXOpen.Layer.State.WorkLayer);
+
+    #              for (int i = 2; i < +256; i++)
+    #                  __display_part_.Layers.SetState(i, layerArray.Contains(i)
+    #                      ? NXOpen.Layer.State.Selectable
+    #                      : NXOpen.Layer.State.Hidden);
+
+    #              __display_part_.Layers.SetState(layerArray.Min(), NXOpen.Layer.State.WorkLayer);
+    #              __display_part_.Layers.SetState(1, NXOpen.Layer.State.Hidden);
+
+    #              if (!(part.ComponentAssembly.RootComponent is null))
+    #              {
+    #                  Component validChild = part.ComponentAssembly.RootComponent
+    #                      .GetChildren()
+    #                      .Where(component => component.__IsLoaded())
+    #                      .FirstOrDefault(component => !component.IsSuppressed);
+
+    #                  if (validChild != null)
+    #                      return;
+    #              }
+
+    #              Part dummyPart = session_.__FindOrOpen(DummyPath);
+    #              ufsession_.Ui.SetPrompt($"Adding dummy file to {part.Leaf}.");
+    #              __work_part_.ComponentAssembly.AddComponent(dummyPart, "Entire Part", "DUMMY", _Point3dOrigin,
+    #                  _Matrix3x3Identity, 1, out _);
+    #          }
+
+    #          public static void CheckAssemblyDummyFiles()
+    #          {
+    #              ufsession_.Ui.SetPrompt("Checking Dummy files exist.");
+
+    #              if (__display_part_.ComponentAssembly.RootComponent == null)
+    #                  return;
+
+    #              foreach (Component childOfStrip in __display_part_.ComponentAssembly.RootComponent.GetChildren())
+    #              {
+    #                  if (childOfStrip.IsSuppressed)
+    #                      continue;
+
+    #                  if (!childOfStrip.__IsLoaded())
+    #                      continue;
+
+    #                  if (!Regex.IsMatch(childOfStrip.DisplayName, RegexPressAssembly, RegexOptions.IgnoreCase))
+    #                      continue;
+
+    #                  if (childOfStrip.GetChildren().Length == 0)
+    #                      throw new InvalidOperationException(
+    #                          $"A press exists in your assembly without any children. {childOfStrip.__AssemblyPathString()}");
+
+    #                  switch (childOfStrip.GetChildren().Length)
+    #                  {
+    #                      case 1:
+    #                          throw new InvalidOperationException(
+    #                              $"A press exists in your assembly with only one child. Expecting a ram and a bolster. {childOfStrip.__AssemblyPathString()}");
+    #                      case 2:
+    #                          foreach (Component childOfPress in childOfStrip.GetChildren())
+    #                          {
+    #                              if (!childOfPress.__IsLoaded())
+    #                                  throw new InvalidOperationException(
+    #                                      $"The child of a press must be loaded. {childOfPress.__AssemblyPathString()}");
+
+    #                              if (childOfPress.IsSuppressed)
+    #                                  throw new InvalidOperationException(
+    #                                      $"The child of a press cannot be suppressed. {childOfPress.__AssemblyPathString()}");
+
+    #                              if (childOfPress.GetChildren().Length != 0 && childOfPress.GetChildren()
+    #                                      .Select(component => component)
+    #                                      .Any(component => !component.IsSuppressed && component.Prototype is Part))
+    #                                  continue;
+
+    #                              throw new InvalidOperationException(
+    #                                  $"The child of a bolster or ram under a press must be the Dummy file: {DummyPath}. {childOfPress.__AssemblyPathString()}");
+    #                          }
+
+    #                          break;
+    #                  }
+    #              }
+    #          }
+
+    #          public static void ZipupDataDirectories(string exportDirectory, Process assemblyProcess)
+    #          {
+    #              try
+    #              {
+    #                  string[] stpFilesInOutGoingFolder =
+    #                      Directory.GetFiles(exportDirectory, "*.stp", SearchOption.TopDirectoryOnly);
+
+    #                  if (stpFilesInOutGoingFolder.Length != 0)
+    #                  {
+    #                      string displayName = Path.GetFileNameWithoutExtension(stpFilesInOutGoingFolder.First());
+
+    #                      Process stpZipProcess = AssemblyExportDesignDataCreate7ZipProcess($"{exportDirectory}\\{displayName}_STP.7z",
+    #                          stpFilesInOutGoingFolder);
+
+    #                      stpZipProcess.Start();
+
+    #                      stpZipProcess.WaitForExit();
+
+    #                      foreach (string file in stpFilesInOutGoingFolder)
+    #                          try
+    #                          {
+    #                              if (File.Exists(file)) File.Delete(file);
+    #                          }
+    #                          catch (Exception ex)
+    #                          {
+    #                              ex.__PrintException();
+    #                          }
+    #                  }
+
+    #                  assemblyProcess?.WaitForExit();
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          /// <summary>
+    #          ///     Gets the file paths of all Sim Reports with the specified <paramref name="ctsJobNumber" />.
+    #          /// </summary>
+    #          /// <param name="ctsJobNumber">The job number.</param>
+    #          /// <returns>An array of SimReport file paths.</returns>
+    #          public static string[] GetReports(string ctsJobNumber)
+    #          {
+    #              return (from directory in Directory.GetDirectories("X:\\")
+    #                      let directoryName = Path.GetFileName(directory)
+    #                      where directoryName != null
+    #                      // sql
+    #                      let match = new Regex("^Reports-([0-9]{4})-([0-9]{4})$").Match(directoryName)
+    #                      where match.Success
+    #                      let startRange = int.Parse(match.Groups[1].Value)
+    #                      let endRange = int.Parse(match.Groups[2].Value)
+    #                      let jobNumber = int.Parse(ctsJobNumber)
+    #                      where startRange <= jobNumber && jobNumber <= endRange
+    #                      from report in Directory.GetFiles(directory, "*.7z")
+    #                      let fileName = Path.GetFileNameWithoutExtension(report)
+    #                      where fileName.StartsWith(ctsJobNumber)
+    #                      select report).ToArray();
+    #          }
+
+    #          public static IDictionary<string, ISet<Part>> SortPartsForExport(IEnumerable<Part> validParts)
+    #          {
+    #              Regex detailRegex = new Regex(RegexDetail, RegexOptions.IgnoreCase);
+
+    #              IDictionary<string, ISet<Part>> exportDict = new Dictionary<string, ISet<Part>>
+    #          {
+    #              { "PDF_4-VIEW", new HashSet<Part>() },
+    #              { "STP_DETAIL", new HashSet<Part>() },
+    #              { "DWG_BURNOUT", new HashSet<Part>() },
+    #              { "STP_999", new HashSet<Part>() },
+    #              { "STP_SEE3D", new HashSet<Part>() },
+    #              { "X_T_CASTING", new HashSet<Part>() },
+    #              { "X_T", new HashSet<Part>() }
+    #          };
+
+    #              foreach (Part part in validParts)
+    #              {
+    #                  Match match = detailRegex.Match(part.Leaf);
+
+    #                  if (!match.Success)
+    #                      continue;
+
+    #                  if (part.Leaf.__IsAssemblyHolder())
+    #                      continue;
+
+    #                  if (part.Leaf.EndsWith("000"))
+    #                      continue;
+
+    #                  if (part.__HasDrawingSheet("4-VIEW"))
+    #                      exportDict["PDF_4-VIEW"].Add(part);
+
+    #                  if (part.__HasDrawingSheet("BURNOUT"))
+    #                      exportDict["DWG_BURNOUT"].Add(part);
+
+    #                  if (part.__IsSee3DData())
+    #                      exportDict["STP_SEE3D"].Add(part);
+
+    #                  if (part.__Is999())
+    #                      exportDict["STP_999"].Add(part);
+
+    #                  if (part.__IsCasting())
+    #                      exportDict["X_T_CASTING"].Add(part);
+
+    #                  if (part.__HasReferenceSet("BODY"))
+    #                      exportDict["X_T"].Add(part);
+    #              }
+
+    #              return exportDict;
+    #          }
+
+    #          public static void UpdateParts(
+    #              bool isRto,
+    #              bool pdf4Views, bool stpDetails, IEnumerable<Part> partsWith4ViewsNoAssemblyHolders,
+    #              bool print4Views, IEnumerable<Part> partsWith4Views,
+    #              bool dwgBurnout, IEnumerable<Part> burnoutParts,
+    #              bool stp999, IEnumerable<Part> nine99Parts,
+    #              bool stpSee3DData, IEnumerable<Part> see3DDataParts,
+    #              bool paraCasting, IEnumerable<Part> castingParts,
+    #              Component[] selected_components)
+    #          {
+    #              using (session_.__UsingDisplayPartReset())
+    #              {
+    #                  ISet<Part> selected_parts =
+    #                      new HashSet<Part>(selected_components.Select(__c => __c.Prototype).OfType<Part>());
+
+    #                  ISet<Part> partsToUpdate = new HashSet<Part>();
+
+    #                  if (isRto || pdf4Views || stpDetails)
+    #                      foreach (Part part in partsWith4ViewsNoAssemblyHolders)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (isRto || dwgBurnout)
+    #                      foreach (Part part in burnoutParts)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (isRto || print4Views)
+    #                      foreach (Part part in partsWith4Views)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (isRto || paraCasting)
+    #                      foreach (Part part in castingParts)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (isRto || stp999)
+    #                      foreach (Part part in nine99Parts)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (isRto || stpSee3DData)
+    #                      foreach (Part part in see3DDataParts)
+    #                          if (selected_parts.Contains(part))
+    #                              partsToUpdate.Add(part);
+
+    #                  if (partsToUpdate.Count > 0)
+    #                      UpdateParts(partsToUpdate.ToArray());
+    #              }
+    #          }
+
+    #          public static void ZipupDirectories(string sevenZip, IEnumerable<string> directoriesToExport, string zipPath)
+    #          {
+    #              try
+    #              {
+    #                  // Constructs the arguments that deletes the sub data folders in the newly created assembly zip folderWithCtsNumber.
+    #                  string arguments = $"d \"{zipPath}\" -r {directoriesToExport.Select(Path.GetFileName).Where(dir => dir != null).Aggregate("", (s1, s2) => $"{s1} \"{s2}\"")}";
+
+    #                  // Starts the actual delete process.
+    #                  Process deleteProcess = Process.Start(sevenZip, arguments);
+
+    #                  // Waits for the {deleteProcess} to finish.
+    #                  deleteProcess?.WaitForExit();
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static void MoveSimReport(GFolder folder, string exportDirectory)
+    #          {
+    #              try
+    #              {
+    #                  if (!folder.is_cts_job())
+    #                      return;
+
+    #                  if (GetReports(folder.CtsNumber).Length != 0)
+    #                      foreach (string report in GetReports(folder.CtsNumber))
+    #                      {
+    #                          string reportName = Path.GetFileName(report);
+
+    #                          if (reportName == null)
+    #                              continue;
+
+    #                          string exportedReportPath = $"{exportDirectory}\\{reportName}";
+
+    #                          if (File.Exists(exportedReportPath))
+    #                          {
+    #                              print($"Sim report \"{exportedReportPath}\" already exists.");
+    #                              continue;
+    #                          }
+
+    #                          File.Copy(report, exportedReportPath);
+    #                      }
+    #                  else
+    #                      print("Unable to find a sim report to transfer.");
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static void LaunchProcesses(int numberOfProcesses, params Process[] processes)
+    #          {
+    #              int processesCompleted = 0;
+
+    #              try
+    #              {
+    #                  int length = numberOfProcesses > processes.Length
+    #                      ? processes.Length
+    #                      : numberOfProcesses;
+    #                  HashSet<Process> hashProcesses = new HashSet<Process>();
+    #                  for (int i = 0; i < length; i++)
+    #                  {
+    #                      processes[i].Start();
+    #                      hashProcesses.Add(processes[i]);
+    #                      prompt($"{processesCompleted} of {processes.Length}");
+    #                  }
+
+    #                  for (int i = length; processesCompleted < processes.Length; i++)
+    #                  {
+    #                      Process first = hashProcesses.FirstOrDefault(process => process != null && process.HasExited);
+    #                      if (first == null)
+    #                      {
+    #                          i--;
+    #                          continue;
+    #                      }
+
+    #                      hashProcesses.Remove(first);
+    #                      processesCompleted++;
+    #                      if (i < processes.Length)
+    #                      {
+    #                          Process nextProcess = processes[i];
+    #                          nextProcess.Start();
+    #                          hashProcesses.Add(nextProcess);
+    #                      }
+
+    #                      prompt($"{processesCompleted} of {processes.Length}");
+    #                  }
+
+    #                  processes.ToList().ForEach(proc => proc.WaitForExit());
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+
+    #              ufsession_.Ui.SetPrompt("All processes have finished.");
+    #          }
+
+    #          public static void UpdateParts(params Part[] parts)
+    #          {
+    #              Part[] validParts = parts.Where(part => !part.Leaf.__IsAssemblyHolder()).Distinct(new EqualityLeaf())
+    #                  .ToArray();
+
+    #              for (int i = 0; i < validParts.Length; i++)
+    #                  try
+    #                  {
+    #                      string report = $"Updating: {i + 1} of {validParts.Length}. ";
+    #                      Part part = validParts[i];
+    #                      ufsession_.Ui.SetPrompt($"{report}Setting Display Part to {part.Leaf}. ");
+    #                      __display_part_ = part;
+    #                      __work_part_ = __display_part_;
+
+    #                      if (part.__IsCasting() && !(part.ComponentAssembly.RootComponent is null))
+    #                          // If it is a casting then it cannot contain a child that is a lift lug and set to entire part.
+    #                          if ((from child in part.ComponentAssembly.RootComponent.GetChildren()
+    #                               where child.Prototype is Part
+    #                               where child.__Prototype().FullPath.Contains("LiftLugs")
+    #                               where child.ReferenceSet != RefsetEmpty
+    #                               select child)
+    #                              .Any(child => child.ReferenceSet == RefsetEntirePart))
+    #                              print(
+    #                                  $"Casting part {__display_part_.Leaf} contains a Lift Lug that is set to Entire Part. Casting Part cannot be made.");
+
+    #                      ufsession_.Ui.SetPrompt($"{report}Setting layers in {part.Leaf}.");
+    #                      SetLayers();
+    #                      ufsession_.Ui.SetPrompt($"{report}Finding DisplayableObjects in {part.Leaf}.");
+    #                      List<DisplayableObject> objects = new List<DisplayableObject>();
+
+    #                      foreach (int layer in Layers)
+    #                          objects.AddRange(__display_part_.Layers.GetAllObjectsOnLayer(layer)
+    #                              .OfType<DisplayableObject>());
+
+    #                      ufsession_.Ui.SetPrompt($"{report}Unblanking objects in {part.Leaf}.");
+    #                      session_.DisplayManager.UnblankObjects(objects.ToArray());
+
+    #                      foreach (DraftingView view in __display_part_.DraftingViews)
+    #                          view.Update();
+
+    #                      ufsession_.Ui.SetPrompt($"{report}Switching back to modeling in {part.Leaf}.");
+    #                      session_.ApplicationSwitchImmediate("UG_APP_MODELING");
+    #                      __work_part_.Drafting.ExitDraftingApplication();
+    #                      ufsession_.Ui.SetPrompt($"{report}Saving {part.Leaf}.");
+    #                      part.__Save();
+    #                  }
+    #                  catch (Exception ex)
+    #                  {
+    #                      ex.__PrintException(validParts[i].Leaf);
+    #                  }
+    #          }
+
+    #          public static void SetUpStrip(GFolder folder)
+    #          {
+    #              try
+    #              {
+    #                  string strip_010 = folder.file_strip("010");
+
+    #                  if (!File.Exists(strip_010))
+    #                      return;
+
+    #                  Part op010Strip = session_.__FindOrOpen(strip_010);
+
+    #                  SetLayersInBlanksAndLayoutsAndAddDummies(op010Strip);
+
+    #                  CheckAssemblyDummyFiles();
+
+    #                  op010Strip.__Save();
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static Process Assembly(Part snapPart, bool waitForProcess, string zipPath)
+    #          {
+    #              HashSet<string> filePaths = new HashSet<string>();
+
+    #              foreach (Component component in GetAssembly(snapPart.ComponentAssembly.RootComponent))
+    #                  filePaths.Add(component.__Prototype().FullPath);
+
+    #              return AssemblyExportDesignDataCreate7ZipProcess(zipPath, filePaths.ToArray());
+    #          }
+
+    #          /// <summary>Gets all the components under the given <paramref name="snapComponent" />.</summary>
+    #          /// <remarks>The program will not go past components that are suppressed or end with "simulation"</remarks>
+    #          /// <param name="snapComponent">The component to get the descendants from.</param>
+    #          private static IEnumerable<Component> GetAssembly(Component snapComponent)
+    #          {
+    #              if (!snapComponent.__IsLoaded())
+    #                  yield break;
+
+    #              if (snapComponent.DisplayName.ToLower().EndsWith("-simulation"))
+    #                  yield break;
+
+    #              if (snapComponent.IsSuppressed)
+    #                  yield break;
+
+    #              yield return snapComponent;
+
+    #              foreach (Component child in snapComponent.GetChildren())
+    #                  foreach (Component comp in GetAssembly(child))
+    #                      yield return comp;
+    #          }
+
+    #          public static void PrintPdfs(IEnumerable<Part> partsWith4Views)
+    #          {
+    #              using (session_.__UsingSuppressDisplay())
+    #              {
+    #                  try
+    #                  {
+    #                      UFSession.GetUFSession().Disp.SetDisplay(UFConstants.UF_DISP_UNSUPPRESS_DISPLAY);
+    #                      UFSession.GetUFSession().Disp.RegenerateDisplay();
+    #                      Print4Views(partsWith4Views);
+    #                  }
+    #                  catch (Exception ex)
+    #                  {
+    #                      ex.__PrintException();
+    #                  }
+    #              }
+    #          }
+
+    #          public static void ErrorCheck(bool isRto, bool zipAssembly, IEnumerable<string> expectedFiles)
+    #          {
+    #              string[] enumerable = expectedFiles as string[] ?? expectedFiles.ToArray();
+
+    #              int fileCreatedCount = enumerable.Where(File.Exists).Count();
+
+    #              print($"Created {fileCreatedCount} file(s).");
+
+    #              if (!isRto && !zipAssembly)
+    #                  print(
+    #                      "Created files will have to be manually moved to outgoingData folderWithCtsNumber if that is desired. (Example: RTO)");
+
+    #              List<string> filesThatWereNotCreated = enumerable.Where(s => !File.Exists(s)).ToList();
+
+    #              List<Tuple<string, string>> errorList = new List<Tuple<string, string>>();
+
+    #              foreach (string file in filesThatWereNotCreated)
+    #              {
+    #                  string extension = Path.GetExtension(file);
+
+    #                  if (extension == null)
+    #                      continue;
+
+    #                  string errorFilePath = file.Replace(extension, ".err");
+
+    #                  if (File.Exists(errorFilePath))
+    #                  {
+    #                      string[] fileContents = File.ReadAllLines(errorFilePath);
+
+    #                      errorList.Add(new Tuple<string, string>(file, fileContents[0]));
+
+    #                      File.Delete(errorFilePath);
+    #                  }
+    #                  else
+    #                  {
+    #                      errorList.Add(new Tuple<string, string>(file, "Unknown error."));
+    #                  }
+    #              }
+
+    #              if (errorList.Count <= 0)
+    #                  return;
+
+    #              print("Files that were not created.");
+
+    #              errorList.ForEach(print);
+    #          }
+
+    #          public static void ZipUpDataFolders(IEnumerable<string> directoriesToExport, string exportDirectory)
+    #          {
+    #              LaunchProcesses(10, (
+    #                  from directory in directoriesToExport
+    #                  let directoryName = Path.GetFileName(directory)
+    #                  select AssemblyExportDesignDataCreate7ZipProcess($"{exportDirectory}\\{directoryName}.7z", directory)
+    #              ).ToArray());
+    #          }
+
+    #          public static void Print4Views(IEnumerable<Part> allParts)
+    #          {
+    #              try
+    #              {
+    #                  bool IsNotAssembly(Part part)
+    #                  {
+    #                      string name = Path.GetFileNameWithoutExtension(part.FullPath);
+
+    #                      if (name == null)
+    #                          return false;
+
+    #                      name = name.ToLower();
+
+    #                      if (name.EndsWith("000") || name.EndsWith("lsh") || name.EndsWith("ush") || name.EndsWith("lwr") ||
+    #                          name.EndsWith("upr"))
+    #                          return false;
+
+    #                      return !name.Contains("lsp") && !name.Contains("usp");
+    #                  }
+
+    #                  List<Part> parts = allParts
+    #                      .Where(part => Regex.IsMatch(part.Leaf, RegexDetail, RegexOptions.IgnoreCase))
+    #                      .Where(IsNotAssembly)
+    #                      .Where(part => part.DraftingDrawingSheets.ToArray().Any(__d => __d.Name.ToUpper() == "4-VIEW"))
+    #                      .ToList();
+
+    #                  parts.Sort((part1, part2) => string.Compare(part1.Leaf, part2.Leaf, StringComparison.Ordinal));
+
+    #                  for (int i = 0; i < parts.Count; i++)
+    #                  {
+    #                      Part part = parts[i];
+
+    #                      ufsession_.Ui.SetPrompt($"{i + 1} of {parts.Count}. Printing 4-VIEW of {part.Leaf}.");
+
+    #                      __display_part_ = part;
+
+    #                      __work_part_ = __display_part_;
+
+    #                      PrintBuilder printBuilder = __work_part_.PlotManager.CreatePrintBuilder();
+
+    #                      using (new Destroyer(printBuilder))
+    #                      {
+    #                          // sql
+    #                          printBuilder.Copies = 1;
+
+    #                          printBuilder.ThinWidth = 1.0;
+
+    #                          printBuilder.NormalWidth = 2.0;
+
+    #                          printBuilder.ThickWidth = 3.0;
+
+    #                          printBuilder.Output = PrintBuilder.OutputOption.WireframeBlackWhite;
+
+    #                          printBuilder.ShadedGeometry = true;
+
+    #                          DrawingSheet drawingSheet = __work_part_.DraftingDrawingSheets.FindObject("4-VIEW");
+
+    #                          drawingSheet.Open();
+
+    #                          printBuilder.SourceBuilder.SetSheets(new NXObject[] { drawingSheet });
+
+    #                          printBuilder.PrinterText = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
+
+    #                          printBuilder.Orientation = PrintBuilder.OrientationOption.Landscape;
+
+    #                          printBuilder.Paper = PrintBuilder.PaperSize.Letter;
+
+    #                          printBuilder.Commit();
+    #                      }
+    #                  }
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static void MoveStocklist(GFolder folder, string topDisplayName, string exportDirectory)
+    #          {
+    #              try
+    #              {
+    #                  string stocklist = (from file in Directory.GetFiles(folder.DirStocklist)
+    #                                      let name = Path.GetFileNameWithoutExtension(file)
+    #                                      where name != null
+    #                                      where name.EndsWith($"{topDisplayName}-stocklist")
+    #                                      select file).SingleOrDefault();
+
+    #                  if (stocklist is null)
+    #                  {
+    #                      print($"Could not find a stocklist named: {topDisplayName}-stocklist");
+    #                      return;
+    #                  }
+
+    #                  File.Copy(stocklist, $"{exportDirectory}\\{Path.GetFileName(stocklist)}");
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static Process AssemblyExportDesignDataCreate7ZipProcess(string zipPath, params string[] filesToZip)
+    #          {
+    #              string tempFile = $"{Path.GetTempPath()}zipData{filesToZip.GetHashCode()}.txt";
+
+    #              using (FileStream fs = File.Open(tempFile, FileMode.Create))
+    #              {
+    #                  fs.Close();
+    #              }
+
+    #              using (StreamWriter writer = new StreamWriter(tempFile))
+    #              {
+    #                  filesToZip.ToList().ForEach(writer.WriteLine);
+    #              }
+
+    #              return new Process
+    #              {
+    #                  EnableRaisingEvents = false,
+    #                  StartInfo =
+    #              {
+    #                  CreateNoWindow = false,
+    #                  FileName = "C:\\Program Files\\7-Zip\\7z",
+    #                  WindowStyle = ProcessWindowStyle.Normal,
+    #                  UseShellExecute = true,
+    #                  Arguments = $"a -t7z \"{zipPath}\" \"@{tempFile}\" -mx9"
+    #              }
+    #              };
+    #          }
+
+    #          public static void AssemblyExportDesignDataSevenZip(string path, bool wait, params string[] fileNames)
+    #          {
+    #              string directory = Path.GetDirectoryName(path);
+
+    #              string str = directory + "\\" + "zipData.txt";
+
+    #              try
+    #              {
+    #                  using (FileStream fileStream = File.Open(str, FileMode.Create))
+    #                  {
+    #                      fileStream.Close();
+    #                  }
+
+    #                  using (StreamWriter streamWriter = new StreamWriter(str))
+    #                  {
+    #                      foreach (string fileName in fileNames)
+    #                          streamWriter.WriteLine(fileName);
+    #                  }
+
+    #                  AssemblyExportDesignDataSevenZip(path, wait, str);
+    #              }
+    #              finally
+    #              {
+    #                  File.Delete(str);
+    #              }
+    #          }
+
+    #          public static void AssemblyExportDesignDataSevenZip(string path, bool wait, string textFileToRead)
+    #          {
+    #              if (string.IsNullOrEmpty(path))
+    #                  throw new ArgumentException(@"Invalid path.", nameof(path));
+
+    #              if (File.Exists(path))
+    #                  throw new IOException("The specified output_path already exists.");
+
+    #              if (!File.Exists(textFileToRead))
+    #                  throw new FileNotFoundException();
+
+    #              // sql
+    #              string fileToRead = "a -t7z \"" + path + "\" \"@" + textFileToRead + "\" -mx9";
+
+    #              Process process = new Process
+    #              {
+    #                  EnableRaisingEvents = false,
+    #                  StartInfo =
+    #              {
+    #                  FileName = "C:\\Program Files\\7-Zip\\7z",
+    #                  Arguments = fileToRead
+    #              }
+    #              };
+
+    #              process.Start();
+
+    #              if (!wait)
+    #                  return;
+
+    #              process.WaitForExit();
+
+    #              print(File.Exists(path)
+    #                  ? $"Successfully created \"{path}\"."
+    #                  : $"Unsuccessfully created \"{path}\".");
+    #          }
+
+    #          public static void AssemblyExportDesignDataPdf(Part part, string drawingSheetName, string filePath)
+    #          {
+    #              string directory = Path.GetDirectoryName(filePath);
+
+    #              if (!filePath.EndsWith(".pdf"))
+    #                  throw new InvalidOperationException("File path for PDF must end with \".pdf\".");
+
+    #              if (File.Exists(filePath))
+    #                  throw new ArgumentOutOfRangeException("output_path", "PDF \"" + filePath + "\" already exists.");
+
+    #              //We can use SingleOrDefault here because NX will prevent the naming of two drawing sheets the exact same string.
+    #              DrawingSheet sheet = part.DrawingSheets
+    #                                       .ToArray()
+    #                                       .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
+    #                                   ??
+    #                                   throw new ArgumentException(
+    #                                       $@"Part ""{part.Leaf}"" does not have a sheet named ""{drawingSheetName}"".",
+    #                                       "drawingSheetName");
+
+    #              __display_part_ = part;
+    #              session_.__SetDisplayToWork();
+    #              SetLayers();
+
+    #              PrintPDFBuilder pdfBuilder = part.PlotManager.CreatePrintPdfbuilder();
+
+    #              using (session_.__UsingBuilderDestroyer(pdfBuilder))
+    #              {
+    #                  // sql
+    #                  pdfBuilder.Scale = 1.0;
+    #                  pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor;
+    #                  pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines;
+    #                  pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English;
+    #                  pdfBuilder.XDimension = 8.5;
+    #                  pdfBuilder.YDimension = 11.0;
+    #                  pdfBuilder.RasterImages = true;
+    #                  pdfBuilder.Colors = PrintPDFBuilder.Color.BlackOnWhite;
+    #                  pdfBuilder.Watermark = "";
+    #                  UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
+
+    #                  if (flag)
+    #                  {
+    #                      UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
+    #                      part.__Save();
+    #                  }
+
+    #                  sheet.Open();
+    #                  pdfBuilder.SourceBuilder.SetSheets(new NXObject[] { sheet });
+    #                  pdfBuilder.Filename = filePath;
+    #                  pdfBuilder.Commit();
+    #              }
+    #          }
+
+    #          public static void AssemblyExportDesignDataStp(string partPath, string output_path, string settings_file)
+    #          {
+    #              try
+    #              {
+    #                  if (!output_path.EndsWith(".stp"))
+    #                      throw new InvalidOperationException("File path for STP must end with \".stp\".");
+
+    #                  if (File.Exists(output_path))
+    #                      throw new ArgumentOutOfRangeException("output_path", "STP \"" + output_path + "\" already exists.");
+
+    #                  if (!File.Exists(partPath))
+    #                      throw new FileNotFoundException("Could not find file location \"" + partPath + "\".");
+
+    #                  session_.__FindOrOpen(partPath);
+
+    #                  StepCreator stepCreator = Session.GetSession().DexManager.CreateStepCreator();
+
+    #                  using (session_.__UsingBuilderDestroyer(stepCreator))
+    #                  {
+    #                      // sql
+    #                      stepCreator.ExportAs = StepCreator.ExportAsOption.Ap214;
+    #                      stepCreator.SettingsFile = settings_file;
+    #                      stepCreator.ObjectTypes.Solids = true;
+    #                      stepCreator.OutputFile = output_path;
+    #                      stepCreator.BsplineTol = 0.0254;
+    #                      stepCreator.ObjectTypes.Annotations = true;
+    #                      stepCreator.ExportFrom = StepCreator.ExportFromOption.ExistingPart;
+    #                      stepCreator.InputFile = partPath;
+    #                      stepCreator.FileSaveFlag = false;
+    #                      stepCreator.LayerMask = "1, 96";
+    #                      stepCreator.ProcessHoldFlag = true;
+    #                      stepCreator.Commit();
+    #                  }
+
+    #                  string switchFilePath = output_path.Replace(".stp", ".log");
+
+    #                  if (File.Exists(switchFilePath))
+    #                      File.Delete(switchFilePath);
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          public static void AssemblyExportDesignDataDwg(string partPath, string drawingSheetName, string filePath)
+    #          {
+    #              string directory = Path.GetDirectoryName(filePath);
+
+    #              if (File.Exists(filePath))
+    #                  throw new ArgumentOutOfRangeException("output_path", "DWG \"" + filePath + "\" already exists.");
+
+    #              Part part = session_.__FindOrOpen(partPath);
+
+    #              DrawingSheet sheet = part.DrawingSheets
+    #                                       .ToArray()
+    #                                       .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
+    #                                   ??
+    #                                   throw new ArgumentException(
+    #                                       $"Part \"{part.Leaf}\" does not have a sheet named \"{drawingSheetName}\".",
+    #                                       "drawingSheetName");
+
+    #              UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
+
+    #              if (flag)
+    #              {
+    #                  SetLayers();
+    #                  UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
+    #                  part.__Save();
+    #              }
+
+    #              DxfdwgCreator dxfdwgCreator1 = session_.DexManager.CreateDxfdwgCreator();
+    #              using (session_.__UsingBuilderDestroyer(dxfdwgCreator1))
+    #              {
+    #                  // sql
+    #                  dxfdwgCreator1.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
+    #                  dxfdwgCreator1.AutoCADRevision = DxfdwgCreator.AutoCADRevisionOptions.R2004;
+    #                  dxfdwgCreator1.ViewEditMode = true;
+    #                  dxfdwgCreator1.FlattenAssembly = true;
+    #                  dxfdwgCreator1.SettingsFile = "C:\\Program Files\\Siemens\\NX 11.0\\dxfdwg\\dxfdwg.def";
+    #                  dxfdwgCreator1.ExportFrom = DxfdwgCreator.ExportFromOption.ExistingPart;
+    #                  dxfdwgCreator1.OutputFileType = DxfdwgCreator.OutputFileTypeOption.Dwg;
+    #                  dxfdwgCreator1.ObjectTypes.Curves = true;
+    #                  dxfdwgCreator1.ObjectTypes.Annotations = true;
+    #                  dxfdwgCreator1.ObjectTypes.Structures = true;
+    #                  dxfdwgCreator1.FlattenAssembly = false;
+    #                  dxfdwgCreator1.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
+    #                  dxfdwgCreator1.InputFile = part.FullPath;
+    #                  dxfdwgCreator1.ProcessHoldFlag = true;
+    #                  dxfdwgCreator1.OutputFile = filePath;
+    #                  dxfdwgCreator1.WidthFactorMode = DxfdwgCreator.WidthfactorMethodOptions.AutomaticCalculation;
+    #                  dxfdwgCreator1.LayerMask = "1-256";
+    #                  dxfdwgCreator1.DrawingList = drawingSheetName;
+    #                  dxfdwgCreator1.Commit();
+    #              }
+
+    #              string switchFilePath = filePath.Replace(".dwg", ".log");
+
+    #              if (File.Exists(switchFilePath))
+    #                  File.Delete(switchFilePath);
+    #          }
+    #      }
+    #  }
+
+    pass
+
+
+class UFuncAssemblyWaveLink:
+    #      public partial class AssemblyWavelink : _UFuncForm
+    #  {
+    #      public AssemblyWavelink()
+    #      {
+    #          InitializeComponent();
+    #      }
+
+    #      private void AssemblyWavelink_Load(object sender, EventArgs e)
+    #      {
+    #          Location = Settings.Default.assembly_wave_link_form_window_location;
+    #          Text = AssemblyFileVersion;
+    #      }
+
+    #      private void AssemblyWavelink_FormClosed(object sender, FormClosedEventArgs e)
+    #      {
+    #          Settings.Default.assembly_wave_link_form_window_location = Location;
+    #          Settings.Default.Save();
+    #      }
+
+    #      private void buttonShortTapReam_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetShortTap, RefsetReamShort, null);
+    #      }
+
+    #      private void buttonTapReam_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetTap, RefsetReam, null);
+    #      }
+
+    #      private void buttonTap_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetTap, null, null);
+    #      }
+
+    #      private void buttonReam_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, null, RefsetReam, null);
+    #      }
+
+    #      private void buttonShortTap_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetShortTap, null, null);
+    #      }
+
+    #      private void buttonReamShort_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, null, RefsetReamShort, null);
+    #      }
+
+    #      private void buttonClrHole_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetClrHole, RefsetClrHole, RefsetClrHole);
+    #      }
+
+    #      private void buttonCbore_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkFasteners(chkBlankTools.Checked, RefsetCBore, RefsetCBore, null);
+    #      }
+
+    #      private void buttonSubTool_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WavelinkSubtool();
+    #      }
+
+    #      private void buttonSubtract_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Subtract);
+    #      }
+
+    #      private void buttonUnite_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Unite);
+    #      }
+
+    #      private void buttonLink_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Create);
+    #      }
+
+    #      private void buttonIntersect_Click(object sender, EventArgs e)
+    #      {
+    #          using (session_.__UsingFormShowHide(this))
+    #              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Intersect);
+    #      }
+
+    #      public void WavelinkSubtool()
+    #      {
+    #          session_.SetUndoMark(Session.MarkVisibility.Visible, $"{ufunc_rev_name} - {nameof(WavelinkSubtool)}");
+
+    #          Body target = SelectSingleSolidBody1(body => true);
+
+    #          if (target is null)
+    #              return;
+
+    #          Component[] tools = SelectManyComponents1(c =>
+    #          {
+    #              if (!(c is Component comp))
+    #                  return false;
+
+    #              return comp.Tag != target.OwningComponent.Tag
+    #              && (from refset in comp.__Prototype().GetAllReferenceSets()
+    #                  let name = refset.Name.ToUpper()
+    #                  where name == "SUB_TOOL" || Name == "SUB-TOOL" || name == "SUBTOOL"
+    #                  select refset
+    #                   ).Any() && !comp.DisplayName.__IsAssemblyHolder();
+    #          }
+
+    #                   );
+
+    #          if (tools.Length == 0)
+    #              return;
+
+    #          using (session_.__UsingDisplayPartReset())
+    #          using (session_.__UsingSuppressDisplay())
+    #              try
+    #              {
+
+    #                  var current = __display_part_.Layers.WorkLayer;
+
+    #                  try
+    #                  {
+
+    #                      __work_component_ = target.OwningComponent;
+
+    #                      __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
+    #                      foreach (Component tool in tools)
+    #                          using (tool.__UsingReferenceSetReset())
+    #                              try
+    #                              {
+    #                                  ReferenceSet reference_set = tool.__Prototype()
+    #                                      .GetAllReferenceSets()
+    #                                      .SingleOrDefault(refset => refset.Name == "SUB_TOOL" || refset.Name == "SUB-TOOL" || refset.Name == "SUBTOOL");
+
+    #                                  if (reference_set is null)
+    #                                  {
+    #                                      print($"Didn't find any sub tool reference sets for {tool.DisplayName} - {tool.Name} - {tool.Tag}");
+    #                                      continue;
+    #                                  }
+
+    #                                  tool.__ReferenceSet(reference_set.Name);
+    #                                  ExtractFace linked_body = tool.__CreateLinkedBody();
+    #                                  print("//////////////////");
+    #                                  print($"Created {linked_body.GetFeatureName()} in {linked_body.OwningPart.Leaf}");
+    #                                  BooleanFeature boolean_feature = target.__Subtract(linked_body.GetBodies());
+    #                                  print($"Created {boolean_feature.GetFeatureName()} in {linked_body.OwningPart.Leaf}");
+
+    #                              }
+    #                              catch (NXException ex) when (ex.ErrorCode == 670030)
+    #                              {
+    #                                  print($"Error occurred when trying to subtract {tool.DisplayName}, no interference.");
+    #                              }
+    #                              catch (InvalidOperationException)
+    #                              {
+    #                                  print($"Found more than one sub tool reference set for {tool.DisplayName} - {tool.Name} - {tool.Tag}");
+    #                              }
+    #                  }
+    #                  finally
+    #                  {
+    #                      __display_part_.Layers.SetState(current, NXOpen.Layer.State.WorkLayer);
+    #                  }
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #      }
+
+    #      public void WaveLinkFasteners(bool blank_tools, string shcs_ref_set, string dwl_ref_set, string jck_ref_set)
+    #      {
+    #          session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
+
+    #          using (session_.__UsingDisplayPartReset())
+    #              try
+    #              {
+    #                  Body[] targets = SelectMultipleTaggedObjects1(
+    #                      "Select Target Body",
+    #                      "select Target Body",
+    #                      new[] { BodyMask },
+    #                      k =>
+    #                      {
+
+    #                          if (!(k is Body b))
+    #                              return false;
+
+    #                          return b.IsOccurrence
+    #                          && !b.OwningComponent.DisplayName.ToLower().Contains("strip")
+    #                          && !b.OwningComponent.DisplayName.ToLower().Contains("press")
+    #                          && !b.OwningComponent.DisplayName.ToLower().Contains("layout")
+    #                          && !b.OwningComponent.DisplayName.__IsAssemblyHolder();
+    #                      }).Cast<Body>().ToArray();
+
+    #                  if (targets.Length == 0)
+    #                      return;
+
+    #                  Component[] tools = SelectMultipleTaggedObjects1(
+    #                      "Select Tool Components",
+    #                      "Select Tool Components",
+    #                      new[] { Masks.ComponentMask },
+    #                      tool1 =>
+    #                      {
+
+    #                          if (!(tool1 is Component tool))
+    #                              return false;
+
+    #                          return !tool.DisplayName._IsLayout_()
+    #                          && !tool.DisplayName.ToLower().Contains("strip")
+    #                          && !tool.DisplayName._IsFastenerExtended_()
+    #                          && !tool.DisplayName.__IsAssemblyHolder()
+    #                          && targets.All(t => t.OwningComponent.Tag != tool.Tag);
+    #                      }).Cast<Component>().ToArray();
+
+    #                  if (tools.Length == 0)
+    #                      return;
+
+    #                  using (session_.__UsingSuppressDisplay())
+    #                      foreach (var target in targets)
+    #                          foreach (Component tool in tools)
+    #                              using (session_.__UsingDisplayPartReset())
+    #                              using (session_.__UsingResetWorkLayer())
+    #                                  try
+    #                                  {
+    #                                      __work_component_ = target.OwningComponent;
+    #                                      __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
+
+    #                                      foreach (Component child in tool.GetChildren())
+    #                                          try
+    #                                          {
+    #                                              if (!child.__IsLoaded())
+    #                                              {
+    #                                                  print($"Child fastener {child.DisplayName} was not loaded.");
+    #                                                  continue;
+    #                                              }
+
+    #                                              if (child.IsSuppressed)
+    #                                                  continue;
+
+    #                                              //if (child._IsJckScrewTsg_() || child._IsJckScrew_())
+    #                                              //    continue;
+
+    #                                              using (child.__UsingReferenceSetReset())
+    #                                              {
+    #                                                  string original_ref_set = child.ReferenceSet;
+    #                                                  Component proto_child_fastener = child.__ProtoChildComp();
+
+    #                                                  if (proto_child_fastener.Layer != LayerFastener)
+    #                                                      continue;
+
+    #                                                  try
+    #                                                  {
+    #                                                      string[] ref_sets = new[] { shcs_ref_set, dwl_ref_set, jck_ref_set }
+    #                                                          .Where(__r => !string.IsNullOrEmpty(__r))
+    #                                                          .ToArray();
+
+    #                                                      string[] fastener_ref_set_names = proto_child_fastener.__Prototype()
+    #                                                          .GetAllReferenceSets()
+    #                                                          .Select(__r => __r.Name)
+    #                                                          .Intersect(ref_sets)
+    #                                                          .ToArray();
+
+    #                                                      switch (fastener_ref_set_names.Length)
+    #                                                      {
+    #                                                          case 0:
+    #                                                              if ((!(shcs_ref_set is null)&& child._IsShcs_())
+    #                                                                  || (!(dwl_ref_set is null) && child._IsDwl_())
+    #                                                                  || (!(jck_ref_set is null) && child._IsJckScrewTsg_() || child._IsJckScrew_()))
+    #                                                                  print(
+    #                                                                      $"Coulnd't find any valid ref sets for {child.DisplayName}");
+    #                                                              continue;
+    #                                                          case 1:
+    #                                                              child.__ReferenceSet(fastener_ref_set_names[0]);
+    #                                                              break;
+    #                                                          default:
+    #                                                              print(
+    #                                                                  $"Found more than one valid ref set for {child.DisplayName}");
+    #                                                              continue;
+    #                                                      }
+
+    #                                                      if (!target.__InterferesWith(child))
+    #                                                      {
+    #                                                          print(
+    #                                                              $"Could not subtract fastener {child.DisplayName}, no interference.");
+    #                                                          continue;
+    #                                                      }
+
+    #                                                      ExtractFace ext = child.__CreateLinkedBody();
+    #                                                      //ext.__Layer(96);
+    #                                                      print("//////////////////");
+    #                                                      print($"Created {ext.GetFeatureName()} in {ext.OwningPart.Leaf}");
+    #                                                      BooleanFeature boolean_feature = target.__Subtract(ext.GetBodies());
+    #                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
+    #                                                  }
+    #                                                  catch (Exception ex)
+    #                                                  {
+    #                                                      ex.__PrintException(child.DisplayName);
+    #                                                  }
+    #                                              }
+    #                                          }
+    #                                          catch (Exception ex)
+    #                                          {
+    #                                              ex.__PrintException();
+    #                                          }
+
+    #                                      if (blank_tools)
+    #                                          tool.Blank();
+    #                                  }
+    #                                  catch (Exception ex)
+    #                                  {
+    #                                      ex.__PrintException();
+    #                                  }
+
+    #              }
+    #              catch (NothingSelectedException)
+    #              {
+    #                  //Control jump
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #      }
+
+    #      public static void WaveLinkBoolean(bool blank_tools, Feature.BooleanType booleanType)
+    #      {
+    #          session_.SetUndoMark(Session.MarkVisibility.Visible, "Assembly Wavelink");
+
+    #          using (session_.__UsingDisplayPartReset())
+    #          {
+    #              try
+    #              {
+    #                  Body[] targets = SelectManySolidBodies1();
+
+    #                  if (targets.Length == 0)
+    #                      return;
+
+    #                  Component[] tools = SelectManyComponents1(c =>
+    #                  {
+    #                      if (!(c is Component comp))
+    #                          return false;
+
+    #                      return targets.All(b => b.OwningComponent.Tag != c.Tag)
+    #                      && !comp.DisplayName.__IsAssemblyHolder();
+    #                  });
+
+    #                  if (tools.Length == 0)
+    #                      return;
+
+    #                  var referenceSets = tools.Select(snapComponent => new { snapComponent, snapComponent.ReferenceSet }).ToList();
+    #                  RefSetForm formCts = new RefSetForm(tools);
+
+    #                  if (booleanType != Feature.BooleanType.Create)
+    #                      formCts.RemoveReferenceSet("BODY");
+
+    #                  formCts.ShowDialog();
+
+    #                  if (!formCts.IsSelected)
+    #                      return;
+
+    #                  foreach (var target in targets)
+    #                      foreach (var child in tools)
+    #                          using (session_.__UsingDisplayPartReset())
+    #                          using (child.__UsingReferenceSetReset())
+    #                          using (session_.__UsingResetWorkLayer())
+    #                          {
+    #                              var current = __display_part_.Layers.WorkLayer;
+
+    #                              try
+    #                              {
+    #                                  __work_component_ = target.OwningComponent;
+
+    #                                  __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
+
+    #                                  child.__ReferenceSet(formCts.SelectedReferenceSetName);
+
+    #                                  foreach (var ext in child.__CreateLinkedBodies())
+    #                                      try
+    #                                      {
+    #                                          print("//////////////////");
+
+    #                                          print($"Created {ext.GetFeatureName()} in {ext.OwningPart.Leaf}");
+
+    #                                          switch (booleanType)
+    #                                          {
+    #                                              case Feature.BooleanType.Subtract:
+    #                                                  {
+    #                                                      BooleanFeature boolean_feature = target.__Subtract(ext.GetBodies());
+    #                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
+    #                                                  }
+    #                                                  break;
+
+    #                                              case Feature.BooleanType.Unite:
+    #                                                  {
+    #                                                      BooleanFeature boolean_feature = target.__Unite(ext.GetBodies());
+    #                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
+    #                                                  }
+    #                                                  break;
+
+    #                                              case Feature.BooleanType.Intersect:
+    #                                                  {
+    #                                                      BooleanFeature boolean_feature = target.__Intersect(ext.GetBodies());
+    #                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
+    #                                                  }
+    #                                                  break;
+    #                                          }
+    #                                      }
+    #                                      catch (NXException ex) when (ex.ErrorCode == 670030)
+    #                                      {
+    #                                          print($"Error occurred when trying to subtract {child.DisplayName}, no interference.");
+    #                                      }
+    #                                      catch (Exception ex)
+    #                                      {
+    #                                          ex.__PrintException();
+    #                                      }
+    #                              }
+    #                              finally
+    #                              {
+    #                                  __display_part_.Layers.SetState(current, NXOpen.Layer.State.WorkLayer);
+    #                              }
+    #                          }
+
+    #                  if (blank_tools)
+    #                      foreach (var tool in tools)
+    #                          tool.Blank();
+    #              }
+    #              catch (NothingSelectedException)
+    #              {
+    #              }
+    #              catch (Exception ex)
+    #              {
+    #                  ex.__PrintException();
+    #              }
+    #          }
+    #      }
+
+    #  }
+    pass
+
+
+class UFuncAutoDetail:
+    #         public partial class AutoDetail : _UFuncForm
     #     {
-    #         if (_unit == BasePart.Units.Inches)
+    #         private static readonly List<Component> _allComponents = new List<Component>();
+    #         private static readonly IDictionary<string, List<string>> _holeChart = new Dictionary<string, List<string>>();
+    #         private static string _borderFile;
+    #         private static string _sizeFile;
+
+    #         public AutoDetail()
     #         {
-    #             const string mm = "MM";
-    #             menuItemUnits.Text = mm;
-    #             _unit = BasePart.Units.Millimeters;
-    #         }
-    #         else
-    #         {
-    #             const string @in = "IN";
-    #             menuItemUnits.Text = @in;
-    #             _unit = BasePart.Units.Inches;
+    #             InitializeComponent();
+    #             Location = Settings.Default.assembly_auto_detail_form_window_location;
     #         }
 
-    #         if (rdoTypeScrew.Checked)
-    #             LoadShcs();
-
-    #         if (rdoTypeDowel.Checked)
-    #             LoadDowel();
-
-    #         if (rdoTypeJack.Checked)
-    #             LoadJack();
-
-    #     }
-
-    #     private void MainForm_Load(object sender, EventArgs e)
-    #     {
-    #         try
+    #         private void MainForm_Load(object sender, EventArgs e)
     #         {
     #             Text = AssemblyFileVersion;
 
-    #             switch (_1x_2x)
-    #             {
-    #                 case 1:
-    #                     mnu2x.Text = "1x";
-    #                     break;
-    #                 case 2:
-    #                     mnu2x.Text = "2x";
-    #                     break;
-    #                 default:
-    #                     print("Couldn't determine 1x or 2x");
-    #                     break;
-    #             }
+    # 			// sql
+    #             _sizeFile = FilePathUcf.PerformStreamReaderString(
+    #                 ":HOLESIZE_FILE_LOCATION:",
+    #                 ":END_HOLESIZE_FILE_LOCATION:");
 
-    #             Location = Settings.Default.add_fasteners_form_window_location;
-    #             WorkPartChangedRegister = session_.Parts.AddWorkPartChangedHandler(WorkPartChanged);
-	# 			// sql
-    #             double[] values = { 0.000d, 0.0625d, 0.125d, 0.250d, 0.500d, 0.750d, 1.000d, 4.000d, 6.000d, 10.000d };
-    #             string[] stringValues =
-    #                 { "Off", "0.0625", "0.125", "0.250", "0.500", "0.750", "1.000", "4.000", "6.000", "10.000" };
-    #             List<GridSpacing> list = values.Select((t, i) => new GridSpacing(t, stringValues[i])).ToList();
-    #             cmbGridSpacing.DataSource = null;
-    #             cmbGridSpacing.DisplayMember = nameof(GridSpacing.StringValue);
-    #             cmbGridSpacing.ValueMember = nameof(GridSpacing.Value);
-    #             cmbGridSpacing.DataSource = list;
-    #             _unit = BasePart.Units.Millimeters;
-    #             const string mm = "MM";
-    #             menuItemUnits.Text = mm;
-    #             rdoTypeScrew.Checked = true;
-    #             LoadShcs();
-    #             Reset();
-    #             cmbPreferred.SelectedIndex = Settings.Default.add_fasteners_preferred_index;
-    #             chkCycleAdd.Checked = Settings.Default.add_fasteners_cycle_add;
-    #             chkReverseCycleAdd.Checked = Settings.Default.add_fasteners_reverse_cycle_add;
-    #             chkManual.Checked = Settings.Default.add_fasteners_manual;
-    #             int cmb_index = Settings.Default.add_fasteners_grid_index;
+    # 			// sql
+    #             _borderFile =FilePathUcf.PerformStreamReaderString(
+    #                 ":BORDER_FILE_LOCATION:",
+    #                 ":END_BORDER_FILE_LOCATION:");
 
-    #             if (cmb_index == -1)
-    #                 cmb_index = 0;
+    #             string[] lines = File.ReadAllLines(_sizeFile)
+    #                 .Where(__s => !__s.StartsWith("--"))
+    #                 .Where(__s => !string.IsNullOrEmpty(__s))
+    #                 .Where(__s => !string.IsNullOrWhiteSpace(__s))
+    #                 .ToArray();
 
-    #             cmbGridSpacing.SelectedIndex = cmb_index;
-    #             chkGrid.Checked = Settings.Default.add_fasteners_show_grid;
+    #             for (int i = 0; i < lines.Length - 1; i += 2)
+    #                 _holeChart[lines[i + 1]] = lines[i].Split(',').ToList();
 
-    #             if (chkCycleAdd.Checked || chkReverseCycleAdd.Checked)
-    #                 chkSubstitute.Checked = false;
-
-    #             session_.Parts.AddPartSavedHandler(part_saved_handler);
+    #             SetFormDefaults();
     #         }
-    #         catch (Exception ex)
+
+    #         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
-
-    #     private void part_saved_handler(BasePart part)
-    #     {
-    #         try
-    #         {
-    #             if (!part.Leaf.Contains("session-control"))
-    #                 return;
-
-    #             if (!part.HasUserAttribute("show", NXObject.AttributeType.String, -1))
-    #                 part.SetUserAttribute("show", -1, "true", NXOpen.Update.Option.Now);
-
-    #             var att = part.GetUserAttributeAsString("show", NXObject.AttributeType.String, -1).ToLower();
-
-    #             switch (att)
-    #             {
-    #                 case "true":
-    #                     Show();
-    #                     break;
-    #                 case "false":
-    #                     Hide();
-    #                     break;
-    #                 default:
-    #                     print($"Unknown attribute value for 'show' == '{att}'");
-    #                     break;
-    #             }
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
-
-    #     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-    #     {
-    #         try
-    #         {
-    #             Reset();
-    #             Settings.Default.add_fasteners_grid_index = cmbGridSpacing.SelectedIndex;
-    #             Settings.Default.add_fasteners_show_grid = chkGrid.Checked;
-    #             Settings.Default.add_fasteners_form_window_location = Location;
-    #             Settings.Default.add_fasteners_manual = chkManual.Checked;
+    #             Settings.Default.assembly_auto_detail_form_window_location = Location;
     #             Settings.Default.Save();
-
-    #             if (!(__display_part_ is null) && __work_part_.__HasDynamicBlock())
-    #                 __work_part_.Bodies.ToArray()[0].__Translucency(0);
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #         finally
-    #         {
-    #             session_.Parts.RemoveWorkPartChangedHandler(WorkPartChangedRegister);
-    #         }
-    #     }
-
-    #     private void BtnViewWcs_Click(object sender, EventArgs e)
-    #     {
-    #         Matrix3x3 coordSystem = __display_part_.WCS.CoordinateSystem.Orientation.Element;
-    #         __display_part_.Views.WorkView.Orient(coordSystem);
-    #     }
-
-    #     private void CmbGridSpacing_SelectedIndexChanged(object sender, EventArgs e)
-    #     {
-    #         if (__display_part_ is null)
-    #             return;
-
-    #         double _grid_spacing = (double)cmbGridSpacing.SelectedValue;
-
-	# 		// sql - tolerance
-    #         if (_grid_spacing.__Abs() < .001)
-    #         {
-    #             __display_part_.Preferences.Workplane.ShowGrid = false;
-    #             __display_part_.Preferences.Workplane.SnapToGrid = false;
-    #             return;
     #         }
 
-    #         __display_part_.Preferences.Workplane.SnapToGrid = true;
-
-    #         WorkPlane.GridSize grid = new WorkPlane.GridSize
+    #         private void ButtonSelectBorderFile_Click(object sender, EventArgs e)
     #         {
-    #             MajorGridSpacing = _grid_spacing,
-    #             MinorLinesPerMajor = 1,
-    #             SnapPointsPerMinor = 1
-    #         };
+    # 			// sql
+    #             openFileDialog.InitialDirectory = "G:\\0Library\\Drafting";
+    #             DialogResult dialogResult = openFileDialog.ShowDialog();
 
-    #         __display_part_.Preferences.Workplane.SetRectangularUniformGridSize(grid);
-    #     }
+    # 			// sql
+    #             _borderFile = dialogResult == DialogResult.OK
+    #                 ? openFileDialog.FileName
+    #                 : FilePathUcf.PerformStreamReaderString(
+    #                     ":BORDER_FILE_LOCATION:",
+    #                     ":END_BORDER_FILE_LOCATION:");
+    #         }
 
-    #     private void ButtonSelectComponent_Click(object sender, EventArgs e)
-    #     {
-    #         // we want to hide the other forms here
-    #         // var session_control_part = session_.Parts.ToArray().First(p => p.Leaf.StartsWith("session-control"));
-
-    #         // session_control_part.SetUserAttribute("show", -1, "false", NXOpen.Update.Option.Now);
-
-    #         // session_control_part.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-           
-    #         try
+    #         private void CheckBox_Clicked(object sender, EventArgs e)
     #         {
-    #             Properties.Settings.Default.tsg_library_hide_forms = true;
-    #             Settings.Default.Save();
+    #             bool flag = chkDetailSheet.Checked || chkHoleChart.Checked || chkUpdateViews.Checked ||
+    #                         chkDrillChart.Checked;
+    #             btnSelect.Enabled = flag;
+    #             btnSelectAll.Enabled = flag;
+    #         }
 
+    #         private void CheckBoxDelete4Views_CheckedChanged(object sender, EventArgs e)
+    #         {
+    #             chkHoleChart.Checked = false;
+    #             chkUpdateViews.Checked = false;
+
+    #             if (chkDelete4Views.Checked)
+    #                 chkDetailSheet.Checked = false;
+
+    #             chkDetailSheet.Enabled = !chkDelete4Views.Checked;
+    #             chkHoleChart.Enabled = !chkDelete4Views.Checked;
+    #             chkUpdateViews.Enabled = !chkDelete4Views.Checked;
+    #             btnSelect.Enabled = chkDelete4Views.Checked;
+    #             btnSelectAll.Enabled = chkDelete4Views.Checked;
+    #         }
+
+    #         private void ButtonSelect_Click(object sender, EventArgs e)
+    #         {
     #             using (session_.__UsingFormShowHide(this))
     #             {
     #                 try
     #                 {
-    #                     SelectTarget();
-    #                     listBoxSelection.Enabled = true;
-    #                     btnWireTaps.Enabled = true;
-    #                     chkCycleAdd.Enabled = true;
-    #                     chkReverseCycleAdd.Enabled = true;
-    #                     btnPlanView.Enabled = true;
-    #                     btnOrigin.Enabled = true;
-    #                     btnWireTaps.Enabled = true;
-    #                     menuItemUnits.Enabled = true;
-    #                     btnSelectComponent.Enabled = false;
-    #                     toolStripMenuItem1.Enabled = true;
-    #                     btnChangeRefSet.Enabled = true;
-    #                 }
-    #                 catch (NothingSelectedException)
-    #                 {
-    #                     btnSelectComponent.Enabled = true;
-    #                     Reset();
-    #                 }
-    #                 catch (NoDynamicBlockException)
-    #                 {
-    #                     print(@"No dynamic block in current Work Part. You will have to move the WCS manually.");
-    #                     Reset();
+    #                     _allComponents.Clear();
+
+    #                     Component[] selectComponents = Selection.SelectManyComponents();
+
+    #                     if (selectComponents.Length == 0)
+    #                         return;
+
+    #                     _allComponents.AddRange(selectComponents);
+
+    #                     List<Component> trimmedComponents = _allComponents.Where(comp => !comp.IsSuppressed)
+    #                         .Distinct(new EqualityDisplayName())
+    #                         .ToList();
+
+    #                     trimmedComponents.Sort((c1, c2) => string.Compare(c1.Name, c2.Name, StringComparison.Ordinal));
+
+    #                     DetailComponents(trimmedComponents);
     #                 }
     #                 catch (Exception ex)
     #                 {
@@ -11757,10552 +15342,4243 @@ class UFuncAddFasteners:
     #                 }
     #             }
     #         }
-    #         finally
+
+    #         private void ButtonSelectAll_Click(object sender, EventArgs e)
     #         {
-    #             // session_control_part.SetUserAttribute("show", -1, "true", NXOpen.Update.Option.Now);
-
-    #             // session_control_part.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-
-    #             Show();
-    #         //catch (Exception ex)
-    #         //{
-    #         //}
-          
-    #             Properties.Settings.Default.tsg_library_hide_forms = false;
-    #             Settings.Default.Save();
-    #         }
-    #     }
-
-    #     private void LoadShcs()
-    #     {
-    #         string unit_dir = IsFormMetric ? "Metric" : "English";
-    #         listBoxSelection.SelectedIndexChanged -= ListBoxSelection_SelectedIndexChanged;
-    #         listBoxSelection.DataSource = null;
-    #         string suffix;
-
-    #         switch (_1x_2x)
-    #         {
-    #             case 1:
-    #                 suffix = "";
-    #                 break;
-    #             case 2:
-    #                 suffix = "-2x";
-    #                 break;
-    #             default:
-    #                 print("Cannot determine which fastener to use");
-    #                 return;
-    #         }
-
-    #         FastenerListItem[] shcss = Directory
-    #             .GetDirectories($@"G:\0Library\Fasteners\{unit_dir}\SocketHeadCapScrews{suffix}")
-    #             .Select(__f => new FastenerListItem(Path.GetFileNameWithoutExtension(__f), __f))
-    #             .ToArray();
-	# 		// sql
-    #         const string preferred_diameters_path = @"U:\nxFiles\UfuncFiles\AddFastenersPreferredDiameters.txt";
-    #         const string preferred_gm_diameters_path = @"U:\nxFiles\UfuncFiles\AddFastenersPreferredDiametersGm.txt";
-
-    #         if (cmbPreferred.SelectedIndex == 1)
-    #         {
-    #             HashSet<string> shcs_preferred_dirs = File.ReadAllLines(preferred_diameters_path)
-    #                 .Where(__s => !string.IsNullOrEmpty(__s))
-    #                 .Where(__s => !string.IsNullOrWhiteSpace(__s))
-    #                 .Select(Path.GetDirectoryName)
-    #                 .ToHashSet();
-
-    #             shcss = shcss.Where(item => shcs_preferred_dirs.Contains(item.Value)).ToArray();
-    #         }
-    #         else if (cmbPreferred.SelectedIndex == 2)
-    #         {
-    #             HashSet<string> shcs_preferred_dirs = File.ReadAllLines(preferred_gm_diameters_path)
-    #                 .Where(__s => !string.IsNullOrEmpty(__s))
-    #                 .Where(__s => !string.IsNullOrWhiteSpace(__s))
-    #                 .Select(Path.GetDirectoryName)
-    #                 .ToHashSet();
-
-    #             shcss = shcss.Where(item => shcs_preferred_dirs.Contains(item.Value)).ToArray();
-    #         }
-
-    #         listBoxSelection.DisplayMember = nameof(FastenerListItem.Text);
-    #         listBoxSelection.ValueMember = nameof(FastenerListItem.Value);
-    #         listBoxSelection.DataSource = shcss;
-    #         listBoxSelection.SelectedIndex = -1;
-    #         listBoxSelection.SelectedIndexChanged += ListBoxSelection_SelectedIndexChanged;
-    #     }
-
-    #     private void LoadDowel()
-    #     {
-    #         string unit_dir = IsFormMetric ? "Metric" : "English";
-    #         listBoxSelection.SelectedIndexChanged -= ListBoxSelection_SelectedIndexChanged;
-    #         listBoxSelection.DataSource = null;
-
-    #         chkCycleAdd.Checked = false;
-    #         chkReverseCycleAdd.Checked = false;
-
-    #         FastenerListItem[] dowels = Directory.GetFiles($@"G:\0Library\Fasteners\{unit_dir}\Dowels", "*.prt",
-    #                 SearchOption.TopDirectoryOnly)
-    #             .Select(__f => new FastenerListItem(Path.GetFileNameWithoutExtension(__f), __f))
-    #             .ToArray();
-
-    #         listBoxSelection.DisplayMember = nameof(FastenerListItem.Text);
-    #         listBoxSelection.ValueMember = nameof(FastenerListItem.Value);
-    #         listBoxSelection.DataSource = dowels;
-    #         listBoxSelection.SelectedIndex = -1;
-    #         listBoxSelection.SelectedIndexChanged += ListBoxSelection_SelectedIndexChanged;
-    #     }
-
-    #     private void LoadJack()
-    #     {
-    #         string unit_dir = IsFormMetric ? "Metric" : "English";
-    #         listBoxSelection.SelectedIndexChanged -= ListBoxSelection_SelectedIndexChanged;
-    #         listBoxSelection.DataSource = null;
-    #         chkCycleAdd.Checked = false;
-    #         chkReverseCycleAdd.Checked = false;
-
-    #         FastenerListItem[] jackScrewsTsg = Directory.GetFiles($@"G:\0Library\Fasteners\{unit_dir}\JackScrews",
-    #                 "*-tsg.prt",
-    #                 SearchOption.TopDirectoryOnly)
-    #             .Select(__f => new FastenerListItem(__f.__LeafF(), __f))
-    #             .OrderBy(__s =>
+    #             using (session_.__UsingFormShowHide(this))
     #             {
-    #                 Match match = Regex.Match(__s.Text, "^_?(?<diameter>\\d+)(mm)?-jck-screw-tsg$");
-
-    #                 if (!match.Success)
-    #                     throw new Exception($"{__s.Text} didn't match regex");
-
-    #                 return int.Parse(match.Groups["diameter"].Value);
-    #             })
-    #             .ToArray();
-
-    #         FastenerListItem[] jackScrews = Directory.GetFiles($@"G:\0Library\Fasteners\{unit_dir}\JackScrews",
-    #                 "*-screw.prt",
-    #                 SearchOption.TopDirectoryOnly)
-    #             .Select(__f => new FastenerListItem(Path.GetFileNameWithoutExtension(__f), __f))
-    #             .ToArray();
-
-    #         jackScrewsTsg = jackScrewsTsg.Concat(jackScrews).ToArray();
-    #         listBoxSelection.DisplayMember = nameof(FastenerListItem.Text);
-    #         listBoxSelection.ValueMember = nameof(FastenerListItem.Value);
-    #         listBoxSelection.DataSource = jackScrewsTsg;
-    #         listBoxSelection.SelectedIndex = -1;
-    #         listBoxSelection.SelectedIndexChanged += ListBoxSelection_SelectedIndexChanged;
-    #     }
-
-    #     private void Reset()
-    #     {
-    #         try
-    #         {
-    #             if (__work_part_ is null)
-    #                 return;
-
-    #             btnChangeRefSet.Enabled = false;
-    #             toolStripMenuItem1.Enabled = false;
-    #             chkSubstitute.Checked = false;
-    #             listBoxSelection.SelectedIndex = -1;
-    #             __work_component_?.__Translucency(0);
-
-    #             if (__work_part_.__HasDynamicBlock())
-    #             {
-    #                 __work_part_.__DynamicBlock().GetBodies()[0].__Translucency(0);
-    #                 toolStripMenuItem1.Enabled = true;
-    #             }
-    #             else if (!__work_part_.__HasDynamicBlock())
-    #             {
-    #                 Body[] bodies = __work_part_.Bodies.ToArray()
-    #                     .Where(__b => __b.IsSolidBody)
-    #                     .Where(__b => __b.Layer == 1)
-    #                     .ToArray();
-
-    #                 if (bodies.Length == 1)
-    #                     __work_part_.__SingleSolidBodyOnLayer1().__Translucency(0);
-
-    #                 toolStripMenuItem1.Enabled = true;
-    #             }
-    #             else
-    #             {
-    #                 btnOrigin.Enabled = false;
-    #                 btnPlanView.Enabled = false;
-    #                 btnWireTaps.Enabled = false;
-    #                 btnChangeRefSet.Enabled = true;
-    #             }
-
-    #             if (__work_part_.Tag != __display_part_.Tag)
-    #                 ufsession_.Assem.SetWorkPart(NXOpen.Tag.Null);
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #         finally
-    #         {
-    #             btnSelectComponent.Enabled = true;
-    #             btnReset.Enabled = true;
-    #         }
-    #     }
-
-    #     private void BtnOtherOk_Click(object sender, EventArgs e)
-    #     {
-    #         using (session_.__UsingFormShowHide(this))
-    #         {
-    #             try
-    #             {
-    #                 session_.SetUndoMark(Session.MarkVisibility.Visible, "AddFasteners");
-
-    #                 if (__work_component_ is null)
-    #                 {
-    #                     // Working at the displayed part
-    #                     WaveIn();
-    #                     MakePlanView(__display_part_.WCS.Save());
-    #                     return;
-    #                 }
-
-    #                 // Working at the assembly level.
-    #                 Component originalWorkComponent = __work_component_;
-
-    #                 using (new DisplayPartReset())
-    #                 {
-    #                     __display_part_ = __work_part_;
-    #                     WaveIn();
-    #                     MakePlanView(__display_part_.WCS.Save());
-    #                 }
-
-    #                 foreach (Component child in originalWorkComponent.GetChildren())
-    #                 {
-    #                     if (!child.__IsLoaded())
-    #                     {
-    #                         print($"Child {child.Name} is not loaded");
-    #                         continue;
-    #                     }
-    #                     Component protoPartOcc = _GetProtoPartOcc(originalWorkComponent.__Prototype(), child);
-
-    #                     switch (protoPartOcc.Layer)
-    #                     {
-    #                         case LayerDwlTooling:
-    #                         case LayerShcsHandlingWireTap:
-    #                             break;
-    #                         default:
-    #                             child.__ReferenceSet(protoPartOcc.ReferenceSet);
-    #                             break;
-    #                     }
-    #                 }
-    #             }
-    #             catch (Exception ex)
-    #             {
-    #                 ex.__PrintException();
-    #             }
-    #             finally
-    #             {
-    #                 Reset();
-    #                 btnReset.Enabled = true;
-    #                 btnSelectComponent.Enabled = true;
-    #             }
-    #         }
-    #     }
-
-    #     public static void WaveIn()
-    #     {
-    #         try
-    #         {
-    #             Body solid_body_layer_1;
-
-    #             if (!__work_part_.__HasDynamicBlock())
-    #             {
-    #                 solid_body_layer_1 = __work_part_.__SingleSolidBodyOnLayer1();
-    #             }
-    #             else
-    #             {
-    #                 __work_part_.Layers.SetState(96, State.Visible);
-    #                 solid_body_layer_1 = __work_part_.__DynamicBlock().GetBodies()[0];
-    #             }
-
-    #             if (__work_part_.ComponentAssembly.RootComponent is null)
-    #                 return;
-
-    #             foreach (Component __child in __work_part_.ComponentAssembly.RootComponent.GetChildren())
     #                 try
     #                 {
-    #                     WaveIn(__child, solid_body_layer_1);
+    #                     if (__display_part_.ComponentAssembly.RootComponent is null)
+    #                         return;
+
+    #                     _allComponents.Clear();
+    #                     GetChildComponents(__display_part_.ComponentAssembly.RootComponent);
+
+    #                     if (_allComponents.Count == 0)
+    #                     {
+    #                         print("No valid components");
+    #                         return;
+    #                     }
+
+    #                     List<CtsAttributes> materials = CreateMaterialList();
+    #                     List<Component> passedComponents = new List<Component>();
+
+    #                     foreach (Component comp in _allComponents)
+    #                         try
+    #                         {
+    #                             foreach (NXObject.AttributeInformation attr in comp.GetUserAttributes())
+    #                             {
+    #                                 if (attr.Title.ToUpper() == "MATERIAL")
+    #                                 {
+    #                                     string value = comp.GetUserAttributeAsString("MATERIAL",
+    #                                         NXObject.AttributeType.String,
+    #                                         -1);
+
+    #                                     if (value != "")
+    #                                         passedComponents.AddRange(from matAttr in materials
+    #                                                                   where matAttr.AttrValue == value
+    #                                                                   select comp);
+    #                                     else
+    #                                         print($"\n{comp.DisplayName} : MATERIAL attribute equals nothing");
+    #                                 }
+
+    #                                 // Rev1.1 Change - Added for Scrap Chutes
+
+    #                                 if (attr.Title.ToUpper() != "DESCRIPTION")
+    #                                     continue;
+
+    #                                 string dValue = comp.GetUserAttributeAsString("DESCRIPTION",
+    #                                     NXObject.AttributeType.String,
+    #                                     -1);
+
+    #                                 if (dValue is null)
+    #                                 {
+    #                                     print("////////////////////////////////////");
+    #                                     print($"Component: {comp.DisplayName} has a null DESCRIPTION value.");
+    #                                     print(comp.__AssemblyPathString());
+    #                                     print("////////////////////////////////////");
+    #                                     continue;
+    #                                 }
+
+    #                                 if (dValue.ToUpper() == "CHUTE TO SUIT")
+    #                                     passedComponents.Add(comp);
+
+    #                                 if (dValue.ToLower().Contains("diemaker to alter"))
+    #                                     passedComponents.Add(comp);
+    #                                 // End of Rev1.1 change
+    #                             }
+    #                         }
+    #                         catch (Exception ex)
+    #                         {
+    #                             ex.__PrintException(comp.DisplayName);
+    #                         }
+
+    #                     if (passedComponents.Count == 0)
+    #                     {
+    #                         print("No valid components");
+    #                         return;
+    #                     }
+
+    #                     Component[] selectDeselectComps = passedComponents.ToArray();
+    #                     passedComponents = Preselect.GetUserSelections(selectDeselectComps);
+
+    #                     if (passedComponents.Count == 0)
+    #                     {
+    #                         print("No valid components");
+    #                         return;
+    #                     }
+
+    #                     passedComponents = passedComponents.Where(comp => !comp.IsSuppressed)
+    #                         .Distinct(new EqualityDisplayName())
+    #                         .ToList();
+
+    #                     passedComponents.Sort((c1, c2) => string.Compare(c1.Name, c2.Name, StringComparison.Ordinal));
+    #                     DetailComponents(passedComponents);
     #                 }
     #                 catch (Exception ex)
     #                 {
     #                     ex.__PrintException();
     #                 }
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
-
-    #     public static void WaveIn(Component __child, Body solid_body_layer_1)
-    #     {
-    #         if (!__child.__IsLoaded())
-    #             return;
-
-    #         if (__child.IsSuppressed)
-    #             return;
-
-    #         if (__child.Layer != 99 && __child.Layer != 98 && __child.Layer != 97)
-    #             return;
-
-    #         bool is_subtracted = false;
-
-    #         foreach (var feature in __display_part_.Features.ToArray())
-    #         {
-    #             if (!(feature is ExtractFace extract))
-    #                 continue;
-
-    #             if (!extract.__IsLinkedBody())
-    #                 continue;
-
-
-    #             if (extract.__IsBroken())
-    #             {
-    #                 ufsession_.Wave.AskBrokenLinkSourcePart(extract.Tag, out var part_name, out var t);
-    #                 print(part_name);
-    #                 print(t);
-    #                 continue;
     #             }
-
-    #             var xform_tag = extract.__XFormTag();
-    #             var point = new double[3];
-    #             ufsession_.So.AskPointOfXform(xform_tag, point);
-    #             var origin = point.__ToPoint3d();
-
-    #             if (!origin.__IsEqualTo(__child.__Origin()))
-    #                 continue;
-
-    #             is_subtracted = true;
-    #             break;
     #         }
 
-    #         if (is_subtracted)
-    #             return;
-
-    #         if (!__child.HasInstanceUserAttribute("subtract", NXObject.AttributeType.String, -1))
-    #             return;
-
-    #         string subtract_att = __child.__GetAttribute("subtract");
-    #         string subtract_ref_set;
-
-    #         switch (subtract_att)
+    #         private void DetailComponents(IEnumerable<Component> selectedComponents)
     #         {
-    #             case "HANDLING":
-    #             case "WIRE_TAP":
-    #                 subtract_ref_set = "SHORT-TAP";
-    #                 break;
-    #             case "BLIND_OPP":
-    #                 subtract_ref_set = "CBORE_BLIND_OPP";
-    #                 break;
-    #             case "CLR_DRILL":
-    #                 subtract_ref_set = "CLR_HOLE";
-    #                 break;
-    #             default:
-    #                 subtract_ref_set = subtract_att;
-    #                 break;
-    #         }
-
-    #         string current = __child.ReferenceSet;
-    #         __child.__ReferenceSet(subtract_ref_set);
-
-    #         ExtractFace linked_body = CreateLinkedBody(__work_part_, __child);
-    #         linked_body.OwningPart.Layers.MoveDisplayableObjects(96, linked_body.GetBodies());
-    #         linked_body.SetName($"{__child.DisplayName}, {subtract_att}");
-
-    #         try
-    #         {
-    #             SubtractLinkedBody(__work_part_, solid_body_layer_1, linked_body);
-    #         }
-    #         catch (NXException ex) when (ex.ErrorCode == 670030)
-    #         {
-    #             print($"Could not subtract {__child.DisplayName} with reference set {subtract_ref_set}");
-    #         }
-
-    #         switch (subtract_att)
-    #         {
-    #             case "HANDLING":
-    #             case "WIRE_TAP":
-    #                 __child.__Layer(98);
-    #                 break;
-    #             case "TOOLING":
-    #                 __child.__Layer(97);
-    #                 break;
-    #         }
-
-    #         if (__child.Layer != 99 || subtract_att == "HANDLING" || subtract_att == "WIRE_TAP")
-    #         {
-    #             __child.__ReferenceSet("Empty");
-    #             __work_part_.__FindReferenceSet("BODY").RemoveObjectsFromReferenceSet(new NXObject[] { __child });
-    #             return;
-    #         }
-
-    #         __child.__ReferenceSet("BODY");
-
-    #         __work_part_.GetAllReferenceSets()
-    #             .Single(__r => __r.Name == "BODY")
-    #             .AddObjectsToReferenceSet(new[] { __child });
-    #     }
-
-    #     private static Component _GetProtoPartOcc(Part owningPart, Component partOcc)
-    #     {
-    #         Tag instance = ufsession_.Assem.AskInstOfPartOcc(partOcc.Tag);
-
-    #         Tag prototypeChildPartOcc =
-    #             ufsession_.Assem.AskPartOccOfInst(owningPart.ComponentAssembly.RootComponent.Tag, instance);
-
-    #         return (Component)prototypeChildPartOcc.__ToTaggedObject();
-    #     }
-
-    #     private static BooleanFeature SubtractLinkedBody(Part owningPart, Body subtractBody, ExtractFace linkedBody)
-    #     {
-    #         BooleanBuilder booleanBuilder = owningPart.Features.CreateBooleanBuilderUsingCollector(null);
-
-    #         using (new Destroyer(booleanBuilder))
-    #         {
-    #             booleanBuilder.Target = subtractBody;
-    #             ScCollector collector = owningPart.ScCollectors.CreateCollector();
-
-    #             SelectionIntentRule[] rules =
+    #             using (session_.__UsingDisplayPartReset())
     #             {
-    #                 owningPart.ScRuleFactory.CreateRuleBodyDumb(linkedBody.GetBodies())
-    #             };
+    #                 Component[] componentArray = selectedComponents.ToArray();
 
-    #             collector.ReplaceRules(rules, false);
-    #             booleanBuilder.ToolBodyCollector = collector;
-    #             booleanBuilder.Operation = Feature.BooleanType.Subtract;
-    #             return (BooleanFeature)booleanBuilder.Commit();
-    #         }
-    #     }
-
-    #     private static ExtractFace CreateLinkedBody(Part owningPart, Component child)
-    #     {
-    #         Body[] toolBodies = child.__Members()
-    #             .OfType<Body>()
-    #             .Where(body => body.IsSolidBody)
-    #             .ToArray();
-
-    #         ExtractFaceBuilder linkedBodyBuilder = owningPart.Features.CreateExtractFaceBuilder(null);
-
-    #         using (new Destroyer(linkedBodyBuilder))
-    #         {
-    #             linkedBodyBuilder.Associative = true;
-    #             linkedBodyBuilder.FeatureOption = ExtractFaceBuilder.FeatureOptionType.OneFeatureForAllBodies;
-    #             linkedBodyBuilder.FixAtCurrentTimestamp = false;
-    #             linkedBodyBuilder.ParentPart = ExtractFaceBuilder.ParentPartType.OtherPart;
-    #             linkedBodyBuilder.Type = ExtractFaceBuilder.ExtractType.Body;
-
-    #             SelectionIntentRule[] rules =
-    #             {
-    #                 owningPart.ScRuleFactory.CreateRuleBodyDumb(toolBodies)
-    #             };
-
-    #             linkedBodyBuilder.ExtractBodyCollector.ReplaceRules(rules, false);
-    #             return (ExtractFace)linkedBodyBuilder.Commit();
-    #         }
-    #     }
-
-    #     private void ChkSubstitute_Click(object sender, EventArgs e)
-    #     {
-    #         CheckBox box = (CheckBox)sender;
-
-    #         if (box == chkSubstitute)
-    #         {
-    #             chkCycleAdd.Enabled = !chkSubstitute.Checked;
-    #             chkReverseCycleAdd.Enabled = !chkSubstitute.Checked;
-
-    #             if (!chkSubstitute.Checked)
-    #                 return;
-
-    #             chkReverseCycleAdd.Checked = false;
-    #             chkCycleAdd.Checked = false;
-    #         }
-    #         else if (box == chkCycleAdd)
-    #         {
-    #             chkReverseCycleAdd.Enabled = true;
-    #             chkSubstitute.Enabled = !chkCycleAdd.Checked;
-
-    #             if (!chkCycleAdd.Checked)
-    #                 return;
-
-    #             chkReverseCycleAdd.Checked = false;
-    #             chkSubstitute.Checked = false;
-    #         }
-    #         else if (chkReverseCycleAdd.Checked)
-    #         {
-    #             chkSubstitute.Enabled = false;
-    #             chkSubstitute.Checked = false;
-    #             chkSubstitute.Enabled = false;
-    #             chkCycleAdd.Checked = false;
-    #         }
-    #         else if (!chkCycleAdd.Checked)
-    #             chkSubstitute.Enabled = true;
-    #     }
-
-    #     private void ChkCycleAdd_CheckedChanged(object sender, EventArgs e)
-    #     {
-    #         if (chkCycleAdd.Checked || chkReverseCycleAdd.Checked)
-    #         {
-    #             rdoTypeDowel.Enabled = false;
-    #             rdoTypeJack.Enabled = false;
-    #             chkSubstitute.Checked = false;
-    #             rdoTypeScrew.PerformClick();
-    #         }
-    #         else
-    #         {
-    #             rdoTypeDowel.Enabled = true;
-    #             rdoTypeJack.Enabled = true;
-    #         }
-
-    #         Settings.Default.add_fasteners_cycle_add = chkCycleAdd.Checked;
-    #         Settings.Default.add_fasteners_reverse_cycle_add = chkReverseCycleAdd.Checked;
-    #         Settings.Default.Save();
-    #     }
-
-    #     private void BtnReset_Click(object sender, EventArgs e) => Reset();
-
-    #     public static void InsertWireTaps()
-    #     {
-    #         session_.SetUndoMark(Session.MarkVisibility.Visible, "WIRE_TAP");
-
-    #         if (__display_part_.Tag == __work_part_.Tag)
-    #             new[] { 99, 98, 97 }.ToList().ForEach(i => __display_part_.Layers.SetState(i, State.Selectable));
-
-    #         Part wireTapScrew =
-    #             session_.__FindOrOpen(@"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\008\8mm-shcs-020.prt");
-    #         __display_part_.WCS.Rotate(WCS.Axis.XAxis, 90.0);
-    #         CartesianCoordinateSystem savedCsys = __display_part_.WCS.Save();
-    #         Matrix3x3 rotateOrientation = savedCsys.Orientation.Element;
-    #         double x = __display_part_.PartUnits == BasePart.Units.Inches ? 1 : 25.4;
-    #         double[] offset1 = { 1.00 * x, .875 * x, 0.00 };
-    #         double[] offset2 = { 3.00 * x, .875 * x, 0.00 };
-    #         double[] mappedOffset1 = new double[3];
-    #         ufsession_.Csys.MapPoint(UF_CSYS_ROOT_WCS_COORDS, offset1, UF_CSYS_ROOT_COORDS, mappedOffset1);
-    #         double[] mappedOffset2 = new double[3];
-    #         ufsession_.Csys.MapPoint(UF_CSYS_ROOT_WCS_COORDS, offset2, UF_CSYS_ROOT_COORDS, mappedOffset2);
-    #         double[] mappedToWork1 = new double[3];
-    #         ufsession_.Csys.MapPoint(UF_CSYS_ROOT_COORDS, mappedOffset1, UF_CSYS_WORK_COORDS, mappedToWork1);
-    #         double[] mappedToWork2 = new double[3];
-    #         ufsession_.Csys.MapPoint(UF_CSYS_ROOT_COORDS, mappedOffset2, UF_CSYS_WORK_COORDS, mappedToWork2);
-    #         Point3d basePoint1 = new Point3d(mappedToWork1[0], mappedToWork1[1], mappedToWork1[2]);
-    #         Point3d basePoint2 = new Point3d(mappedToWork2[0], mappedToWork2[1], mappedToWork2[2]);
-
-    #         Component component1 = __work_part_.ComponentAssembly.AddComponent(
-    #             wireTapScrew,
-    #             "SHORT-TAP",
-    #             "8mm-shcs-020",
-    #             basePoint1,
-    #             rotateOrientation,
-    #             98,
-    #             out _);
-
-    #         Component component2 = __work_part_.ComponentAssembly.AddComponent(
-    #             wireTapScrew,
-    #             "SHORT-TAP",
-    #             "8mm-shcs-020",
-    #             basePoint2,
-    #             rotateOrientation,
-    #             98,
-    #             out _);
-
-    #         __display_part_.WCS.Rotate(WCS.Axis.XAxis, -90.0);
-    #         const string subtract = "subtract";
-    #         component1.SetInstanceUserAttribute(subtract, -1, "WIRE_TAP", NXOpen.Update.Option.Now);
-    #         component2.SetInstanceUserAttribute(subtract, -1, "WIRE_TAP", NXOpen.Update.Option.Now);
-    #         session_.__DeleteObjects(savedCsys);
-    #     }
-
-    #     private void BtnWireTaps_Click(object sender, EventArgs e) => InsertWireTaps();
-
-    #     private void BtnOrigin_Click(object sender, EventArgs e) => BlockOrigin();
-
-    #     private static void ChangEnabled(bool flag, params Control[] controls)
-    #     {
-    #         controls.ToList().ForEach(control => control.Enabled = flag);
-    #     }
-
-    #     private void ListBoxSelection_SelectedIndexChanged(object sender, EventArgs e)
-    #     {
-    #         try
-    #         {
-    #             if (listBoxSelection.SelectedIndex == -1)
-    #                 return;
-
-    #             string selected_value = (string)listBoxSelection.SelectedValue;
-
-    #             if (selected_value == nameof(LoadShcs))
-    #             {
-    #                 LoadShcs();
-    #                 return;
-    #             }
-
-    #             if (selected_value.ToLower().EndsWith(".prt"))
-    #             {
-    #                 double original_grid_spacing = __display_part_.Preferences.Workplane.__GridSpacing();
-
-    #                 try
+    #                 for (int index = 0; index < componentArray.Length; index++)
     #                 {
-    #                     cmbReferenceSet.Enabled = true;
-    #                     Part fastener_part = session_.__FindOrOpen(selected_value);
+    #                     Component detailComp = componentArray[index];
 
-    #                     if (chkSubstitute.Checked)
+    #                     try
     #                     {
-    #                         SubstituteFasteners(fastener_part);
-    #                         return;
+    #                         prompt($"({index + 1} of {componentArray.Length})");
+    #                         DetailComponent(detailComp);
     #                     }
-
-    #                     if (chkCycleAdd.Checked || chkReverseCycleAdd.Checked)
+    #                     catch (Exception ex)
     #                     {
-    #                         PlaceFastenersCycle(fastener_part);
-    #                         return;
+    #                         ex.__PrintException(detailComp.DisplayName);
     #                     }
-
-    #                     if (fastener_part.__IsJckScrewTsg())
-    #                     {
-    #                         PlaceFastenersJigJacks(fastener_part);
-    #                         listBoxSelection.Enabled = true;
-    #                         return;
-    #                     }
-
-    #                     PlaceFasteners(fastener_part);
-    #                     return;
     #                 }
-    #                 finally
+
+    #                 SetFormDefaults();
+    #             }
+    #         }
+
+    #         public static void SetWcsToWorkPart()
+    #         {
+    #             Block dynamic = __work_part_.__DynamicBlock();
+
+    #             if (__work_part_.Tag == __display_part_.Tag)
+    #             {
+    #                 __display_part_.WCS.SetOriginAndMatrix(dynamic.__Origin(), dynamic.__Orientation());
+    #                 return;
+    #             }
+
+    #             using (__work_component_.__UsingReferenceSetReset())
+    #             {
+    #                 __work_component_.__ReferenceSet("Entire Part");
+
+    #                 CartesianCoordinateSystem system = __work_part_.CoordinateSystems.CreateCoordinateSystem(
+    #                     _Point3dOrigin,
+    #                     dynamic.__Orientation(),
+    #                     false);
+
+    #                 NXObject ject = __work_component_.FindOccurrence(system);
+
+    #                 if (!(ject is CartesianCoordinateSystem cart))
+    #                     throw new Exception();
+
+    #                 __display_part_.WCS.SetOriginAndMatrix(_Point3dOrigin, cart.Orientation.Element);
+    #                 ufsession_.Obj.DeleteObject(system.Tag);
+    #             }
+    #         }
+
+    #         public static ModelingView GetPlanView()
+    #         {
+    #             ModelingView planView = null;
+
+    #             foreach (ModelingView view in __work_part_.ModelingViews)
+    #                 if (view.Name == ViewPlan)
     #                 {
-    #                     cmbReferenceSet.Enabled = false;
-    #                     session_.__SetWorkPlane(original_grid_spacing, false, false);
+    #                     planView = view;
+    #                     break;
     #                 }
-    #             }
 
-    #             listBoxSelection.SelectedIndexChanged -= ListBoxSelection_SelectedIndexChanged;
-    #             listBoxSelection.DataSource = null;
-
-    #             List<FastenerListItem> shcss = Directory.GetFiles(selected_value, "*.prt", SearchOption.TopDirectoryOnly)
-    #                 .Select(__f => new FastenerListItem(Path.GetFileNameWithoutExtension(__f), __f))
-    #                 .ToList();
-
-    #             const string preferred_diameters_path = @"U:\nxFiles\UfuncFiles\AddFastenersPreferredDiameters.txt";
-    #             const string preferred_gm_diameters_path =
-    #                 @"U:\nxFiles\UfuncFiles\AddFastenersPreferredDiametersGm.txt";
-
-    #             if (cmbPreferred.SelectedIndex == 1)
-    #             {
-    #                 HashSet<string> shcs_preferred_dirs = File.ReadAllLines(preferred_diameters_path)
-    #                     .Where(__s => !string.IsNullOrEmpty(__s))
-    #                     .Where(__s => !string.IsNullOrWhiteSpace(__s))
-    #                     .ToHashSet();
-
-    #                 shcss = shcss.Where(item => shcs_preferred_dirs.Contains(item.Value)).ToList();
-    #             }
-    #             else if (cmbPreferred.SelectedIndex == 2)
-    #             {
-    #                 HashSet<string> shcs_preferred_dirs = File.ReadAllLines(preferred_gm_diameters_path)
-    #                     .Where(__s => !string.IsNullOrEmpty(__s))
-    #                     .Where(__s => !string.IsNullOrWhiteSpace(__s))
-    #                     .ToHashSet();
-
-    #                 shcss = shcss.Where(item => shcs_preferred_dirs.Contains(item.Value)).ToList();
-    #             }
-
-    #             shcss.Insert(0, new FastenerListItem("Go Back", nameof(LoadShcs)));
-    #             listBoxSelection.DisplayMember = nameof(FastenerListItem.Text);
-    #             listBoxSelection.ValueMember = nameof(FastenerListItem.Value);
-    #             listBoxSelection.DataSource = shcss;
-    #             listBoxSelection.SelectedIndex = -1;
-    #             listBoxSelection.SelectedIndexChanged += ListBoxSelection_SelectedIndexChanged;
+    #             return planView;
     #         }
-    #         catch (Exception ex)
+
+    #         public static void MakePlanView(CartesianCoordinateSystem csys)
     #         {
-    #             ex.__PrintException();
-    #         }
-    #         finally
-    #         {
-    #             btnReset.Enabled = true;
-    #         }
-    #     }
+    # 			// sql
+    #             const string l1 = "L1";
+    #             const string top = "Top";
+    #             const string plan = "PLAN";
+    #             __display_part_ = __work_part_;
+    #             ModelingView planView = GetPlanView();
+    #             ModelingView modelingView1, modelingView2;
+    #             Layout layout;
 
-    #     private void PlaceFastenersJigJacks(Part fastener_part)
-    #     {
-    #         try
-    #         {
-    #             btnOk.Enabled = false;
-    #             listBoxSelection.SelectedIndex = -1;
-    #             listBoxSelection.Enabled = false;
-    #             btnChangeRefSet.Enabled = false;
-    #             btnReset.Enabled = false;
-    #             btnPlanView.Enabled = false;
-    #             btnWireTaps.Enabled = false;
-    #             btnOrigin.Enabled = false;
-
-    #             cmbGridSpacing.SelectedValue = __display_part_.Preferences
-    #                 .Workplane
-    #                 .GetRectangularUniformGridSize()
-    #                 .MajorGridSpacing;
-
-    #             chkGrid.Checked = __display_part_.Preferences.Workplane.ShowGrid;
-
-    #             if (__display_part_.Tag == __work_part_.Tag)
+    #             if (planView != null)
     #             {
-    #                 __display_part_.Layers.SetState(1, State.WorkLayer);
-
-    #                 new[] { 99, 98, 97, 97 }
-    #                     .ToList()
-    #                     .ForEach(i => __display_part_.Layers.SetState(i, State.Selectable));
+    #                 layout = __work_part_.Layouts.FindObject(l1);
+    #                 modelingView1 = __work_part_.ModelingViews.WorkView;
+    #                 modelingView2 = __work_part_.ModelingViews.FindObject(top);
+    #                 layout.ReplaceView(modelingView1, modelingView2, true);
+    #                 ModelingView tempView = __work_part_.ModelingViews.FindObject(plan);
+    #                 ufsession_.Obj.DeleteName(tempView.Tag);
     #             }
 
-    #             cmbReferenceSet.Items.Clear();
-    #             HashSet<string> refsets = fastener_part.GetAllReferenceSets().Select(__r => __r.Name).ToHashSet();
-    #             refsets.Remove("BODY");
-    #             refsets.Remove("BODY_EDGE");
-    #             refsets.Remove("MODEL");
-    #             cmbReferenceSet.Items.AddRange(refsets.ToArray());
-    #             cmbReferenceSet.SelectedIndex = 0;
-    #             CartesianCoordinateSystem csys = __display_part_.WCS.Save();
-
-    #             Component addedFastener = __work_part_.ComponentAssembly.AddComponent(
-    #                 fastener_part,
-    #                 "GRID",
-    #                 fastener_part.Leaf,
-    #                 csys.Origin,
-    #                 csys.Orientation.Element,
-    #                 99,
-    #                 out _);
-
+    #             ufsession_.View.SetViewMatrix("", 3, csys.Tag, null);
+    #             View newView = __display_part_.Views.SaveAs(__display_part_.ModelingViews.WorkView, plan, false, false);
+    #             layout = __display_part_.Layouts.FindObject(l1);
+    #             modelingView1 = (ModelingView)newView;
+    #             modelingView2 = __display_part_.ModelingViews.FindObject(top);
+    #             layout.ReplaceView(modelingView1, modelingView2, true);
     #             session_.__DeleteObjects(csys);
+    #         }
 
-    #             if (MoveComponentWithMouse(addedFastener) != UF_UI_PICK_RESPONSE)
+    #         private void DetailComponent(Component detailComp)
+    #         {
+    #             print("////////////////////////");
+
+    #             if (!detailComp.__IsLoaded())
     #             {
-    #                 session_.__DeleteObjects(addedFastener);
+    #                 print($"Component {detailComp.DisplayName} is not loaded");
+    #                 print("4-VIEW will not be created for this component");
+
     #                 return;
     #             }
 
-    #             CartesianCoordinateSystem proto_csys = __work_part_.CoordinateSystems.CreateCoordinateSystem(
-    #                 addedFastener.__Origin(),
-    #                 addedFastener.__Orientation(), false);
-
-    #             if (__work_component_ is null)
+    #             using (session_.__UsingSuppressDisplay())
     #             {
-    #                 proto_csys.GetDirections(out Vector3d xDir, out Vector3d yDir);
-    #                 __display_part_.WCS.SetOriginAndMatrix(proto_csys.Origin, xDir.__ToMatrix3x3(yDir));
-    #                 session_.__DeleteObjects(proto_csys);
-    #             }
-    #             else
-    #             {
-    #                 CartesianCoordinateSystem occ_csys =
-    #                     (CartesianCoordinateSystem)__work_component_.FindOccurrence(proto_csys);
-    #                 occ_csys.GetDirections(out Vector3d xDir, out Vector3d yDir);
-    #                 __display_part_.WCS.SetOriginAndMatrix(occ_csys.Origin, xDir.__ToMatrix3x3(yDir));
-    #                 session_.__DeleteObjects(proto_csys);
-    #             }
+    #                 __display_part_ = detailComp.__Prototype();
 
-    #             string reference_set = cmbReferenceSet.Text;
-    #             addedFastener.SetInstanceUserAttribute("subtract", -1, reference_set, NXOpen.Update.Option.Now);
-    #             cmbGridSpacing.SelectedValue = 1.000;
-    #             PlaceFasteners(addedFastener.__Prototype(), false);
-    #             cmbGridSpacing.SelectedValue = 0.125;
+    #                 new CleanBodyRefSet().execute(__display_part_);
 
-    #             if (__work_component_ is null)
-    #             {
-    #                 addedFastener.__ReferenceSet("BODY_EDGE");
-    #                 return;
-    #             }
-
-    #             Tag instance = ufsession_.Assem.AskInstOfPartOcc(addedFastener.Tag);
-    #             Tag other = ufsession_.Assem.AskPartOccOfInst(__work_component_.Tag, instance);
-    #             Component comp = (Component)session_.GetObjectManager().GetTaggedObject(other);
-    #             comp.__ReferenceSet("BODY_EDGE");
-    #         }
-    #         finally
-    #         {
-    #             btnOk.Enabled = true;
-    #         }
-    #     }
-
-    #     public void PlaceFasteners(Part fastener_part, bool reset_ref_sets = true)
-    #     {
-    #         try
-    #         {
-    #             listBoxSelection.SelectedIndexChanged -= ListBoxSelection_SelectedIndexChanged;
-    #             listBoxSelection.SelectedIndex = -1;
-    #             listBoxSelection.Enabled = false;
-    #             btnOk.Enabled = false;
-    #             grpFastenerType.Enabled = false;
-    #             mnuStrMainMenu.Enabled = false;
-    #             btnChangeRefSet.Enabled = false;
-    #             btnPlanView.Enabled = false;
-    #             btnReset.Enabled = false;
-    #             btnWireTaps.Enabled = false;
-    #             chkCycleAdd.Enabled = false;
-    #             chkReverseCycleAdd.Enabled = false;
-    #             chkSubstitute.Enabled = false;
-    #             btnOrigin.Enabled = false;
-
-    #             try
-    #             {
-    #                 double value = (double)cmbGridSpacing.SelectedValue;
-
-    #                 if (value > 0.0)
-    #                     __display_part_.Preferences.Workplane.SetRectangularUniformGridSize(
-    #                         new WorkPlane.GridSize
-    #                         {
-    #                             MajorGridSpacing = value,
-    #                             MinorLinesPerMajor = 1,
-    #                             SnapPointsPerMinor = 1
-    #                         }
-    #                     );
-    #             }
-    #             catch (Exception ex)
-    #             {
-    #                 ex.__PrintException();
-    #             }
-
-    #             chkGrid.Checked = __display_part_.Preferences.Workplane.ShowGrid;
-
-    #             if (__display_part_.Tag == __work_part_.Tag)
-    #             {
-    #                 __display_part_.Layers.SetState(1, State.WorkLayer);
-
-    #                 new[] { 99, 98, 97, 96 }
-    #                     .ToList()
-    #                     .ForEach(i => __display_part_.Layers.SetState(i, State.Selectable));
-    #             }
-
-    #             if (reset_ref_sets)
-    #             {
-    #                 cmbReferenceSet.Items.Clear();
-    #                 HashSet<string> refsets = fastener_part.GetAllReferenceSets().Select(__r => __r.Name).ToHashSet();
-    #                 refsets.Remove("BODY");
-    #                 refsets.Remove("MODEL");
-    #                 cmbReferenceSet.Items.AddRange(refsets.ToArray());
-    #                 cmbReferenceSet.SelectedIndex = 0;
-
-    #                 if (fastener_part.__IsShcs())
-    #                     cmbReferenceSet.Items.Add("HANDLING");
-    #             }
-
-    #             CartesianCoordinateSystem csys = __display_part_.WCS.Save();
-    #             Component addedFastener = null;
-
-    #             Face bottomFace = null;
-
-    #             if (chkManual.Checked)
-    #             {
-    #                 bottomFace = Ui.Selection.SelectSingleFace(x => x.SolidFaceType == Face.FaceType.Planar);
-
-    #                 if (bottomFace is null)
-    #                     return;
-    #             }
-
-    #             try
-    #             {
-    #                 while (true)
+    #                 try
     #                 {
-    #                     __display_part_.WCS.CoordinateSystem.GetDirections(out Vector3d xDir, out Vector3d yDir);
-    #                     Matrix3x3 ori = xDir.__ToMatrix3x3(yDir);
+    #                     if (__work_part_.__HasDynamicBlock())
+    #                         SetWcsToWorkPart();
+    #                 }
+    #                 catch (Exception ex)
+    #                 {
+    #                     ex.__PrintException();
+    #                 }
 
-    #                     if (!chkManual.Checked)
-    #                         addedFastener = __work_part_.ComponentAssembly.AddComponent(
-    #                             fastener_part,
-    #                             "BODY_EDGE",
-    #                             fastener_part.Leaf,
-    #                             csys.Origin,
-    #                             csys.Orientation.Element,
-    #                             99,
-    #                             out _);
+    #                 //try
+    #                 //{
+    #                 //    MakePlanView(__display_part_.WCS.Save());
+    #                 //}
+    #                 //catch (NXException ex) when (ex.ErrorCode == 925019)
+    #                 //{
+    #                 //    print_($"Could not replace view in {__work_part_.Leaf}");
+    #                 //}
+    #                 //catch (Exception ex)
+    #                 //{
+    #                 //    ex.__PrintException();
+    #                 //}
 
-    #                     if (chkManual.Checked)
-    #                     {
-    #                         string message = "Select Origin";
-    #                         UFUi.PointBaseMethod pbMethod = UFUi.PointBaseMethod.PointInferred;
-    #                         Tag selection = NXOpen.Tag.Null;
-    #                         double[] basePoint = new double[3];
-    #                         int response;
+    #                 if (__display_part_.Layers.GetState(111) != State.WorkLayer)
+    #                     __display_part_.Layers.SetState(111, State.Selectable);
 
-    #                         using (session_.__UsingLockUiFromCustom())
-    #                             ufsession_.Ui.PointConstruct(
-    #                                 message,
-    #                                 ref pbMethod,
-    #                                 out selection,
-    #                                 basePoint,
-    #                                 out response
-    #                             );
+    #                 using (new ResetShadeRendering())
+    #                 {
+    #                     PreferencesBuilder preferencesBuilder1 = __work_part_.SettingsManager.CreatePreferencesBuilder();
 
-    #                         switch (response)
+    #                     using (new Destroyer(preferencesBuilder1))
+    #                         if (chkColorDetailSheet.Checked)
     #                         {
-    #                             case UF_UI_OK:
-    #                                 break;
-    #                             case UF_UI_BACK:
-    #                             case UF_UI_CANCEL:
-    #                                 return;
-    #                             default:
-    #                                 throw NXException.Create(response);
+    #                             preferencesBuilder1.ViewStyle.ViewStyleShading.RenderingStyle = ShadingRenderingStyleOption.FullyShaded;
+    #                             preferencesBuilder1.Commit();
     #                         }
 
-    #                         var orientation = bottomFace.__NormalVector().__Negate().__ToMatrix3x3();
-    #                         var origin = basePoint.__ToPoint3d();
+    #                     ufsession_.Draw.SetDisplayState(1);
+    #                     __display_part_.ModelingViews.WorkView.RenderingStyle = View.RenderingStyleType.ShadedWithEdges;
 
-    #                         addedFastener = __work_part_.ComponentAssembly.AddComponent(
-    #                             fastener_part,
-    #                             "BODY_EDGE",
-    #                             fastener_part.Leaf,
-    #                             origin,
-    #                             orientation,
-    #                             99,
-    #                             out _);
-    #                     }
-    #                     else if (MoveComponentWithMouse(addedFastener) != UF_UI_PICK_RESPONSE)
+    #                     if (__display_part_.__TryGetRefset("BODY", out var dispRefSet))
+    #                         foreach (NXObject refMember in dispRefSet.AskMembersInReferenceSet())
+    #                         {
+    #                             if (!(refMember is Curve lineLayer))
+    #                                 continue;
+
+    #                             if (lineLayer.Layer != 1)
+    #                                 continue;
+
+    #                             dispRefSet.RemoveObjectsFromReferenceSet(new[] { refMember });
+    #                             lineLayer.Layer = 10;
+    #                         }
+
+    #                     if (chkHoleChart.Checked)
+    #                         try
+    #                         {
+    #                             // set WCS to "PLAN" view and set "Top" as the work view
+    #                             SetCsysToPlanView();
+    #                             SetHoleChartLayers();
+    #                             // get work view and part units and set lettering preferences
+    #                             View workView = __display_part_.Views.WorkView;
+    #                             SetLetteringPreferences(__display_part_.PartUnits);
+
+    #                             List<NXObject> deleteNote = __display_part_.Notes
+    #                                 .Cast<Note>()
+    # 									// sql
+    #                                 .Where(holeNote => holeNote.Layer == 230)
+    #                                 .Cast<NXObject>()
+    #                                 .ToList();
+
+    #                             if (deleteNote.Count > 0)
+    #                                 session_.__DeleteObjects(deleteNote.ToArray());
+
+    #                             foreach (Body solidBody in __display_part_.Bodies)
+    #                             {
+    #                                 solidBody.Unblank();
+
+    #                                 if (solidBody.Layer != 1 && solidBody.Layer != 94 && solidBody.Layer != 96)
+    #                                     continue;
+
+    #                                 foreach (Face cylFace in solidBody.GetFaces())
+    #                                 {
+    #                                     double[] point = new double[3];
+    #                                     double[] dir = new double[3];
+    #                                     double[] box = new double[6];
+    #                                     ufsession_.Modl.AskFaceData(cylFace.Tag, out int type, point, dir, box,
+    #                                         out double radius, out _, out _);
+
+    #                                     if (cylFace.SolidFaceType != Face.FaceType.Cylindrical)
+    #                                         continue;
+
+    #                                     // Revision 1.45
+    #                                     if (!cylFace.Name.ToUpper().Contains("HOLECHART"))
+    #                                         continue;
+
+    #                                     Point3d cfOrigin = point.__ToPoint3d();
+    #                                     string[] cfNote = new string[1];
+    #                                     double multiplier = __display_part_.PartUnits == BasePart.Units.Inches ? 1.0 : 25.4;
+
+    #                                     foreach (string key in _holeChart.Keys)
+    #                                         foreach (string value in _holeChart[key])
+    #                                         {
+    #                                             double holeDiameter = Convert.ToDouble(value);
+    #                                             double faceDiameter = Convert.ToDouble(radius * 2);
+    #                                             double difference = holeDiameter * .000000001;
+    #                                             double abs = System.Math.Abs(holeDiameter * multiplier - faceDiameter);
+
+    #                                             if (abs > difference * multiplier)
+    #                                                 continue;
+
+    #                                             cfNote[0] = key;
+    #                                             break;
+    #                                         }
+
+    #                                     CreateHoleChartNote(cfOrigin, cfNote, workView.Tag);
+    #                                 }
+    #                             }
+
+    #                             SetDefaultLayers();
+    #                             print($"HoleCharted {__display_part_.Leaf}");
+    #                         }
+    #                         catch (Exception ex)
+    #                         {
+    #                             ex.__PrintException();
+    #                         }
+
+    #                     if (chkDetailSheet.Checked)
+    #                         try
+    #                         {
+    #                             SetHoleChartLayers();
+    #                             SetCsysToPlanView();
+
+    #                             // delete existing 4-VIEW
+    #                             List<NXObject> deleteView = __display_part_.DrawingSheets
+    #                                 .Cast<DrawingSheet>()
+    #                                 .Where(dwg => dwg.Name == "4-VIEW")
+    #                                 .Cast<NXObject>()
+    #                                 .ToList();
+
+    #                             if (deleteView.Count > 0)
+    #                                 session_.__DeleteObjects(deleteView.ToArray());
+
+    #                             string[] drillChart = null;
+
+    #                             if (chkDrillChart.Checked)
+    #                             {
+    # #pragma warning disable CS0612 // Type or member is obsolete
+    #                                 drillChart = DrillChart.Main();
+    # #pragma warning restore CS0612 // Type or member is obsolete
+    #                                 print($"Drill Charted in {__display_part_.Leaf}");
+    #                             }
+
+    #                             CreateDetailSheet(drillChart);
+    #                             SetDefaultLayers();
+    #                             print($"Created 4-View in {__display_part_.Leaf}");
+    #                         }
+    #                         catch (Exception ex)
+    #                         {
+    #                             ex.__PrintException();
+    #                         }
+
+    #                     if (chkUpdateViews.Checked)
+    #                         try
+    #                         {
+    #                             // update all views
+    #                             SetDefaultLayers();
+
+    #                             foreach (DrawingSheet dwg in __display_part_.DrawingSheets)
+    #                             {
+    #                                 // Revision 1.7 – 2018 / 02 / 09
+    #                                 ufsession_.Draw.IsObjectOutOfDate(dwg.Tag, out bool outOfDate);
+
+    #                                 if (!outOfDate)
+    #                                     continue;
+
+    #                                 dwg.Open();
+
+    #                                 foreach (DraftingView drfView in dwg.GetDraftingViews())
+    #                                 {
+    #                                     drfView.Update();
+    #                                     print($"Updated view {drfView.Name} in {__display_part_.Leaf}");
+    #                                 }
+    #                             }
+    #                         }
+    #                         catch (Exception ex)
+    #                         {
+    #                             ex.__PrintException();
+    #                         }
+
+    #                     if (!chkDelete4Views.Checked)
+    #                         return;
+    #                     // Revision • 1.62 – 2017 / 12 / 13
+    #                     try
     #                     {
-    #                         session_.__DeleteObjects(addedFastener);
+    #                         __display_part_.Notes
+    #                             .ToArray()
+    #                             .Where(note => note.Layer == 230)
+    #                             .ToList()
+    #                             .ForEach(__n => ufsession_.Obj.DeleteObject(__n.Tag));
+    #                     }
+    #                     catch (Exception ex)
+    #                     {
+    #                         ex.__PrintException();
+    #                     }
+
+    #                     // delete existing 4-VIEW
+    #                     List<NXObject> deleteView1 = __display_part_.DrawingSheets.Cast<DrawingSheet>()
+    #                         .Where(dwg => dwg.Name == "4-VIEW")
+    #                         .Cast<NXObject>()
+    #                         .ToList();
+
+    #                     if (deleteView1.Count > 0)
+    #                         session_.__DeleteObjects(deleteView1.ToArray());
+    #                 }
+    #             }
+    #         }
+
+    #         private static DraftingView ImportPlanView(double xPlacement, double yPlacement)
+    #         {
+    #             BaseViewBuilder baseViewBuilder = __work_part_.DraftingViews.CreateBaseViewBuilder(null);
+
+    #             using (new Destroyer(baseViewBuilder))
+    #             {
+    #                 ModelingView planView = null;
+    #                 ModelingView topView = null;
+    #                 bool isPlan = false;
+    #                 foreach (ModelingView mView in __work_part_.ModelingViews)
+    #                     switch (mView.Name)
+    #                     {
+    #                         case "PLAN":
+    #                             isPlan = true;
+    #                             planView = mView;
+    #                             break;
+    #                         case "Top":
+    #                             topView = mView;
+    #                             break;
+    #                     }
+
+    #                 baseViewBuilder.SelectModelView.SelectedView = isPlan ? planView : topView;
+    #                 baseViewBuilder.Style.ViewStyleBase.Part = __work_part_;
+    #                 baseViewBuilder.Style.ViewStyleBase.PartName = __work_part_.FullPath;
+    #                 using (__work_part_.LoadFully()) { }
+    #                 baseViewBuilder.Style.ViewStyleGeneral.UVGrid = false;
+    #                 baseViewBuilder.Style.ViewStyleGeneral.AutomaticAnchorPoint = false;
+    #                 baseViewBuilder.Style.ViewStyleGeneral.Centerlines = false;
+    #                 Point3d point = new Point3d(xPlacement, yPlacement, 0.0);
+    #                 baseViewBuilder.Placement.Placement.SetValue(null, __work_part_.Views.WorkView, point);
+    #                 NXObject nXObject1 = baseViewBuilder.Commit();
+    #                 DraftingView nPlanView = (DraftingView)nXObject1;
+    #                 return nPlanView;
+    #             }
+    #         }
+
+    #         private static void AssignDraftObject(DraftingView drfView, CtsDimensionData dataToUse,
+    #             ref UFDrf.Object dataToAssign)
+    #         {
+    #             dataToAssign.object_tag = dataToUse.DimEntity;
+    #             dataToAssign.object_view_tag = drfView.Tag;
+    #             dataToAssign.object_assoc_modifier = dataToUse.ExtPointId;
+    #         }
+
+    #         private static void DimensionView(
+    #             DraftingView drfView,
+    #             IReadOnlyList<double> drfViewPosition,
+    #             double viewScale,
+    #             IReadOnlyList<double> size,
+    #             BasePart.Units partUnits
+    #         )
+    #         {
+    #             // get all displayable objects for the current drafting view
+    #             drfView.Update();
+    #             Matrix3x3 viewMatrix = drfView.Matrix;
+    #             List<DisplayableObject> objInView = new List<DisplayableObject>();
+    #             Tag visObj = NXOpen.Tag.Null;
+
+    #             do
+    #             {
+    #                 ufsession_.View.CycleObjects(drfView.Tag, UFView.CycleObjectsEnum.VisibleObjects, ref visObj);
+
+    #                 if (visObj == NXOpen.Tag.Null)
+    #                     continue;
+
+    #                 ufsession_.Obj.AskTypeAndSubtype(visObj, out _, out _);
+    #                 DisplayableObject visEdge = (DisplayableObject)NXObjectManager.Get(visObj);
+    #                 objInView.Add(visEdge);
+    #             }
+    #             while (visObj != NXOpen.Tag.Null);
+
+    #             // ask extreme of all displayed edges and then create CtsDimensionData for each edge
+    #             List<CtsDimensionData> dimData = new List<CtsDimensionData>();
+
+    #             foreach (DisplayableObject dispObj in objInView)
+    #             {
+    #                 double[] drfLocation = new double[2];
+    #                 double[] extremePoint = new double[3];
+
+    #                 switch (dispObj)
+    #                 {
+    #                     case Edge _:
+    #                         double[] dirVectorX = viewMatrix.__AxisX().__ToArray();
+    #                         double[] dirVectorY = viewMatrix.__AxisY().__ToArray();
+    #                         double[] dirVectorZ = viewMatrix.__AxisZ().__ToArray();
+
+    #                         ufsession_.Modl.AskExtreme(
+    #                             dispObj.Tag,
+    #                             dirVectorX,
+    #                             dirVectorY,
+    #                             dirVectorZ,
+    #                             out _,
+    #                             extremePoint);
+    #                         break;
+    #                     case Line _:
+    #                         Line line = (Line)dispObj;
+    #                         extremePoint = line.StartPoint.__ToArray();
+    #                         break;
+    #                     default:
+    #                         continue;
+    #                 }
+
+    #                 ufsession_.View.MapModelToDrawing(drfView.Tag, extremePoint, drfLocation);
+
+    #                 CtsDimensionData dimObject = new CtsDimensionData
+    #                 {
+    #                     DimXvalue = drfLocation[0],
+    #                     DimYvalue = drfLocation[1],
+    #                     DimEntity = dispObj.Tag,
+    #                     Type = dispObj.GetType().ToString()
+    #                 };
+
+    #                 dimData.Add(dimObject);
+    #             }
+
+    #             // sort all CtsDimensionData objects to find mins and max
+    #             if (dimData.Count <= 0)
+    #                 return;
+
+    #             CtsDimensionData[] objInfo = dimData.ToArray();
+    #             Array.Sort(objInfo, CtsDimensionData.SortXdescending());
+
+    #             CtsDimensionData CreateCtsData(int index, CtsDimensionData.ExtremePointId id)
+    #             {
+    #                 return new CtsDimensionData
+    #                 {
+    #                     DimEntity = objInfo[index].DimEntity,
+    #                     DimXvalue = objInfo[index].DimXvalue,
+    #                     DimYvalue = objInfo[index].DimYvalue,
+    #                     ExtPointId = (int)id,
+    #                     Type = objInfo[index].Type
+    #                 };
+    #             }
+
+    #             CtsDimensionData minX = CreateCtsData(objInfo.Length - 1, CtsDimensionData.ExtremePointId.MinX);
+    #             CtsDimensionData maxX = CreateCtsData(0, CtsDimensionData.ExtremePointId.MaxX);
+    #             Array.Sort(objInfo, CtsDimensionData.SortYdescending());
+    #             CtsDimensionData minY = CreateCtsData(objInfo.Length - 1, CtsDimensionData.ExtremePointId.MinY);
+    #             CtsDimensionData maxY = CreateCtsData(0, CtsDimensionData.ExtremePointId.MaxY);
+    #             minY.ExtPointId = (int)CtsDimensionData.ExtremePointId.MaxY;
+    #             maxY.Type = objInfo[0].Type;
+
+    #             switch (drfView.Name)
+    #             {
+    #                 case "4-VIEW-BOTTOM":
+    #                     {
+    #                         // get minX greatest Y vertex
+    #                         FindEndPoints(ref minX, out Point3d vertex1, out Point3d vertex2);
+
+    #                         double[] drfVertex1 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex1.__ToArray(), drfVertex1);
+
+    #                         double[] drfVertex2 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex2.__ToArray(), drfVertex2);
+
+    #                         minX.DimXvalue = drfVertex1[0] <= drfVertex2[0] ? drfVertex1[0] : drfVertex2[0];
+    #                         minX.ExtPointId = drfVertex1[0] <= drfVertex2[0] ? (int)FirstEndPoint : (int)LastEndPoint;
+    #                         minX.DimYvalue = drfVertex1[1] >= drfVertex2[1] ? drfVertex1[1] : drfVertex2[1];
+
+    #                         // get maxX greatest Y vertex
+    #                         FindEndPoints(ref maxX, out Point3d vertex3, out Point3d vertex4);
+
+    #                         double[] drfVertex3 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex3.__ToArray(), drfVertex3);
+
+    #                         double[] drfVertex4 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex4.__ToArray(), drfVertex4);
+
+    #                         maxX.DimXvalue = drfVertex3[0] >= drfVertex4[0] ? drfVertex3[0] : drfVertex4[0];
+    #                         maxX.ExtPointId = drfVertex3[0] >= drfVertex4[0] ? (int)FirstEndPoint : (int)LastEndPoint;
+    #                         maxX.DimYvalue = drfVertex3[1] >= drfVertex4[1] ? drfVertex3[1] : drfVertex4[1];
+
+    #                         // get minY greatest X vertex
+    #                         FindEndPoints(ref minY, out Point3d vertex5, out Point3d vertex6);
+
+    #                         double[] drfVertex5 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex5.__ToArray(), drfVertex5);
+
+    #                         double[] drfVertex6 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex6.__ToArray(), drfVertex6);
+    #                         minY.DimXvalue = drfVertex5[0] >= drfVertex6[0] ? drfVertex5[0] : drfVertex6[0];
+    #                         minY.DimYvalue = drfVertex5[1] <= drfVertex6[1] ? drfVertex5[1] : drfVertex6[1];
+    #                         minY.ExtPointId = drfVertex5[0] >= drfVertex6[0]
+    #                             ? drfVertex5[1] <= drfVertex6[1] ? (int)FirstEndPoint : (int)LastEndPoint
+    #                             : drfVertex5[1] <= drfVertex6[1]
+    #                                 ? (int)FirstEndPoint
+    #                                 : (int)LastEndPoint;
+
+    #                         // get maxY greatest X vertex
+    #                         FindEndPoints(ref maxY, out Point3d vertex7, out Point3d vertex8);
+
+    #                         double[] drfVertex7 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex7.__ToArray(), drfVertex7);
+
+    #                         double[] drfVertex8 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex8.__ToArray(), drfVertex8);
+
+    #                         maxY.DimXvalue = drfVertex7[0] >= drfVertex8[0] ? drfVertex7[0] : drfVertex8[0];
+    #                         maxY.DimYvalue = drfVertex7[0] >= drfVertex8[0]
+    #                             ? drfVertex7[1] >= drfVertex8[1] ? drfVertex7[1] : drfVertex8[1]
+    #                             : drfVertex7[1] >= drfVertex8[1]
+    #                                 ? drfVertex7[1]
+    #                                 : drfVertex8[1];
+    #                         maxY.ExtPointId = drfVertex7[0] >= drfVertex8[0]
+    #                             ? drfVertex7[1] >= drfVertex8[1] ? (int)FirstEndPoint : (int)LastEndPoint
+    #                             : drfVertex7[1] >= drfVertex8[1]
+    #                                 ? (int)FirstEndPoint
+    #                                 : (int)LastEndPoint;
     #                         break;
     #                     }
-
-    #                     if (!(addedFastener is null))
+    #                 case "4-VIEW-RIGHT":
     #                     {
-
-    #                         string reference_set = cmbReferenceSet.Text;
-    #                         addedFastener.SetInstanceUserAttribute("subtract", -1, reference_set, NXOpen.Update.Option.Now);
-
-    #                         switch (reference_set)
-    #                         {
-    #                             case "HANDLING":
-    #                             case "WIRE_TAP":
-    #                                 addedFastener.__Layer(98);
-    #                                 break;
-    #                             case "TOOLING":
-    #                                 addedFastener.__Layer(97);
-    #                                 break;
-    #                             default:
-    #                                 addedFastener.__Layer(99);
-    #                                 break;
-    #                         }
+    #                         // get minY least X vertex
+    #                         FindEndPoints(ref minY, out Point3d vertex1, out Point3d vertex2);
+    #                         double[] drfVertex1 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex1.__ToArray(), drfVertex1);
+    #                         double[] drfVertex2 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex2.__ToArray(), drfVertex2);
+    #                         minY.DimXvalue = drfVertex1[0] <= drfVertex2[0] ? drfVertex1[0] : drfVertex2[0];
+    #                         minY.DimYvalue = drfVertex1[0] <= drfVertex2[0]
+    #                             ? drfVertex1[1] <= drfVertex2[1] ? drfVertex1[1] : drfVertex2[1]
+    #                             : drfVertex1[1] <= drfVertex2[1]
+    #                                 ? drfVertex1[1]
+    #                                 : drfVertex2[1];
+    #                         minY.ExtPointId = drfVertex1[0] <= drfVertex2[0]
+    #                             ? drfVertex1[1] <= drfVertex2[1] ? (int)FirstEndPoint : (int)LastEndPoint
+    #                             : drfVertex1[1] <= drfVertex2[1]
+    #                                 ? (int)FirstEndPoint
+    #                                 : (int)LastEndPoint;
+    #                         // get maxY least X vertex
+    #                         FindEndPoints(ref maxY, out Point3d vertex3, out Point3d vertex4);
+    #                         double[] drfVertex3 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex3.__ToArray(), drfVertex3);
+    #                         double[] drfVertex4 = new double[2];
+    #                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex4.__ToArray(), drfVertex4);
+    #                         if (drfVertex3[0] <= drfVertex4[0])
+    #                             maxY.DimXvalue = drfVertex3[0];
+    #                         else
+    #                             minY.DimXvalue = drfVertex4[0];
+    #                         maxY.DimYvalue = drfVertex3[0] <= drfVertex4[0]
+    #                             ? drfVertex3[1] >= drfVertex4[1] ? drfVertex3[1] : drfVertex4[1]
+    #                             : drfVertex3[1] >= drfVertex4[1]
+    #                                 ? drfVertex3[1]
+    #                                 : drfVertex4[1];
+    #                         maxY.ExtPointId = drfVertex3[0] <= drfVertex4[0]
+    #                             ? drfVertex3[1] >= drfVertex4[1] ? (int)FirstEndPoint : (int)LastEndPoint
+    #                             : drfVertex3[1] >= drfVertex4[1]
+    #                                 ? (int)FirstEndPoint
+    #                                 : (int)LastEndPoint;
+    #                         break;
     #                     }
-    #                 }
-    #             }
-    #             finally
-    #             {
-    #                 session_.__DeleteObjects(csys);
-    #             }
-    #         }
-    #         finally
-    #         {
-    #             listBoxSelection.Enabled = true;
-    #             grpFastenerType.Enabled = true;
-    #             mnuStrMainMenu.Enabled = true;
-    #             btnChangeRefSet.Enabled = true;
-    #             btnPlanView.Enabled = true;
-    #             btnReset.Enabled = true;
-    #             btnWireTaps.Enabled = true;
-    #             chkCycleAdd.Enabled = true;
-    #             chkReverseCycleAdd.Enabled = true;
-    #             chkSubstitute.Enabled = true;
-    #             btnOrigin.Enabled = true;
-    #             btnOk.Enabled = true;
-    #             listBoxSelection.SelectedIndex = -1;
-    #             listBoxSelection.SelectedIndexChanged += ListBoxSelection_SelectedIndexChanged;
-    #         }
-    #     }
-
-    #     public void PlaceFastenersCycle(Part fastener_part)
-    #     {
-    #         try
-    #         {
-    #             string dir = Path.GetDirectoryName(fastener_part.FullPath);
-    #             string leaf = fastener_part.Leaf;
-    #             string[] cycles = CycleAdd1.MetricCyclePair[dir];
-    #             string small_dwl = cycles[0];
-    #             string large_dwl = cycles[1];
-    #             string jack = cycles[2];
-    #             Match match = Regex.Match(leaf, "-shcs-(?<length>\\d+)");
-    #             string actual_dwl = small_dwl;
-
-    #             if (match.Success)
-    #             {
-    #                 int length = int.Parse(match.Groups["length"].Value);
-
-    #                 if (length >= CycleAdd1.MetricDelimeter)
-    #                     actual_dwl = large_dwl;
     #             }
 
-    #             string shcs = fastener_part.FullPath;
-    #             string dowel = actual_dwl;
-    #             Part shcs_part = session_.__FindOrOpen(shcs);
-    #             Part dowel_part = session_.__FindOrOpen(dowel);
-    #             Part jigjack_part = session_.__FindOrOpen(jack);
+    #             double dimSpace = partUnits == BasePart.Units.Inches ? .75 : 20;
+    #             double xDistance = size[0];
+    #             double zDistance = size[2];
 
-    #             if (chkCycleAdd.Checked)
-    #                 PlaceFasteners(shcs_part);
-    #             else
-    #                 PlaceFastenersJigJacks(jigjack_part);
+    #             // orthoRight dimension placement and text value
+    #             UFDrf.Text orthoRightDimText = new UFDrf.Text();
+    #             double[] orthoRightDimOrigin = new double[3];
+    #             orthoRightDimOrigin[0] = drfViewPosition[0] - zDistance / 2 - dimSpace * viewScale;
+    #             orthoRightDimOrigin[1] = drfViewPosition[1];
+    #             orthoRightDimOrigin[2] = 0;
 
-    #             PlaceFasteners(dowel_part);
+    #             // orthoBottom horizontal dimension placement and text value
+    #             UFDrf.Text orthoBtmDimText = new UFDrf.Text();
+    #             double[] orthoBtmHorizDimOrigin = new double[3];
+    #             orthoBtmHorizDimOrigin[0] = drfViewPosition[0];
+    #             orthoBtmHorizDimOrigin[1] = drfViewPosition[1] + zDistance / 2 + dimSpace * viewScale;
+    #             orthoBtmHorizDimOrigin[2] = 0;
 
-    #             if (chkCycleAdd.Checked)
-    #                 PlaceFastenersJigJacks(jigjack_part);
-    #             else
-    #                 PlaceFasteners(shcs_part);
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
+    #             // orthoBottom vertical dimension placement and text value
+    #             UFDrf.Text orthoBtmVertDimText = new UFDrf.Text();
+    #             double[] orthoBtmVertDimOrigin = new double[3];
+    #             orthoBtmVertDimOrigin[0] = drfViewPosition[0] + xDistance / 2 + dimSpace * viewScale;
+    #             orthoBtmVertDimOrigin[1] = drfViewPosition[1];
+    #             orthoBtmVertDimOrigin[2] = 0;
+    #             UFDrf.Object drfObjMaxX = new UFDrf.Object();
+    #             UFDrf.Object drfObjMinX = new UFDrf.Object();
+    #             UFDrf.Object drfObjMaxY = new UFDrf.Object();
+    #             UFDrf.Object drfObjMinY = new UFDrf.Object();
+    #             ufsession_.Drf.InitObjectStructure(ref drfObjMaxX);
+    #             ufsession_.Drf.InitObjectStructure(ref drfObjMinX);
+    #             ufsession_.Drf.InitObjectStructure(ref drfObjMaxY);
+    #             ufsession_.Drf.InitObjectStructure(ref drfObjMinY);
 
-    #     public static void SubstituteFasteners(Part nxPart)
-    #     {
-    #         using (new LockUpdates())
-    #         {
-    #             Component[] fasteners_to_substitue = new Component[0];
-
-    #             if (nxPart.__IsShcs())
-    #                 fasteners_to_substitue = __work_part_.__RootComponent()
-    #                     .GetChildren()
-    #                     .Where(__c => __c._IsShcs_())
-    #                     .ToArray();
-    #             else if (nxPart.__IsDwl())
-    #                 fasteners_to_substitue = __work_part_.__RootComponent()
-    #                     .GetChildren()
-    #                     .Where(__c => __c._IsDwl_())
-    #                     .ToArray();
-    #             else if (nxPart.__IsJckScrew())
-    #                 fasteners_to_substitue = __work_part_.__RootComponent()
-    #                     .GetChildren()
-    #                     .Where(__c => __c._IsJckScrew_())
-    #                     .ToArray();
-    #             else if (nxPart.__IsJckScrewTsg())
-    #                 fasteners_to_substitue = __work_part_.__RootComponent()
-    #                     .GetChildren()
-    #                     .Where(__c => __c._IsJckScrewTsg_())
-    #                     .ToArray();
-
-    #             if (fasteners_to_substitue.Length == 0)
+    #             if (drfView.Name == "4-VIEW-BOTTOM")
     #             {
-    #                 print($"Couldn't find any fasteners to substitue with {nxPart.Leaf}");
+    #                 AssignDraftObject(drfView, minX, ref drfObjMinX);
+    #                 AssignDraftObject(drfView, maxX, ref drfObjMaxX);
+    #                 AssignDraftObject(drfView, minY, ref drfObjMinY);
+    #                 AssignDraftObject(drfView, maxY, ref drfObjMaxY);
+    #                 ufsession_.Drf.CreateVerticalDim(ref drfObjMinY, ref drfObjMaxY, ref orthoBtmVertDimText,
+    #                     orthoBtmVertDimOrigin, out _);
+    #                 ufsession_.Drf.CreateHorizontalDim(ref drfObjMinX, ref drfObjMaxX, ref orthoBtmDimText,
+    #                     orthoBtmHorizDimOrigin, out _);
+    #             }
+
+    #             if (drfView.Name != "4-VIEW-RIGHT")
+    #                 return;
+
+    #             AssignDraftObject(drfView, minY, ref drfObjMinY);
+    #             AssignDraftObject(drfView, maxY, ref drfObjMaxY);
+
+    #             ufsession_.Drf.CreateVerticalDim(
+    #                 ref drfObjMinY,
+    #                 ref drfObjMaxY,
+    #                 ref orthoRightDimText,
+    #                 orthoRightDimOrigin,
+    #                 out _);
+    #         }
+
+    #         private static void FindEndPoints(ref CtsDimensionData maxY, out Point3d vertex3, out Point3d vertex4)
+    #         {
+    #             if (maxY.DimEntity.__ToTaggedObject() is Line line1)
+    #             {
+    #                 vertex3 = line1.StartPoint;
+    #                 vertex4 = line1.EndPoint;
     #                 return;
     #             }
 
-    #             string original_display_name = fasteners_to_substitue[0].DisplayName;
-    #             ReplaceComponentBuilder replaceBuilder = __work_part_.AssemblyManager.CreateReplaceComponentBuilder();
+    #             Edge edge = (Edge)NXObjectManager.Get(maxY.DimEntity);
+    #             edge.GetVertices(out vertex3, out vertex4);
+    #         }
 
-    #             using (new Destroyer(replaceBuilder))
+    #         private static void CreateHoleChartNote(Point3d noteOrigin, string[] holeDia, Tag view)
+    #         {
+    #             Session.UndoMarkId markIdNote = session_.SetUndoMark(Session.MarkVisibility.Invisible, "CreateOrNull Annotation");
+    #             LetteringPreferences letteringPreferences1 = __work_part_.Annotations.Preferences.GetLetteringPreferences();
+
+    #             UserSymbolPreferences userSymbolPreferences1 = __work_part_.Annotations.NewUserSymbolPreferences(
+    #                 UserSymbolPreferences.SizeType.ScaleAspectRatio,
+    #                 1.0,
+    #                 1.0);
+
+    #             Note note1 = __work_part_.Annotations.CreateNote(
+    #                 holeDia,
+    #                 noteOrigin,
+    #                 AxisOrientation.Horizontal,
+    #                 letteringPreferences1,
+    #                 userSymbolPreferences1);
+
+    #             note1.SetName("HOLECHARTNOTE");
+    #             ufsession_.View.ConvertToModel(view, note1.Tag);
+    #             letteringPreferences1.Dispose();
+    #             userSymbolPreferences1.Dispose();
+    #             session_.UpdateManager.DoUpdate(markIdNote);
+    #             session_.DeleteUndoMark(markIdNote, "CreateOrNull Annotation");
+    #         }
+
+    #         private static void SetLayerVisibility(Tag viewToSet)
+    #         {
+    #             View viewObj = (View)NXObjectManager.Get(viewToSet);
+    #             StateInfo[] layerVisibleInView = new StateInfo[256];
+
+    #             for (int i = 0; i < layerVisibleInView.Length - 1; i++)
     #             {
-    #                 replaceBuilder.ReplacementPart = nxPart.FullPath;
-    #                 replaceBuilder.MaintainRelationships = true;
-    #                 replaceBuilder.ReplaceAllOccurrences = false;
-    #                 replaceBuilder.ComponentNameType = ReplaceComponentBuilder.ComponentNameOption.AsSpecified;
-    #                 replaceBuilder.ComponentsToReplace.Add(fasteners_to_substitue);
-    #                 replaceBuilder.Commit();
+    #                 layerVisibleInView[i].Layer = i + 1;
+    #                 layerVisibleInView[i].State = State.Hidden;
     #             }
 
-    #             print($"Substituted fasteners {original_display_name} -> {nxPart.Leaf}");
+    #             layerVisibleInView[0].Layer = 1;
+    #             layerVisibleInView[0].State = State.Visible;
+    #             layerVisibleInView[95].Layer = 96;
+    #             layerVisibleInView[95].State = State.Visible;
+    #             layerVisibleInView[111].State = State.Visible;
+    #             __display_part_.Layers.SetObjectsVisibilityOnLayer(viewObj, layerVisibleInView, true);
     #         }
-    #     }
 
-    #     private static void MotionCallback(double[] positionArray, ref UFUi.MotionCbData mtnCbData, IntPtr clientData)
-    #     {
-    #         GCHandle _handle = (GCHandle)clientData;
-    #         Component component1 = (Component)_handle.Target;
-    #         Session theSession = session_;
-    #         Part workPart = theSession.Parts.Work;
-    #         ComponentPositioner componentPositioner1;
-    #         componentPositioner1 = workPart.ComponentAssembly.Positioner;
-    #         componentPositioner1.ClearNetwork();
-    #         componentPositioner1.BeginMoveComponent();
-    #         _ = theSession.Preferences.Assemblies.InterpartPositioning;
-    #         Network network1;
-    #         network1 = componentPositioner1.EstablishNetwork();
-    #         ComponentNetwork componentNetwork1 = (ComponentNetwork)network1;
-    #         componentNetwork1.MoveObjectsState = true;
-    #         Component nullNXOpen_Assemblies_Component = null;
-    #         componentNetwork1.DisplayComponent = nullNXOpen_Assemblies_Component;
-    #         componentNetwork1.NetworkArrangementsMode = ComponentNetwork.ArrangementsMode.Existing;
-    #         componentNetwork1.RemoveAllConstraints();
-    #         NXObject[] movableObjects1 = new NXObject[1];
-    #         movableObjects1[0] = component1;
-    #         componentNetwork1.SetMovingGroup(movableObjects1);
-    #         componentNetwork1.Solve();
-    #         componentNetwork1.MoveObjectsState = true;
-    #         componentNetwork1.NetworkArrangementsMode = ComponentNetwork.ArrangementsMode.Existing;
-    #         componentNetwork1.BeginDrag();
-    #         component1.GetPosition(out Point3d position, out _);
-
-    #         Vector3d translation1 = new Vector3d(
-    #             positionArray[0] - position.X,
-    #             positionArray[1] - position.Y,
-    #             positionArray[2] - position.Z);
-
-    #         componentNetwork1.DragByTranslation(translation1);
-    #         componentNetwork1.EndDrag();
-    #         componentNetwork1.ResetDisplay();
-    #         componentNetwork1.ApplyToModel();
-    #         componentNetwork1.Solve();
-    #         componentPositioner1.ClearNetwork();
-    #         theSession.UpdateManager.AddToDeleteList(componentNetwork1);
-    #         componentPositioner1.DeleteNonPersistentConstraints();
-    #         componentPositioner1.EndMoveComponent();
-    #         ufsession_.Modl.Update();
-    #     }
-
-    #     public static int MoveComponentWithMouse(Component snapComponent)
-    #     {
-    #         GCHandle __handle = GCHandle.Alloc(snapComponent);
-
-    #         using (session_.__UsingGCHandle(__handle))
-    #         using (session_.__UsingLockUiFromCustom())
+    #         private static TextCfw CreateCfw(int color)
     #         {
-    #             double[] screenPos = new double[3];
-
-    #             ufsession_.Ui.SpecifyScreenPosition(
-    #                 "Move Object",
-    #                 MotionCallback,
-    #                 (IntPtr)__handle,
-    #                 screenPos,
-    #                 out Tag _,
-    #                 out int response);
-
-    #             return response;
+    #             return new TextCfw(color, 1, LineWidth.Normal);
     #         }
-    #     }
 
-    #     private void BtnChangeRefSet_Click(object sender, EventArgs e)
-    #     {
-    #         using (session_.__UsingFormShowHide(this))
+    #         private static void SetLetteringPreferences(BasePart.Units units)
+    #         {
+    #             double size = units == BasePart.Units.Inches ? .125 : 3.175;
+
+    #             using (var letteringPreferences = __display_part_.Annotations.Preferences.GetLetteringPreferences())
+    #             {
+    #                 Lettering generalText = new Lettering
+    #                 {
+    #                     Size = size,
+    #                     CharacterSpaceFactor = 1.0,
+    #                     AspectRatio = 1.0,
+    #                     LineSpaceFactor = 1.0,
+    #                     Cfw = CreateCfw(31),
+    #                     Italic = false
+    #                 };
+
+    #                 letteringPreferences.SetGeneralText(generalText);
+
+    #                 __display_part_.Annotations.Preferences.SetLetteringPreferences(letteringPreferences);
+    #             }
+    #         }
+
+    #         private void SetDraftingPreferences(BasePart.Units units, double scale)
+    #         {
+    #             double unitMultiplier = units == BasePart.Units.Inches ? 1.0 : 25.4;
+
+    #             using (LetteringPreferences letteringPreferences1 =
+    #                    __work_part_.Annotations.Preferences.GetLetteringPreferences())
+    #             {
+    #                 Lettering CreateLettering(double value)
+    #                 {
+    #                     return new Lettering
+    #                     {
+    #                         Size = value * unitMultiplier * scale,
+    #                         CharacterSpaceFactor = 0.9,
+    #                         AspectRatio = 1.0,
+    #                         LineSpaceFactor = 1.0,
+    #                         Cfw = CreateCfw(7),
+    #                         Italic = false
+    #                     };
+    #                 }
+
+    #                 letteringPreferences1.SetDimensionText(CreateLettering(.125));
+    #                 letteringPreferences1.SetAppendedText(CreateLettering(.0625));
+    #                 letteringPreferences1.SetToleranceText(CreateLettering(.0625));
+    #                 letteringPreferences1.SetGeneralText(CreateLettering(.125));
+    #                 __work_part_.Annotations.Preferences.SetLetteringPreferences(letteringPreferences1);
+    #             }
+
+    #             using (LineAndArrowPreferences lineAndArrowPreferences1 = __work_part_.Annotations.Preferences.GetLineAndArrowPreferences())
+    #             {
+    #                 LineCfw Cfw(int color)
+    #                 {
+    #                     return new LineCfw(
+    #                         color,
+    #                         DisplayableObject.ObjectFont.Solid,
+    #                         LineWidth.Thin);
+    #                 }
+
+    #                 lineAndArrowPreferences1.SetFirstExtensionLineCfw(Cfw(141));
+    #                 lineAndArrowPreferences1.SetFirstArrowheadCfw(Cfw(173));
+    #                 lineAndArrowPreferences1.SetFirstArrowLineCfw(Cfw(173));
+    #                 lineAndArrowPreferences1.SetSecondExtensionLineCfw(Cfw(173));
+    #                 lineAndArrowPreferences1.SetSecondArrowheadCfw(Cfw(173));
+    #                 lineAndArrowPreferences1.SetSecondArrowLineCfw(Cfw(173));
+    #                 lineAndArrowPreferences1.ArrowheadLength = .125 * unitMultiplier;
+    #                 lineAndArrowPreferences1.ArrowheadIncludedAngle = 30.0;
+    #                 lineAndArrowPreferences1.StubLength = 0.25 * unitMultiplier;
+    #                 lineAndArrowPreferences1.TextToLineDistance = 0.0625 * unitMultiplier;
+    #                 lineAndArrowPreferences1.LinePastArrowDistance = 0.125 * unitMultiplier;
+    #                 lineAndArrowPreferences1.FirstPosToExtLineDist = 0.0625 * unitMultiplier;
+    #                 lineAndArrowPreferences1.SecondPosToExtLineDist = 0.0625 * unitMultiplier;
+    #                 lineAndArrowPreferences1.DatumLengthPastArrow = 0.0625 * unitMultiplier;
+    #                 lineAndArrowPreferences1.TextOverStubSpaceFactor = 0.1 * unitMultiplier;
+    #                 __display_part_.Annotations.Preferences.SetLineAndArrowPreferences(lineAndArrowPreferences1);
+    #             }
+
+    #             using (var dimensionPreferences = __display_part_.Annotations.Preferences.GetDimensionPreferences())
+    #             {
+    #                 dimensionPreferences.ExtensionLineDisplay = ExtensionLineDisplay.Two;
+    #                 dimensionPreferences.ArrowDisplay = ArrowDisplay.Two;
+    #                 dimensionPreferences.TextPlacement = TextPlacement.Automatic;
+    #                 dimensionPreferences.TextOrientation = TextOrientation.Horizontal;
+    #                 LinearTolerance linearTolerance1 = __display_part_.Annotations.Preferences.GetLinearTolerances();
+    #                 linearTolerance1.PrimaryDimensionDecimalPlaces = units == BasePart.Units.Inches ? 3 : 2;
+    #                 __display_part_.Annotations.Preferences.SetLinearTolerances(linearTolerance1);
+
+    #                 using (var unitsFormatPreferences = dimensionPreferences.GetUnitsFormatPreferences())
+    #                 {
+    #                     if (chkDualDimensions.Checked)
+    #                         unitsFormatPreferences.DualDimensionPlacement = DualDimensionPlacement.Below;
+
+    #                     unitsFormatPreferences.PrimaryDimensionUnit = units == BasePart.Units.Inches
+    #                         ? DimensionUnit.Inches
+    #                         : DimensionUnit.Millimeters;
+
+    #                     unitsFormatPreferences.PrimaryDimensionTextFormat = DimensionTextFormat.Decimal;
+    #                     unitsFormatPreferences.DecimalPointCharacter = DecimalPointCharacter.Period;
+    #                     unitsFormatPreferences.DisplayTrailingZeros = true;
+    #                     unitsFormatPreferences.TolerancePlacement = TolerancePlacement.After;
+    #                     dimensionPreferences.SetUnitsFormatPreferences(unitsFormatPreferences);
+    #                     __work_part_.Annotations.Preferences.SetDimensionPreferences(dimensionPreferences);
+    #                 }
+    #             }
+    #         }
+
+    #         private static void SetViewPreferences()
+    #         {
+    #             ViewPreferences viewPreferences = __work_part_.ViewPreferences;
+    #             viewPreferences.HiddenLines.HiddenlineColor = 0;
+    #             viewPreferences.HiddenLines.HiddenlineFont = NXOpen.Preferences.Font.Dashed;
+    #             viewPreferences.VisibleLines.VisibleColor = 0;
+    #             viewPreferences.VisibleLines.VisibleWidth = NXOpen.Preferences.Width.Original;
+    #             viewPreferences.SmoothEdges.SmoothEdgeColor = 0;
+    #             viewPreferences.SmoothEdges.SmoothEdgeFont = NXOpen.Preferences.Font.Invisible;
+    #             viewPreferences.SmoothEdges.SmoothEdgeWidth = NXOpen.Preferences.Width.Original;
+    #             viewPreferences.General.AutomaticAnchorPoint = false;
+    #             viewPreferences.General.Centerlines = false;
+    #             __work_part_.Preferences.ColorSettingVisualization.MonochromeDisplay = false;
+    #             __work_part_.Preferences.Drafting.DisplayBorders = false;
+    #         }
+
+    #         private static void SetCsysToPlanView()
+    #         {
+    #             // Revision 1.4 – 2017 – 06 – 15
+    #             // This entire method was rewritten.
     #             try
     #             {
-    #                 SelectChangeReferenceSet();
+    #                 Layout layout = __work_part_.Layouts.FindObject("L1");
+    #                 ModelingView backView = __work_part_.ModelingViews.FindObject("Back");
+    #                 layout.ReplaceView(__work_part_.ModelingViews.WorkView, backView, true);
+
+    #                 string viewName = __display_part_.ModelingViews.ToArray().Any(__k => __k.Name == "PLAN")
+    #                     ? "PLAN"
+    #                     : "Top";
+
+    #                 ModelingView view = __display_part_.__FindModelingView(viewName);
+    #                 layout.ReplaceView(backView, view, true);
+    #                 __display_part_.WCS.SetOriginAndMatrix(view.Origin, view.Matrix);
+    #             }
+    #             catch (NXException ex) when (ex.ErrorCode == 925019)
+    #             {
+    #                 print($"Could not replace view in {__work_part_.Leaf}");
     #             }
     #             catch (Exception ex)
     #             {
-    #                 ex.__PrintException();
+    #                 ex.__PrintException($"Part: {__work_part_.Leaf}");
     #             }
-    #     }
+    #             finally
+    #             {
+    #                 __work_part_.ModelingViews.WorkView.UpdateDisplay();
+    #             }
+    #         }
 
-    #     public void SelectChangeReferenceSet()
-    #     {
-    #         try
+    #         private void GetChildComponents(Component assembly)
     #         {
-    #             Component[] fasteners = Selection.SelectManyComponents();
-
-    #             if (fasteners.Length == 0)
-    #                 return;
-
-    #             if (fasteners.Any(__fast => __fast.OwningComponent.Tag != fasteners[0].OwningComponent.Tag))
+    #             foreach (Component child in assembly.GetChildren())
     #             {
-    #                 print("All fasteners must be under the same component");
-    #                 return;
-    #             }
-
-    #             // remove BODY, GRID, BODY_EDGE, MODEL
-    #             List<string> reference_set_names = fasteners.Select(__fast => __fast.Prototype)
-    #                 .OfType<Part>()
-    #                 .SelectMany(__part => __part.GetAllReferenceSets())
-    #                 .Select(__ref => __ref.Name)
-    #                 .Distinct()
-    #                 .ToList();
-
-    #             reference_set_names.Remove("BODY");
-    #             reference_set_names.Remove("BODY_EDGE");
-    #             reference_set_names.Remove("GRID");
-    #             reference_set_names.Remove("MODEL");
-
-    #             // all shcs metric
-    #             if (fasteners.All(__fast => __fast._IsShcs_()) &&
-    #                 fasteners.All(__fast => __fast.Name.ToLower().Contains("mm")))
-    #                 reference_set_names.Add("HANDLING");
-    #             // all shcs english
-    #             else if (fasteners.All(__fast => __fast._IsShcs_()) &&
-    #                      fasteners.All(__fast => !__fast.Name.ToLower().Contains("mm")))
-    #                 reference_set_names.Add("HANDLING");
-    #             // all dwl metric
-    #             else if (fasteners.All(__fast => __fast._IsDwl_()) &&
-    #                      fasteners.All(__fast => __fast.Name.ToLower().Contains("mm")))
-    #                 reference_set_names.Add("TOOLING");
-    #             // all dwl english
-    #             else if (fasteners.All(__fast => __fast._IsDwl_()) &&
-    #                      fasteners.All(__fast => !__fast.Name.ToLower().Contains("mm")))
-    #                 reference_set_names.Add("TOOLING");
-    #             // all jack screw 
-    #             else if (fasteners.All(__fast => __fast._IsJckScrew_()))
-    #             {
-    #             }
-    #             // all jack screw tsg
-    #             else if (fasteners.All(__fast => __fast._IsJckScrewTsg_()))
-    #             {
-    #             }
-    #             else
-    #             {
-    #                 print("You cannot select different type of fasteners in the same selection");
-    #                 return;
-    #             }
-
-    #             string selected_ref_set =
-    #                 session_.__SelectMenuItem14gt("Select Reference Set", reference_set_names.ToArray());
-
-    #             foreach (Component selected_fastener in fasteners)
-    #                 using (session_.__UsingDisplayPartReset())
+    #                 if (child.IsSuppressed)
     #                 {
-    #                     Component actual_fastener;
-
-    #                     if (!(__work_component_ is null)
-    #                         || selected_fastener.Parent.Tag != __display_part_.ComponentAssembly.RootComponent.Tag)
-    #                     {
-    #                         Tag instance = ufsession_.Assem.AskInstOfPartOcc(selected_fastener.Tag);
-    #                         Tag actual_tag = ufsession_.Assem.AskPartOccOfInst(
-    #                             __work_component_.__Prototype().ComponentAssembly.RootComponent.Tag, instance);
-    #                         actual_fastener = (Component)session_.__GetTaggedObject(actual_tag);
-    #                         __display_part_ = actual_fastener.Parent.__Prototype();
-    #                     }
-    #                     else
-    #                         actual_fastener = selected_fastener;
-
-    #                     __display_part_
-    #                         .Features
-    #                         .ToArray()
-    #                         .OfType<ExtractFace>()
-    #                         .Where(__f => __f.FeatureType == "LINKED_BODY")
-    #                         .ToList()
-    #                         .ForEach(__k =>
-    #                         {
-    #                             ufsession_.Wave.IsLinkBroken(__k.Tag, out bool is_broken);
-
-    #                             if (is_broken)
-    #                                 return;
-
-    #                             ufsession_.Wave.AskLinkXform(__k.Tag, out Tag xform);
-
-    #                             ufsession_.So.AskAssyCtxtPartOcc(
-    #                                 xform,
-    #                                 __display_part_.ComponentAssembly.RootComponent.Tag,
-    #                                 out Tag from_part_occ);
-
-    #                             if (from_part_occ == NXOpen.Tag.Null)
-    #                                 return;
-
-    #                             double[] point = new double[3];
-    #                             ufsession_.So.AskPointOfXform(xform, point);
-    #                             Component from_comp = (Component)from_part_occ.__ToTaggedObject();
-
-    #                             if (!from_comp.__Origin().__IsEqualTo(point))
-    #                                 return;
-
-    #                             if (from_part_occ != actual_fastener.Tag)
-    #                                 return;
-
-    #                             session_.__DeleteObjects(__k);
-
-    #                             actual_fastener.SetInstanceUserAttribute("subtract", -1, selected_ref_set,
-    #                                 NXOpen.Update.Option.Now);
-
-    #                             WaveIn(actual_fastener, __display_part_.__SingleSolidBodyOnLayer1());
-    #                         });
+    #                     if (!IsNameValid(child))
+    #                         continue;
+    #                     print($"{child.DisplayName} is suppressed");
+    #                     continue;
     #                 }
+
+    #                 if (assembly.GetChildren() is null)
+    #                     continue;
+
+    #                 if (!IsNameValid(child))
+    #                 {
+    #                     GetChildComponents(child);
+    #                     continue;
+    #                 }
+
+    #                 Tag instance = ufsession_.Assem.AskInstOfPartOcc(child.Tag);
+
+    #                 if (instance == NXOpen.Tag.Null)
+    #                     continue;
+
+    #                 ufsession_.Assem.AskPartNameOfChild(instance, out string partName);
+
+    #                 if (ufsession_.Part.IsLoaded(partName) == 1)
+    #                 {
+    #                     _allComponents.Add(child);
+    #                     GetChildComponents(child);
+    #                     continue;
+    #                 }
+
+    #                 ufsession_.Cfi.AskFileExist(partName, out int status);
+
+    #                 if (status != 0)
+    #                     continue;
+
+    #                 ufsession_.Part.OpenQuiet(partName, out Tag partOpen, out _);
+
+    #                 if (partOpen == NXOpen.Tag.Null)
+    #                     continue;
+
+    #                 _allComponents.Add(child);
+    #                 GetChildComponents(child);
+    #             }
     #         }
-    #         catch (NothingSelectedException)
+
+    #         public static bool IsNameValid(Component comp)
     #         {
+    #             return Regex.IsMatch(comp.DisplayName, RegexDetail);
     #         }
-    #         catch (Exception ex)
+
+    #         public static List<CtsAttributes> CreateMaterialList()
     #         {
-    #             ex.__PrintException();
+    #             string getMaterial = FilePathUcf.PerformStreamReaderString(
+    #                 ":MATERIAL_ATTRIBUTE_NAME:",
+    #                 ":END_MATERIAL_ATTRIBUTE_NAME:");
+
+    #             List<CtsAttributes> compMaterials = FilePathUcf.PerformStreamReaderList(
+    #                 ":COMPONENT_MATERIALS:",
+    #                 ":END_COMPONENT_MATERIALS:");
+
+    #             foreach (CtsAttributes cMaterial in compMaterials)
+    #                 cMaterial.AttrName = getMaterial != string.Empty ? getMaterial : "MATERIAL";
+
+    #             return compMaterials;
     #         }
-    #     }
 
-    #     private void BtnPlanView_Click(object sender, EventArgs e)
-    #     {
-    #         const string createPlanView = "Create Plan View?";
-    #         const string areYouSure = "Are you sure?";
-    #         DialogResult result = MessageBox.Show(createPlanView, areYouSure, MessageBoxButtons.YesNo);
-
-    #         if (result == DialogResult.Yes)
-    #             MakePlanView(__display_part_.WCS.Save());
-    #     }
-
-    #     private void ChkGrid_CheckedChanged(object sender, EventArgs e)
-    #     {
-    #         __display_part_.Preferences.Workplane.ShowGrid = chkGrid.Checked;
-    #     }
-
-    #     private void ForceButtonsOnToolStripMenuItem_Click(object sender, EventArgs e)
-    #     {
-    #         ChangeAllButtonsEnabled(true);
-    #     }
-
-    #     public void ChangeAllButtonsEnabled(bool flag)
-    #     {
-    #         ChangEnabled(flag, listBoxSelection, btnSelectComponent, grpFastenerType, chkGrid, cmbGridSpacing,
-    #             btnPlanView, btnOk, btnOrigin, btnWireTaps, btnChangeRefSet, chkSubstitute,
-    #             chkSubstitute, chkCycleAdd, chkReverseCycleAdd);
-    #         mnu2x.Enabled = flag;
-    #         menuItemUnits.Enabled = flag;
-    #     }
-
-    #     private void CloseAllFastenersMenuItem_Click(object sender, EventArgs e)
-    #     {
-    #         try
+    #         private static void SetHoleChartLayers()
     #         {
-    #             const string oLibraryFasteners = "G:\\0Library\\Fasteners";
+    #             __display_part_.Layers.SetState(230, State.WorkLayer);
+    #             SetLayers(1, 94, 96, 200, 231);
+    #         }
 
-    #             if (__display_part_.FullPath.StartsWith(oLibraryFasteners))
+    #         private static void SetDefaultLayers()
+    #         {
+    #             __display_part_.Layers.SetState(1, State.WorkLayer);
+    #             SetLayers(94, 96, 99, 100, 111, 200, 230);
+    #         }
+
+    #         private static void SetLayers(params int[] layers)
+    #         {
+    #             using (StateCollection layerState = __display_part_.Layers.GetStates())
     #             {
-    #                 print("You cannot run this command with a fastener as your display part.");
-    #                 return;
+    #                 foreach (Category category in __display_part_.LayerCategories)
+    #                     if (category.Name == "ALL")
+    #                         layerState.SetStateOfCategory(category, State.Hidden);
+    #                 __display_part_.Layers.SetStates(layerState, true);
     #             }
 
-    #             List<BasePart> partsToClose = session_.Parts
-    #                 .ToArray()
-    #                 .Where(part => part.FullPath.StartsWith(oLibraryFasteners))
-    #                 .ToList();
-
-    #             partsToClose.ForEach(part => part.__Close(true, true));
-    #             print($"Closed {partsToClose.Count} fastener files.");
-    #         }
-    #         catch (Exception ex)
-    #         {
-    #             ex.__PrintException();
-    #         }
-    #     }
-
-    #     public static void MakePlanView(CartesianCoordinateSystem csys)
-    #     {
-    #         const string l1 = "L1";
-    #         const string top = "Top";
-    #         const string plan = "PLAN";
-    #         __display_part_ = __work_part_;
-
-
-
-
-    #         ModelingView planView = __work_part_.__ModelingViews("PLAN");
-    #         ModelingView modelingView1, modelingView2;
-    #         Layout layout;
-
-    #         if (planView != null)
-    #         {
-    #             layout = __work_part_.Layouts.FindObject(l1);
-    #             modelingView1 = __work_part_.ModelingViews.WorkView;
-    #             modelingView2 = __work_part_.ModelingViews.FindObject(top);
-    #             layout.ReplaceView(modelingView1, modelingView2, true);
-    #             ModelingView tempView = __work_part_.ModelingViews.FindObject(plan);
-    #             session_.__DeleteObjects(tempView);
+    #             layers.Where(layer => __display_part_.Layers.GetState(layer) != State.WorkLayer)
+    #                 .ToList()
+    #                 .ForEach(layer => __display_part_.Layers.SetState(layer, State.Selectable));
     #         }
 
-    #         ufsession_.View.SetViewMatrix("", 3, csys.Tag, null);
-    #         modelingView1 =
-    #             (ModelingView)__display_part_.Views.SaveAs(__display_part_.ModelingViews.WorkView, plan, false, false);
-    #         modelingView2 = __display_part_.ModelingViews.FindObject(top);
-    #         __display_part_.Layouts.FindObject(l1).ReplaceView(modelingView1, modelingView2, true);
-    #         session_.__DeleteObjects(csys);
-    #     }
-
-    #     public static ExtractFace GetLinkedBody(Part owningPart, Component child)
-    #     {
-    #         foreach (Feature feature in owningPart.Features)
+    #         private void SetFormDefaults()
     #         {
-    #             if (feature.FeatureType != "LINKED_BODY")
-    #                 continue;
-
-    #             ufsession_.Wave.AskLinkXform(feature.Tag, out Tag xform);
-
-    #             if (xform == NXOpen.Tag.Null)
-    #                 continue;
-
-    #             ufsession_.So.AskAssyCtxtPartOcc(xform, owningPart.ComponentAssembly.RootComponent.Tag,
-    #                 out Tag fromPartOcc);
-
-    #             if (fromPartOcc == child.Tag)
-    #                 return (ExtractFace)feature;
+    #             chkHoleChart.Checked = false;
+    #             chkDetailSheet.Checked = false;
+    #             chkUpdateViews.Checked = false;
+    #             chkDelete4Views.Checked = false;
+    #             chkHoleChart.Checked = false;
+    #             btnSelect.Enabled = false;
+    #             btnSelectAll.Enabled = false;
+    #             _allComponents.Clear();
     #         }
 
-    #         return null;
-    #     }
-
-    #     public static void WaveOut(Component child)
-    #     {
-    #         Part owningPart = (Part)child.OwningPart;
-
-    #         if (child.Parent.Tag != owningPart.ComponentAssembly.RootComponent.Tag)
-    #             throw new ArgumentException("Can only wave out immediate children.");
-
-    #         ExtractFace linkedBody = GetLinkedBody(owningPart, child);
-    #         session_.__DeleteObjects(linkedBody);
-    #     }
-
-    #     public static void WaveOut()
-    #     {
-    #         if (__work_part_.Tag == __display_part_.Tag)
+    #         private void ChkChart_CheckedChanged(object sender, EventArgs e)
     #         {
-    #             foreach (Component __child in __work_part_.ComponentAssembly.RootComponent.GetChildren())
+    #             if (chkDrillChart.Checked)
+    #                 chkHoleChart.Checked = false;
+
+    #             if (chkHoleChart.Checked)
+    #                 chkDrillChart.Checked = false;
+    #         }
+
+    #         private double[][] GetMinsMaxs(Body body)
+    #         {
+    #             double[] minCorner = new double[3];
+    #             double[] distances = new double[3];
+
+    #             ufsession_.Modl.AskBoundingBoxAligned(body.Tag, __display_part_.WCS.CoordinateSystem.Tag, false, minCorner,
+    #                 new double[3, 3], distances);
+
+    #             return new[]
+    #             {
+    #                 minCorner,
+    #                 distances
+    #             };
+    #         }
+
+    #         private void CreateDetailSheet(string[] drillChart)
+    #         {
+    #             PreferencesBuilder prefBld = __work_part_.SettingsManager.CreatePreferencesBuilder();
+
+    #             using (new Destroyer(prefBld))
+    #             {
+    #                 prefBld.ViewStyle.ViewStyleGeneral.ViewRepresentation = GeneralViewRepresentationOption.PreNx85Exact;
+    #                 prefBld.ViewStyle.ViewStyleGeneral.ExtractedEdges = GeneralExtractedEdgesOption.None;
+    #                 prefBld.Commit();
+    #             }
+
+    #             try
+    #             {
+    #                 const double baseWidthXDir = 11;
+    #                 const double fitSheetXDir = .7;
+    #                 const double baseHeightYDir = 8.5;
+    #                 const double fitSheetYDir = .7;
+    #                 const double borderSpace = 1;
+    #                 const double viewSpace = 2;
+    #                 const double viewMinFromBtm = 1;
+    #                 double scale = 1;
+    #                 const double increment = .125;
+
+    #                 int bodyCount = __display_part_.Bodies
+    #                     .Cast<Body>()
+    #                     .Count(sBody1 => sBody1.Layer == 1);
+
+    #                 if (bodyCount != 1)
+    #                 {
+    #                     print(
+    #                             $"DetailPart Sheet will not be created.  {__display_part_.FullPath} :" +
+    #                             $" Solid bodies on layer one = {bodyCount}"
+    #                     );
+
+    #                     return;
+    #                 }
+
+    #                 Body sBody = __display_part_.__SolidBodyLayer1OrNull();
+
+    #                 if (sBody is null)
+    #                 {
+    #                     print($"Could not find solid body on layer 1 :' {__display_part_.Leaf}'");
+    #                     return;
+    #                 }
+
+    #                 BasePart.Units units = __display_part_.PartUnits;
+    #                 double scaledWidth;
+    #                 double scaledHeight;
+    #                 double[] minCorner = new double[3];
+    #                 double[] distances = new double[3];
+
+    #                 // import 4-VIEW border part
+    #                 ImportPartModes modes = new ImportPartModes
+    #                 {
+    #                     layer_mode = 1,
+    #                     group_mode = 1,
+    #                     csys_mode = 0,
+    #                     plist_mode = 0,
+    #                     view_mode = 0,
+    #                     cam_mode = false,
+    #                     use_search_dirs = false
+    #                 };
+
+    #                 double[][] results = GetMinsMaxs(sBody);
+
+    #                 Box3d_ boxSolid1 = new Box3d_(sBody);
+
+    #                 //minCorner = boxSolid1.Origin.__ToArray();
+    #                 distances = new[] { boxSolid1.XDistance, boxSolid1.YDistance, boxSolid1.ZDistance };
+
+    #                 Body[] layer111SolidBodies = __display_part_.Bodies
+    #                     .ToArray()
+    #                     .Where(b => b.IsSolidBody && b.Layer == 111)
+    #                     .ToArray();
+
+    #                 double x = default;
+    #                 double y = default;
+    #                 double z = default;
+
+    #                 foreach (Body body111 in layer111SolidBodies)
+    #                 {
+    #                     var box111 = new Box3d_(body111);
+    #                     x = Math.Max(boxSolid1.XDistance, box111.XDistance);
+    #                     y = Math.Max(boxSolid1.YDistance, box111.YDistance);
+    #                     z = Math.Max(boxSolid1.ZDistance, box111.ZDistance);
+    #                 }
+
+    #                 double unitMultiplier = units == BasePart.Units.Inches ? 1.0 : 25.4;
+
+    #                 double measureWidth = (distances[0] + distances[2]
+    #                     + borderSpace * unitMultiplier * 2
+    #                     + viewSpace * unitMultiplier)
+    #                     / unitMultiplier;
+
+    #                 double measureHeight = (distances[1] + distances[2] + borderSpace * unitMultiplier +
+    #                                         viewSpace * unitMultiplier +
+    #                                         viewMinFromBtm * unitMultiplier) / unitMultiplier;
+
+    #                 if (measureWidth > baseWidthXDir * fitSheetXDir || measureHeight > baseHeightYDir * fitSheetYDir)
+    #                     do
+    #                     {
+    #                         scale += increment;
+    #                         scaledWidth = baseWidthXDir * fitSheetXDir * scale;
+    #                         scaledHeight = baseHeightYDir * fitSheetYDir * scale;
+    #                     }
+    #                     while (scaledWidth < measureWidth || scaledHeight < measureHeight);
+
+    #                 if (__display_part_.Expressions.ToArray().All(expression => expression.Name != "borderScale"))
+    #                     using (session_.__UsingDoUpdate("Expression"))
+    #                     {
+    #                         __work_part_.Expressions.CreateWithUnits($"borderScale={scale}", null);
+    #                     }
+
+    #                 double sheetWidth = baseWidthXDir * unitMultiplier * scale;
+    #                 double sheetHeight = baseHeightYDir * unitMultiplier * scale;
+
+    #                 DrawingSheet.Unit drawingSheetUnits = units == BasePart.Units.Inches
+    #                     ? DrawingSheet.Unit.Inches
+    #                     : DrawingSheet.Unit.Millimeters;
+
+    #                 DrawingSheet fourViewSheet = __display_part_.DraftingDrawingSheets.InsertSheet(
+    #                     "4-VIEW",
+    #                     drawingSheetUnits,
+    #                     sheetHeight,
+    #                     sheetWidth,
+    #                     1,
+    #                     1,
+    #                     DrawingSheet.ProjectionAngleType.ThirdAngle);
+
+    #                 SetDraftingPreferences(units, scale);
+    #                 SetViewPreferences();
+
+    #                 ufsession_.Part.Import(
+    #                     _borderFile,
+    #                     ref modes,
+    #                     new double[] { 1, 0, 0, 0, 1, 0 },
+    #                     new double[] { 0, 0, 0 },
+    #                     scale,
+    #                     out _);
+
+    #                 Part temp = __display_part_;
+
     #                 try
     #                 {
-    #                     if (__child.Layer != 99 && __child.Layer != 98 && __child.Layer != 97)
-    #                         continue;
-
-    #                     if (__child.IsSuppressed)
-    #                         continue;
-
-    #                     if (!__child.__IsFastener())
-    #                         continue;
-
-    #                     ExtractFace link = GetLinkedBody(__work_part_, __child);
-    #                     WaveOut(__child);
-    #                     session_.__DeleteObjects(link);
+    #                     if (chkDrillChart.Checked && drillChart.Length > 0)
+    #                     {
+    #                         Note note = (Note)session_.__FindByName(@"GRUMBLEGRUMBLE");
+    #                         note.SetText(drillChart);
+    #                     }
+    #                     else
+    #                         session_.__FindByName(@"GRUMBLEGRUMBLE").__Delete();
     #                 }
     #                 catch (Exception ex)
     #                 {
     #                     ex.__PrintException();
     #                 }
 
-    #             return;
+    #                 try
+    #                 {
+    #                     if (chkDtsPath.Checked)
+    #                     {
+    #                         Note note = (Note)session_.__FindByName(@"DTS_FILE_PATH");
+    #                         note.SetText(new[] { __display_part_.FullPath });
+    #                     }
+    #                     else
+    #                         session_.__FindByName(@"DTS_FILE_PATH").__Delete();
+    #                 }
+    #                 catch (Exception ex)
+    #                 {
+    #                     ex.__PrintException();
+    #                 }
+
+    #                 double xDistance = distances[0];
+    #                 double yDistance = distances[1];
+    #                 double zDistance = distances[2];
+    #                 double[] pvRefPoint = new double[2];
+
+    #                 pvRefPoint[0] = sheetWidth * .333 > xDistance
+    #                     ? sheetWidth * .333
+    #                     : borderSpace * unitMultiplier * scale + xDistance / 2;
+
+    #                 pvRefPoint[1] = sheetHeight * .667 > yDistance
+    #                     ? sheetHeight * .667
+    #                     : (viewMinFromBtm * unitMultiplier + viewSpace * unitMultiplier) * scale + zDistance +
+    #                       yDistance / 2;
+
+    #                 DraftingView planDrfView = ImportPlanView(pvRefPoint[0], pvRefPoint[1]);
+    #                 planDrfView.Update();
+    #                 double[] orthogonalBtm = new double[2];
+    #                 double[] orthogonalRight = new double[2];
+    #                 orthogonalRight[0] = pvRefPoint[0] + xDistance / 2 + viewSpace * unitMultiplier * scale + zDistance / 2;
+    #                 orthogonalRight[1] = pvRefPoint[1];
+    #                 ufsession_.Draw.AddOrthographicView(fourViewSheet.Tag, planDrfView.Tag, UFDraw.ProjDir.ProjectRight,
+    #                     orthogonalRight, out Tag rOrthoTag);
+    #                 DraftingView rightDrfView = (DraftingView)NXObjectManager.Get(rOrthoTag);
+    #                 rightDrfView.SetName("4-VIEW-RIGHT");
+    #                 SetLayerVisibility(rOrthoTag);
+    #                 StateInfo stateArray = new StateInfo(111, State.Visible);
+    #                 __display_part_.Layers.SetObjectsVisibilityOnLayer(rightDrfView, new[] { stateArray }, true);
+    #                 orthogonalBtm[0] = pvRefPoint[0];
+    #                 orthogonalBtm[1] = pvRefPoint[1] - yDistance / 2 - viewSpace * unitMultiplier * .667 * scale -
+    #                                    zDistance / 2;
+    #                 ufsession_.Draw.AddOrthographicView(fourViewSheet.Tag, planDrfView.Tag, UFDraw.ProjDir.ProjectBelow,
+    #                     orthogonalBtm, out Tag bOrthoTag);
+    #                 DraftingView btmDrfView = (DraftingView)NXObjectManager.Get(bOrthoTag);
+    #                 btmDrfView.SetName("4-VIEW-BOTTOM");
+    #                 SetLayerVisibility(bOrthoTag);
+    #                 __display_part_.Layers.SetObjectsVisibilityOnLayer(btmDrfView, new[] { stateArray }, true);
+
+    #                 if (!__display_part_.__HasAttribute("DESCRIPTION"))
+    #                     print("Does not have DESCRIPTION att");
+    #                 else
+    #                 {
+    #                     string descValue = __display_part_.__GetAttribute("DESCRIPTION");
+
+    #                     if (descValue.ToUpper() == "NITROGEN PLATE SYSTEM")
+    #                         return;
+    #                 }
+
+    #                 DimensionView(btmDrfView, orthogonalBtm, scale, distances, units);
+    #                 DimensionView(rightDrfView, orthogonalRight, scale, distances, units);
+
+    #                 bool isWireTaper = false;
+    #                 bool isWaitForDev = false;
+
+    #                 foreach (NXObject.AttributeInformation attrNote in __display_part_.GetUserAttributes())
+    #                 {
+    #                     if (attrNote.Title.ToUpper() == "WTN")
+    #                     {
+    #                         string wtnValue = __display_part_.__GetAttribute(attrNote.Title);
+
+    #                         if (wtnValue.ToUpper() == "YES")
+    #                             isWireTaper = true;
+    #                     }
+
+    #                     if (attrNote.Title.ToUpper() != "WFTD")
+    #                         continue;
+
+    #                     string wfftValue =
+    #                         __display_part_.__GetAttribute(attrNote.Title);
+
+    #                     if (wfftValue.ToUpper() == "YES")
+    #                         isWaitForDev = true;
+    #                 }
+
+    #                 List<NXObject> addToDelete = new List<NXObject>();
+
+    #                 foreach (Note drfNote in __display_part_.Notes)
+    #                 {
+    #                     if (drfNote.Layer != 200)
+    #                         continue;
+
+    #                     string[] noteText = drfNote.GetText();
+
+    #                     //Changed from "TSG STANDARD" to "STANDARD" - to work with the GE Border file. 2016-11-16 Duane VW
+    #                     if (noteText[0].Contains("STANDARD") && !isWireTaper)
+    #                         addToDelete.Add(drfNote);
+
+    #                     if (noteText[0].Contains("WAITING FOR FINAL TRIM") && !isWaitForDev)
+    #                         addToDelete.Add(drfNote);
+    #                 }
+
+    #                 if (addToDelete.Count != 0)
+    #                     session_.__DeleteObjects(addToDelete.ToArray());
+    #             }
+    #             catch (Exception ex)
+    #             {
+    #                 ex.__PrintException(__display_part_.Leaf);
+    #             }
     #         }
 
-    #         foreach (Component child in __work_component_.GetChildren())
+    #         public struct CtsDimensionData : IComparable
     #         {
-    #             if (child.IsSuppressed)
-    #                 continue;
+    #             public CtsDimensionData(string objType, Tag objectTag, double x, double y, ExtremePointId extremeId) : this()
+    #             {
+    #                 Type = objType;
+    #                 DimEntity = objectTag;
+    #                 DimXvalue = x;
+    #                 DimYvalue = y;
+    #             }
 
-    #             if (!child.__IsFastener())
-    #                 continue;
+    #             public string Type { get; set; }
 
-    #             Component protoPartOcc = _GetProtoPartOcc(__work_part_, child);
-    #             WaveOut(protoPartOcc);
+    #             public Tag DimEntity { get; set; }
+
+    #             public double DimXvalue { get; set; }
+
+    #             public double DimYvalue { get; set; }
+
+    #             public int ExtPointId { get; set; }
+
+    #             int IComparable.CompareTo(object obj)
+    #             {
+    #                 return string.CompareOrdinal(Type, ((CtsDimensionData)obj).Type);
+    #             }
+
+    #             private class SortXdescending_ : IComparer
+    #             {
+    #                 int IComparer.Compare(object x, object x1)
+    #                 {
+    #                     if (x is null && x1 is null) return 0;
+    #                     if (x is null ^ x1 is null) return 1;
+    #                     if (((CtsDimensionData)x).DimXvalue > ((CtsDimensionData)x1).DimXvalue) return -1;
+    #                     return ((CtsDimensionData)x).DimXvalue < ((CtsDimensionData)x1).DimXvalue ? 1 : 0;
+    #                 }
+    #             }
+
+    #             private class SortYdescending_ : IComparer
+    #             {
+    #                 public int Compare(object y, object y1)
+    #                 {
+    #                     if (y is null && y1 is null) return 0;
+    #                     if (y is null ^ y1 is null) return 1;
+    #                     if (((CtsDimensionData)y).DimYvalue > ((CtsDimensionData)y1).DimYvalue) return -1;
+    #                     return ((CtsDimensionData)y).DimYvalue < ((CtsDimensionData)y1).DimYvalue ? 1 : 0;
+    #                 }
+    #             }
+
+    #             public static IComparer SortXdescending()
+    #             {
+    #                 return new SortXdescending_();
+    #             }
+
+    #             public static IComparer SortYdescending()
+    #             {
+    #                 return new SortYdescending_();
+    #             }
+
+    #             public enum ExtremePointId
+    #             {
+    #                 None,
+    #                 MinX,
+    #                 MaxX,
+    #                 MinY,
+    #                 MaxY,
+    #                 MinZ,
+    #                 MaxZ
+    #             }
+
+    #             public enum EndPointAssociativity
+    #             {
+    #                 None = 0,
+    #                 FirstEndPoint = UFConstants.UF_DRF_first_end_point,
+    #                 LastEndPoint = UFConstants.UF_DRF_last_end_point
+    #             }
+    #         }
+
+    #         [Obsolete]
+    #         public static class DrillChart
+    #         {
+    #             private const string HoleChartText = @"U:\nxFiles\UfuncFiles\HoleChart.txt";
+
+    #             private static Part __display_part_ => Session.GetSession().Parts.Display;
+
+    #             public static string[] Main()
+    #             {
+    #                 string[] lines = File.ReadAllLines(HoleChartText)
+    #                     .Where(s => !string.IsNullOrEmpty(s))
+    #                     .Where(s => !string.IsNullOrWhiteSpace(s))
+    #                     .Where(s => !s.StartsWith("//"))
+    #                     .ToArray();
+
+    #                 IList<string[]> holeChart = new List<string[]>();
+
+    #                 for (int i = 1; i < lines.Length; i++)
+    #                 {
+    #                     string[] split = lines[i].Split('\t');
+
+    #                     holeChart.Add(split);
+    #                 }
+
+    #                 // Get the solid body on layer 1
+    #                 Body solidBody = __display_part_.__SolidBodyLayer1OrNull();
+
+    #                 if (solidBody is null)
+    #                     throw new ArgumentException("Display part does not have solid body on layer 1");
+
+    #                 IDictionary<double, Tuple<int[], IList<Face>, string[]>> dict =
+    #                     new Dictionary<double, Tuple<int[], IList<Face>, string[]>>();
+
+    #                 foreach (Face face in solidBody.GetFaces())
+    #                 {
+    #                     if (face.SolidFaceType != Face.FaceType.Cylindrical)
+    #                         continue;
+
+    #                     if (!face.Name.ToUpper().Contains("HOLECHART"))
+    #                         continue;
+
+    #                     double[] point = new double[3];
+    #                     double[] dir = new double[3];
+    #                     double[] box = new double[6];
+
+    #                     ufsession_.Modl.AskFaceData(face.Tag, out int _, point, dir, box, out double radius, out _, out _);
+
+    #                     double diameter = radius * 2; // * 25.4;
+
+    #                     string[] actualLine =
+    #                     (
+    #                         from line in holeChart
+    #                         let tempRadius = double.Parse(line[1])
+    #                         where System.Math.Abs(tempRadius - diameter) < .000000001
+    #                         select line
+    #                     ).FirstOrDefault();
+
+    #                     if (actualLine is null)
+    #                     {
+    #                         print($"Couldn't find hole chart: {diameter}");
+
+    #                         continue;
+    #                     }
+
+    #                     if (!dict.ContainsKey(diameter))
+    #                         dict.Add(diameter,
+    #                             new Tuple<int[], IList<Face>, string[]>(new[] { 0 }, new List<Face>(), actualLine));
+
+    #                     dict[diameter].Item1[0]++;
+
+    #                     dict[diameter].Item2.Add(face);
+    #                 }
+
+    #                 session_.__DeleteObjects(__display_part_.Layers.GetAllObjectsOnLayer(230).OfType<Note>().ToArray());
+
+    #                 char letter = 'A';
+
+    #                 IList<IList<string>> actualLines = new List<IList<string>>();
+
+    #                 foreach (double diameter in dict.Keys)
+    #                 {
+    #                     Tuple<int[], IList<Face>, string[]> tuple = dict[diameter];
+    #                     int count = tuple.Item1[0];
+    #                     IList<string> list = new List<string>();
+    #                     IList<Face> faces = tuple.Item2;
+    #                     string[] message = tuple.Item3;
+    #                     list.Add($"{letter} ");
+    #                     string temp = message.Length == 3 ? $"{message[2]} " : $"{message[0]} ";
+    #                     string[] split = Regex.Split(temp, "FOR\\s");
+    #                     list.Add($"{split[0]}FOR");
+    #                     list.Add(split[1]);
+    #                     list.Add($"QTY {count}");
+    #                     actualLines.Add(list);
+
+    #                     foreach (Face face in faces)
+    #                     {
+    #                         double[] point = new double[3];
+    #                         double[] dir = new double[3];
+    #                         double[] box = new double[6];
+
+    #                         ufsession_.Modl.AskFaceData(face.Tag, out int _, point, dir, box, out double _, out _, out _);
+
+    #                         using (session_.__UsingDoUpdate())
+    #                         {
+    #                             using (LetteringPreferences letteringPreferences1 =
+    #                                    __work_part_.Annotations.Preferences.GetLetteringPreferences())
+    #                             using (UserSymbolPreferences userSymbolPreferences1 =
+    #                                    __work_part_.Annotations.NewUserSymbolPreferences(
+    #                                        UserSymbolPreferences.SizeType.ScaleAspectRatio,
+    #                                        1.0,
+    #                                        1.0))
+    #                             {
+    #                                 userSymbolPreferences1.SetLengthAndHeight(.125, .125);
+
+    #                                 Note note1 = __work_part_.Annotations.CreateNote(
+    #                                     new[] { $"{letter}" },
+    #                                     point.__ToPoint3d(),
+    #                                     AxisOrientation.Horizontal,
+    #                                     letteringPreferences1,
+    #                                     userSymbolPreferences1);
+
+    #                                 note1.Layer = 230;
+
+    #                                 note1.RedisplayObject();
+
+    #                                 note1.SetName("HOLECHARTNOTE");
+    #                                 ufsession_.View.ConvertToModel(__display_part_.ModelingViews.WorkView.Tag, note1.Tag);
+
+    #                                 DraftingNoteBuilder draftingNoteBuilder1 =
+    #                                     __work_part_.Annotations.CreateDraftingNoteBuilder(note1);
+
+    #                                 using (session_.__UsingBuilderDestroyer(draftingNoteBuilder1))
+    #                                 {
+    #                                     draftingNoteBuilder1.Style.LetteringStyle.GeneralTextSize = .125;
+    #                                     draftingNoteBuilder1.Commit();
+    #                                 }
+    #                             }
+    #                         }
+    #                     }
+
+    #                     letter++;
+    #                 }
+
+    #                 IList<string> note = new List<string>();
+
+    #                 foreach (IList<string> t in actualLines)
+    #                 {
+    #                     string _letter = t[0];
+    #                     string drill = t[1];
+    #                     string fastenr = t[2];
+    #                     string quantity = t[3];
+    #                     note.Add($"{_letter}{drill}");
+    #                     note.Add($"{fastenr}{quantity}".ToUpper());
+    #                     note.Add("");
+    #                     string s = t.Aggregate("", (current, k) => current + k);
+    #                     note.Add(s);
+    #                 }
+
+    #                 return note.ToArray();
+    #             }
     #         }
     #     }
+    pass
 
-    #     private static void BlockOrigin()
+
+class UFuncAutoSizeComponent:
+    #     public class AutoSizeComponent : _UFunc
+    # {
+    #     private const double Tolerance = .0001;
+    #     private static UserDefinedClass _myUdoClass;
+
+    #     public static int Startup()
     #     {
+    #         const int retValue = 0;
+
     #         try
     #         {
-    #             SetWcsToWorkPart();
+    #             initializeUDO(false);
     #         }
     #         catch (Exception ex)
     #         {
     #             ex.__PrintException();
     #         }
+
+    #         return retValue;
     #     }
 
-    #     public static void SelectTarget()
+    #     public static int initializeUDO(bool alertUser)
     #     {
-    #         NXOpen.Selection.Response response = UI.GetUI().SelectionManager.SelectTaggedObject(
-    #             "Select A Target Body",
-    #             "Select A Target Body",
-    #             NXOpen.Selection.SelectionScope.AnyInAssembly,
-    #             NXOpen.Selection.SelectionAction.ClearAndEnableSpecific,
-    #             false,
-    #             false,
-    #             new[] { Selection.SolidBodyMask },
-    #             out TaggedObject _object,
-    #             out _);
-
-    #         switch (response)
+    #         try
     #         {
-    #             case NXOpen.Selection.Response.Back:
-    #             case NXOpen.Selection.Response.Cancel:
-    #                 throw new NothingSelectedException();
-    #             case NXOpen.Selection.Response.Ok:
-    #                 if (!__work_part_.__HasDynamicBlock())
+    #             if (!(_myUdoClass is null))
+    #             {
+    #                 print("udo already exists");
+    #                 return 0;
+    #             }
+
+    #             if (alertUser)
+    #                 UI.GetUI()
+    #                     .NXMessageBox.Show(
+    #                         "UDO",
+    #                         NXMessageBox.DialogType.Information,
+    #                         "Registering C# UDO Class"
+    #                     );
+
+    #             // Define your custom UDO class
+    #             _myUdoClass = session_.UserDefinedClassManager.CreateUserDefinedObjectClass(
+    #                 "UdoAutoSizeComponent",
+    #                 "Update Order Size"
+    #             );
+    #             // Setup properties on the custom UDO class
+    #             _myUdoClass.AllowQueryClassFromName = UserDefinedClass.AllowQueryClass.On;
+    #             // Register callbacks for the UDO class
+    #             _myUdoClass.AddUpdateHandler(myUpdateCB);
+    #         }
+    #         catch (Exception ex)
+    #         {
+    #             ex.__PrintException();
+    #         }
+
+    #         return 0;
+    #     }
+
+    #     public static int myUpdateCB(UserDefinedLinkEvent updateEvent)
+    #     {
+    #         try
+    #         {
+    #             if (updateEvent.AssociatedObject is null)
+    #                 return 0;
+
+    #             int assocObjStatus = ufsession_.Obj.AskStatus(updateEvent.AssociatedObject.Tag);
+    #             Tag solidBodyTag = updateEvent.AssociatedObject.Tag;
+    #             Body udoBody = (Body)NXObjectManager.Get(solidBodyTag);
+    #             Part updatePart = (Part)udoBody.OwningPart;
+
+    #             if (assocObjStatus != 3)
+    #                 return 0;
+
+    #             int[] updateFlag = updateEvent.UserDefinedObject.GetIntegers();
+
+    #             if (updateFlag[0] == 1)
+    #                 SizeComponent(updatePart);
+
+    #             return 0;
+    #         }
+    #         catch (Exception ex)
+    #         {
+    #             ex.__PrintException();
+    #         }
+
+    #         return 0;
+    #     }
+
+    #     public static int Main1()
+    #     {
+    #         const int retValue = 0;
+    #         try
+    #         {
+    #             UserDefinedClass myUdoClass =
+    #                 session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
+    #                     "UdoAutoSizeComponent"
+    #                 );
+
+    #             if (myUdoClass is null)
+    #                 return retValue;
+
+    #             UserDefinedObject[] currentUdo =
+    #                 __work_part_.UserDefinedObjectManager.GetUdosOfClass(myUdoClass);
+
+    #             if (currentUdo.Length != 0)
+    #                 SizeComponent(__work_part_);
+    #         }
+    #         catch (Exception ex)
+    #         {
+    #             ex.__PrintException();
+    #         }
+
+    #         return retValue;
+    #     }
+
+    #     public static void SizeComponent(Part updatePartSize)
+    #     {
+    #         try
+    #         {
+    #             bool isMetric = false;
+    #             BasePart basePart = updatePartSize;
+
+    #             if (basePart.PartUnits == BasePart.Units.Millimeters)
+    #                 isMetric = true;
+
+    #             foreach (Feature featDynamic in __work_part_.Features.ToArray())
+    #             {
+    #                 if (featDynamic.FeatureType != "BLOCK")
+    #                     continue;
+
+    #                 if (featDynamic.Name != "DYNAMIC BLOCK")
+    #                     continue;
+
+    #                 Block block1 = (Block)featDynamic;
+    #                 Body[] sizeBody = block1.GetBodies();
+    #                 BlockFeatureBuilder blockFeatureBuilderSize = __work_part_.Features.CreateBlockFeatureBuilder(block1);
+    #                 blockFeatureBuilderSize.GetOrientation(out Vector3d xAxis, out Vector3d yAxis);
+
+    #                 double[] initOrigin =
     #                 {
-    #                     __display_part_.WCS.SetOriginAndMatrix(_Point3dOrigin, _Matrix3x3Identity);
+    #                     blockFeatureBuilderSize.Origin.X,
+    #                     blockFeatureBuilderSize.Origin.Y,
+    #                     blockFeatureBuilderSize.Origin.Z
+    #                 };
 
-    #                     // if(!__work_part_.__TrySingleSolidBodyLayer1(out Body solid_body))
-    #                     // throw new NoSolidBodyOnLayer1Exception();
+    #                 double[] xVector = { xAxis.X, xAxis.Y, xAxis.Z };
+    #                 double[] yVector = { yAxis.X, yAxis.Y, yAxis.Z };
+    #                 double[] initMatrix = new double[9];
+    #                 ufsession_.Mtx3.Initialize(xVector, yVector, initMatrix);
+    #                 ufsession_.Csys.CreateMatrix(initMatrix, out Tag tempMatrix);
+    #                 ufsession_.Csys.CreateTempCsys(initOrigin, tempMatrix, out Tag tempCsys);
 
-    #                     Body solid_body = __work_part_.__SingleSolidBodyOnLayer1();
-    #                     solid_body.__Translucency(75);
-    #                     print("Part does not have a dynamic block. You will need to move the csys manually.");
-    #                     return;
+    #                 if (tempCsys == Tag.Null)
+    #                 {
+    #                     UI.GetUI()
+    #                         .NXMessageBox.Show(
+    #                             "Auto Size Update Error",
+    #                             NXMessageBox.DialogType.Error,
+    #                             "Description update failed " + updatePartSize.FullPath
+    #                         );
+    #                     continue;
     #                 }
 
-    #                 __work_part_.__DynamicBlock().GetBodies()[0].__Translucency(75);
-    #                 __display_part_.WCS.SetOriginAndMatrix(__work_part_.__DynamicBlock().__Origin(),
-    #                     __work_part_.__DynamicBlock().__Orientation());
-    #                 return;
-    #             case NXOpen.Selection.Response.ObjectSelectedByName:
-    #                 throw new InvalidOperationException("Cannot select an object by name");
-    #             case NXOpen.Selection.Response.ObjectSelected:
-    #                 Body selected = (Body)_object;
+    #                 // get named expressions
 
-    #                 if (selected.IsOccurrence)
+    #                 bool isNamedExpression = false;
+
+    #                 double xValue = 0,
+    #                     yValue = 0,
+    #                     zValue = 0;
+
+    #                 string burnDirValue = string.Empty;
+    #                 string burnoutValue = string.Empty;
+    #                 string grindValue = string.Empty;
+    #                 string grindTolValue = string.Empty;
+    #                 string diesetValue = string.Empty;
+    #                 NewMethod7(
+    #                     ref isNamedExpression,
+    #                     ref xValue,
+    #                     ref yValue,
+    #                     ref zValue,
+    #                     ref burnDirValue,
+    #                     ref burnoutValue,
+    #                     ref grindValue,
+    #                     ref grindTolValue,
+    #                     ref diesetValue
+    #                 );
+
+    #                 burnDirValue = burnDirValue.Replace("\"", string.Empty);
+    #                 burnoutValue = burnoutValue.Replace("\"", string.Empty);
+    #                 grindValue = grindValue.Replace("\"", string.Empty);
+    #                 grindTolValue = grindTolValue.Replace("\"", string.Empty);
+    #                 diesetValue = diesetValue.Replace("\"", string.Empty);
+
+    #                 if (isNamedExpression)
     #                 {
-    #                     Body proto_selected = selected.__Prototype();
-    #                     Part part = selected.OwningComponent.__Prototype();
+    #                     // get bounding box of solid body
 
-    #                     if (!part.__HasDynamicBlock())
+    #                     double[] minCorner = new double[3];
+    #                     double[,] directions = new double[3, 3];
+    #                     double[] distances = new double[3];
+    #                     double[] grindDistances = new double[3];
+
+    #                     ufsession_.Modl.AskBoundingBoxExact(
+    #                         sizeBody[0].Tag,
+    #                         tempCsys,
+    #                         minCorner,
+    #                         directions,
+    #                         distances
+    #                     );
+    #                     ufsession_.Modl.AskBoundingBoxExact(
+    #                         sizeBody[0].Tag,
+    #                         tempCsys,
+    #                         minCorner,
+    #                         directions,
+    #                         grindDistances
+    #                     );
+
+    #                     NewMethod6(isMetric, xValue, yValue, zValue, burnoutValue, distances);
+
+    #                     double xDist = distances[0];
+    #                     double yDist = distances[1];
+    #                     double zDist = distances[2];
+
+    #                     double xGrindDist = grindDistances[0];
+    #                     double yGrindDist = grindDistances[1];
+    #                     double zGrindDist = grindDistances[2];
+
+    #                     Array.Sort(distances);
+    #                     Array.Sort(grindDistances);
+
+    #                     // ReSharper disable once ConvertIfStatementToSwitchStatement
+    #                     if (burnoutValue.ToLower() == "no" && grindValue.ToLower() == "no")
     #                     {
-    #                         __work_component_ = selected.OwningComponent;
-    #                         __work_component_.__Translucency(75);
-    #                         __display_part_.WCS.SetOriginAndMatrix(__work_component_.__Origin(),
-    #                             __work_component_.__Orientation());
-    #                         print("Part does not have a dynamic block. You will need to move the csys manually.");
-    #                         return;
+    #                         updatePartSize.SetUserAttribute(
+    #                             "DESCRIPTION",
+    #                             -1,
+    #                             $"{distances[0]:f2} X {distances[1]:f2} X {distances[2]:f2}",
+    #                             Update.Option.Now
+    #                         );
     #                     }
+    # 						// sql
+    # 						// get this to work
+    #                     else if (burnoutValue.ToLower() == "no" && grindValue.ToLower() == "yes")
+    #                     {
+    #                         // ReSharper disable once ConvertIfStatementToSwitchStatement
+    #                         if (burnDirValue.ToLower() == "x")
+    #                         {
+    #                             NewMethod5(grindTolValue, distances, grindDistances, xGrindDist);
+    #                         }
 
-    #                     Point3d origin = part.__DynamicBlock().__Origin();
-    #                     Matrix3x3 orientation = part.__DynamicBlock().__Orientation();
-    #                     CartesianCoordinateSystem csys =
-    #                         part.CoordinateSystems.CreateCoordinateSystem(origin, orientation, false);
-    #                     selected.OwningComponent.__Prototype().__FindReferenceSet("BODY")
-    #                         .AddObjectsToReferenceSet(new[] { csys });
-    #                     CartesianCoordinateSystem occ_csys =
-    #                         (CartesianCoordinateSystem)selected.OwningComponent.FindOccurrence(csys);
-    #                     __display_part_.WCS.SetCoordinateSystemCartesianAtCsys(occ_csys);
-    #                     __work_component_ = selected.OwningComponent;
-    #                     __work_component_.__Translucency(75);
-    #                     session_.__DeleteObjects(occ_csys, csys);
-    #                 }
-    #                 else if (__work_part_.__HasDynamicBlock())
-    #                 {
-    #                     if (__work_part_.__DynamicBlock().GetBodies()[0].Tag != selected.Tag)
-    #                         throw new InvalidOperationException("Selected body that wasn't the dynamic block");
+    #                         if (burnDirValue.ToLower() == "y")
+    #                         {
+    #                             NewMethod4(grindTolValue, distances, grindDistances, yGrindDist);
+    #                         }
 
-    #                     __work_part_.__DynamicBlock().GetBodies()[0].__Translucency(75);
-    #                     __display_part_.WCS.SetOriginAndMatrix(__work_part_.__DynamicBlock().__Origin(),
-    #                         __work_part_.__DynamicBlock().__Orientation());
+    #                         if (burnDirValue.ToLower() == "z")
+    #                         {
+    #                             NewMethod3(grindTolValue, distances, grindDistances, zGrindDist);
+    #                         }
+    #                     }
+    #                     else if (grindValue.ToLower() == "yes")
+    #                         NewMethod2(
+    #                             burnDirValue,
+    #                             grindTolValue,
+    #                             xGrindDist,
+    #                             yGrindDist,
+    #                             zGrindDist
+    #                         );
+    #                     else
+    #                         NewMethod1(burnDirValue, xDist, yDist, zDist);
+
+    #                     if (diesetValue != "yes")
+    #                         continue;
+
+    #                     string description = updatePartSize.GetStringUserAttribute(
+    #                         "DESCRIPTION",
+    #                         -1
+    #                     );
+
+    #                     if (description.ToLower().Contains("dieset"))
+    #                         continue;
+
+    #                     description += " DIESET";
+
+    #                     updatePartSize.SetUserAttribute(
+    #                         "DESCRIPTION",
+    #                         -1,
+    #                         description,
+    #                         Update.Option.Now
+    #                     );
     #                 }
     #                 else
     #                 {
-    #                     Body[] bodies = __work_part_.Bodies.ToArray()
-    #                         .Where(__b => __b.IsSolidBody)
-    #                         .Where(__b => __b.Layer == 1)
-    #                         .ToArray();
+    #                     double[] distances = NewMethod(isMetric, sizeBody, tempCsys);
+    #                     Array.Sort(distances);
 
-    #                     if (bodies.Length == 1)
-    #                     {
-    #                         __work_part_.__SingleSolidBodyOnLayer1().__Translucency(75);
-    #                         __display_part_.WCS.SetOriginAndMatrix(_Point3dOrigin, _Matrix3x3Identity);
-    #                         print("Part does not have a dynamic block. You will need to move the csys manually.");
-    #                     }
+    #                     updatePartSize.SetUserAttribute(
+    #                         "DESCRIPTION",
+    #                         -1,
+    #                         $"{distances[0]:f2} X {distances[1]:f2} X {distances[2]:f2}",
+    #                         Update.Option.Now
+    #                     );
+
+    #                     if (diesetValue != "yes")
+    #                         continue;
+    #                     string description = updatePartSize.GetStringUserAttribute(
+    #                         "DESCRIPTION",
+    #                         -1
+    #                     );
+
+    #                     if (description.ToLower().Contains("dieset"))
+    #                         continue;
+    #                     description += " DIESET";
+    #                     updatePartSize.SetUserAttribute(
+    #                         "DESCRIPTION",
+    #                         -1,
+    #                         description,
+    #                         Update.Option.Now
+    #                     );
     #                 }
+    #             }
 
-    #                 break;
+    #             // If the work part does not have a {"DESCRIPTION"} attribute then we want to return;.
+    #             if (!updatePartSize.__HasAttribute("DESCRIPTION"))
+    #                 return;
+
+    #             // The string value of the {"DESCRIPTION"} attribute.
+    #             string descriptionAtt = updatePartSize.__GetAttribute("DESCRIPTION");
+
+    #             // Checks to see if the {_workPart} contains an expression with value {"yes"} and name of {lwrParallel} or {uprParallel}.
+    #             if (
+    #                 updatePartSize.Expressions.ToArray().Any(
+    #                     exp =>
+    #                         (
+    #                             exp.Name.ToLower() == "lwrparallel"
+    #                             || exp.Name.ToLower() == "uprparallel"
+    #                         )
+    #                         && exp.StringValue.ToLower() == "yes"
+    #                 )
+    #             )
+    #                 // Appends {"Parallel"} to the end of the {"DESCRIPTION"}
+    #                 // attribute string value and then sets the it to be the value of the {"DESCRIPTION"} attribute.
+    #                 updatePartSize.SetUserAttribute(
+    #                     "DESCRIPTION",
+    #                     -1,
+    #                     descriptionAtt + " PARALLEL",
+    #                     Update.Option.Now
+    #                 );
+    #         }
+    #         catch (Exception ex)
+    #         {
+    #             ex.__PrintException();
     #         }
     #     }
 
-    #     public static void SetWcsToWorkPart()
+    #     private static void NewMethod7(
+    #         ref bool isNamedExpression,
+    #         ref double xValue,
+    #         ref double yValue,
+    #         ref double zValue,
+    #         ref string burnDirValue,
+    #         ref string burnoutValue,
+    #         ref string grindValue,
+    #         ref string grindTolValue,
+    #         ref string diesetValue
+    #     )
     #     {
-    #         Block dynamicBlock = __work_part_.__DynamicBlock();
-    #         Point3d origin = dynamicBlock.__Origin();
-    #         Matrix3x3 orientation = dynamicBlock.__Orientation();
-
-    #         if (__work_part_.Tag == __display_part_.Tag)
+    #         foreach (Expression exp in __work_part_.Expressions.ToArray())
     #         {
-    #             __display_part_.WCS.SetOriginAndMatrix(origin, orientation);
-    #             return;
+    #             if (exp.Name == "AddX")
+    #             {
+    #                 isNamedExpression = true;
+    #                 xValue = exp.Value;
+    #             }
+
+    #             if (exp.Name == "AddY")
+    #             {
+    #                 isNamedExpression = true;
+    #                 yValue = exp.Value;
+    #             }
+
+    #             if (exp.Name == "AddZ")
+    #             {
+    #                 isNamedExpression = true;
+    #                 zValue = exp.Value;
+    #             }
+
+    #             if (exp.Name == "BurnDir")
+    #             {
+    #                 isNamedExpression = true;
+    #                 burnDirValue = exp.RightHandSide;
+    #             }
+
+    #             if (exp.Name == "Burnout")
+    #             {
+    #                 isNamedExpression = true;
+    #                 burnoutValue = exp.RightHandSide;
+    #             }
+
+    #             if (exp.Name == "Grind")
+    #             {
+    #                 isNamedExpression = true;
+    #                 grindValue = exp.RightHandSide;
+    #             }
+
+    #             if (exp.Name == "GrindTolerance")
+    #             {
+    #                 isNamedExpression = true;
+    #                 grindTolValue = exp.RightHandSide;
+    #             }
+
+    #             if (exp.Name == "DiesetNote")
+    #                 diesetValue = exp.RightHandSide;
     #         }
-
-    #         CartesianCoordinateSystem absCsys =
-    #             __display_part_.CoordinateSystems.CreateCoordinateSystem(_Point3dOrigin, _Matrix3x3Identity, true);
-
-    #         CartesianCoordinateSystem compCsys = __display_part_.CoordinateSystems.CreateCoordinateSystem(
-    #             __work_component_.__Origin(),
-    #             __work_component_.__Orientation(),
-    #             true);
-
-    #         Point3d newOrigin = origin.__MapCsysToCsys(compCsys, absCsys);
-    #         Vector3d newXVec = __work_component_.__Orientation().__AxisX().__MapCsysToCsys(compCsys, absCsys);
-    #         Vector3d newYVec = __work_component_.__Orientation().__AxisY().__MapCsysToCsys(compCsys, absCsys);
-    #         Matrix3x3 newOrientation = newXVec.__ToMatrix3x3(newYVec);
-    #         __display_part_.WCS.SetOriginAndMatrix(newOrigin, newOrientation);
     #     }
 
-    #     private void mnu2x_Click(object sender, EventArgs e)
+    #     private static void NewMethod6(
+    #         bool isMetric,
+    #         double xValue,
+    #         double yValue,
+    #         double zValue,
+    #         string burnoutValue,
+    #         double[] distances
+    #     )
     #     {
-    #         switch (_1x_2x)
+    #         // add stock values
+
+    #         distances[0] += xValue;
+    #         distances[1] += yValue;
+    #         distances[2] += zValue;
+
+    #         if (isMetric)
+    #             for (int i = 0; i < distances.Length; i++)
+    #                 distances[i] /= 25.4d;
+
+    #         if (burnoutValue.ToLower() == "no")
+    #             distances.__RoundTo_125();
+    #     }
+
+    #     private static void NewMethod5(
+    #         string grindTolValue,
+    #         double[] distances,
+    #         double[] grindDistances,
+    #         double xGrindDist
+    #     )
+    #     {
+    #         if (xGrindDist.__Sub(grindDistances[0]).__Abs() < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{grindDistances[0]:f3} {grindTolValue} X {distances[1]:f2} X {distances[2]:f2}"
+    #             );
+
+    #         if (xGrindDist.__Sub(grindDistances[1]).__Abs() < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{distances[0]:f2} X {grindDistances[1]:f3} {grindTolValue} X {distances[2]:f2}"
+    #             );
+
+    #         if (xGrindDist.__Sub(grindDistances[2]).__Abs() < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{distances[0]:f2} X {distances[1]:f2} X {grindDistances[2]:f3} {grindTolValue}"
+    #             );
+    #     }
+
+    #     private static void NewMethod4(
+    #         string grindTolValue,
+    #         double[] distances,
+    #         double[] grindDistances,
+    #         double yGrindDist
+    #     )
+    #     {
+    #         if (yGrindDist.__Sub(grindDistances[0]) < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{grindDistances[0]:f3}"
+    #                     + " "
+    #                     + grindTolValue
+    #                     + " X "
+    #                     + $"{distances[1]:f2}"
+    #                     + " X "
+    #                     + $"{distances[2]:f2}"
+    #             );
+
+    #         if (yGrindDist.__Sub(grindDistances[1]) < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{distances[0]:f2}"
+    #                     + " X "
+    #                     + $"{grindDistances[1]:f3}"
+    #                     + " "
+    #                     + grindTolValue
+    #                     + " X "
+    #                     + $"{distances[2]:f2}"
+    #             );
+
+    #         if (yGrindDist.__Sub(grindDistances[2]) < Tolerance)
+    #             __work_part_.__SetAttribute(
+    #                 "DESCRIPTION",
+    #                 $"{distances[0]:f2}"
+    #                     + " X "
+    #                     + $"{distances[1]:f2}"
+    #                     + " X "
+    #                     + $"{grindDistances[2]:f3}"
+    #                     + " "
+    #                     + grindTolValue
+    #             );
+    #     }
+
+    #     private static void NewMethod3(
+    #         string grindTolValue,
+    #         double[] distances,
+    #         double[] grindDistances,
+    #         double zGrindDist
+    #     )
+    #     {
+    #         if (System.Math.Abs(zGrindDist - grindDistances[0]) < Tolerance)
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 $"{grindDistances[0]:f3}"
+    #                     + " "
+    #                     + grindTolValue
+    #                     + " X "
+    #                     + $"{distances[1]:f2}"
+    #                     + " X "
+    #                     + $"{distances[2]:f2}",
+    #                 Update.Option.Now
+    #             );
+
+    #         if (System.Math.Abs(zGrindDist - grindDistances[1]) < Tolerance)
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 $"{distances[0]:f2}"
+    #                     + " X "
+    #                     + $"{grindDistances[1]:f3}"
+    #                     + " "
+    #                     + grindTolValue
+    #                     + " X "
+    #                     + $"{distances[2]:f2}",
+    #                 Update.Option.Now
+    #             );
+
+    #         if (System.Math.Abs(zGrindDist - grindDistances[2]) < Tolerance)
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 $"{distances[0]:f2}"
+    #                     + " X "
+    #                     + $"{distances[1]:f2}"
+    #                     + " X "
+    #                     + $"{grindDistances[2]:f3}"
+    #                     + " "
+    #                     + grindTolValue,
+    #                 Update.Option.Now
+    #             );
+    #     }
+
+    #     private static void NewMethod2(
+    #         string burnDirValue,
+    #         string grindTolValue,
+    #         double xGrindDist,
+    #         double yGrindDist,
+    #         double zGrindDist
+    #     )
+    #     {
+    #         if (burnDirValue.ToLower() == "x")
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 "BURN " + $"{xGrindDist:f3}" + " " + grindTolValue,
+    #                 Update.Option.Now
+    #             );
+
+    #         if (burnDirValue.ToLower() == "y")
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 "BURN " + $"{yGrindDist:f3}" + " " + grindTolValue,
+    #                 Update.Option.Now
+    #             );
+
+    #         if (burnDirValue.ToLower() == "z")
+    #             __work_part_.SetUserAttribute(
+    #                 "DESCRIPTION",
+    #                 -1,
+    #                 "BURN " + $"{zGrindDist:f3}" + " " + grindTolValue,
+    #                 Update.Option.Now
+    #             );
+    #     }
+
+    #     private static void NewMethod1(
+    #         string burnDirValue,
+    #         double xDist,
+    #         double yDist,
+    #         double zDist
+    #     )
+    #     {
+    #         double distance;
+
+    #         switch (burnDirValue.ToLower())
     #         {
-    #             case 1:
-    #                 mnu2x.Text = "2x";
-    #                 _1x_2x = 2;
+    #             case "x":
+    #                 distance = xDist;
     #                 break;
-    #             case 2:
-    #                 mnu2x.Text = "1x";
-    #                 _1x_2x = 1;
+    #             case "y":
+    #                 distance = yDist;
+    #                 break;
+    #             case "z":
+    #                 distance = zDist;
     #                 break;
     #             default:
-    #                 print("Couldn't determine 1x or 2x");
-    #                 break;
+    #                 return;
     #         }
 
-    #         if (rdoTypeScrew.Checked)
-    #             LoadShcs();
+    #         __work_part_.__SetAttribute(
+    #             "DESCRIPTION",
+    #             $"BURN {distance:f2}"
+    #         );
     #     }
 
-    #     private void RdoFastener_CheckedChanged(object sender, EventArgs e)
+    #     private static double[] NewMethod(bool isMetric, Body[] sizeBody, Tag tempCsys)
     #     {
-    #         if (rdoTypeScrew.Checked)
-    #             LoadShcs();
+    #         // get bounding box of solid body
 
-    #         if (rdoTypeDowel.Checked)
-    #             LoadDowel();
+    #         double[] minCorner = new double[3];
+    #         double[,] directions = new double[3, 3];
+    #         double[] distances = new double[3];
 
-    #         if (rdoTypeJack.Checked)
-    #             LoadJack();
+    #         ufsession_.Modl.AskBoundingBoxExact(
+    #             sizeBody[0].Tag,
+    #             tempCsys,
+    #             minCorner,
+    #             directions,
+    #             distances
+    #         );
+
+    #         if (isMetric)
+    #             for (int i = 0; i < distances.Length; i++)
+    #                 distances[i] /= 25.4d;
+
+    #         distances.__RoundTo_125();
+    #         return distances;
     #     }
 
-    #     private void cmbPreferred_SelectedIndexChanged(object sender, EventArgs e)
+    #     public override void execute()
     #     {
-    #         Settings.Default.add_fasteners_preferred_index = cmbPreferred.SelectedIndex;
-    #         Settings.Default.Save();
-
-    #         if (rdoTypeScrew.Checked)
-    #             LoadShcs();
     #     }
 
-    #     public struct CycleAdd1
+    #     public static void CreateAutoSizeUdo()
     #     {
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public static double MetricCycle;
+    #         UserDefinedClass myUdOclass = null;
 
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public static double EnglishCycle;
-
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public double Diameter;
-
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public string ShortDowel;
-
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public string LongDowel;
-
-    #         /// <summary>
-    #         /// </summary>
-    #         // ReSharper disable once NotAccessedField.Global
-    #         public string JackCycle;
-
-    #         /// <summary>
-    #         /// </summary>
-    #         /// <param name="diameter"></param>
-    #         /// <param name="shortDowel"></param>
-    #         /// <param name="longDowel"></param>
-    #         /// <param name="jackCycle"></param>
-    #         public CycleAdd1(double diameter, string shortDowel, string longDowel, string jackCycle)
+    #         try
     #         {
-    #             Diameter = diameter;
-    #             ShortDowel = shortDowel;
-    #             LongDowel = longDowel;
-    #             JackCycle = jackCycle;
+    #             myUdOclass = session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
+    #                 "UdoAutoSizeComponent"
+    #             );
+    #         }
+    #         catch (NXException ex) when (ex.ErrorCode == 1535022)
+    #         {
+    #             AutoSizeComponent.initializeUDO(false);
+    #             myUdOclass = session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
+    #                 "UdoAutoSizeComponent"
+    #             );
     #         }
 
-    #         public static int MetricDelimeter = 30;
+    #         if (myUdOclass is null)
+    #             return;
 
-    #         public static int EnglishDelimeter = 125;
+    #         UserDefinedObject[] currentUdo = __work_part_.UserDefinedObjectManager.GetUdosOfClass(
+    #             myUdOclass
+    #         );
 
-    #         public static IDictionary<string, string[]> MetricCyclePair
+    #         if (currentUdo.Length != 0)
+    #             return;
+
+    #         BasePart myBasePart = __work_part_;
+    #         UserDefinedObjectManager myUdOmanager = myBasePart.UserDefinedObjectManager;
+    #         UserDefinedObject myUdo = myUdOmanager.CreateUserDefinedObject(myUdOclass);
+    #         UserDefinedObject.LinkDefinition[] myLinks = new UserDefinedObject.LinkDefinition[1];
+    #         int numBodies = __work_part_.Bodies.Cast<Body>().Count(body => body.Layer == 1);
+
+    #         if (numBodies != 1)
+    #             return;
+
+    #         foreach (Body body in __work_part_.Bodies)
     #         {
-    #             get
-    #             {
-    #                 return new Dictionary<string, string[]>
-    #             {
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\004",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\005",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\006",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\008",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\8mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\8mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\8mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\010",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\10mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\10mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\10mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\012",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\12mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\12mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\016",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\16mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\16mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\020",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\20mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\20mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\024",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\030",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews\036",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0006",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0008",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0010",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0250",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0313",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0313-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0313-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0313-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0375",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0375-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0375-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0375-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0500",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0500-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0500-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0625",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0625-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0625-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0750",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\0875",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\1000",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\1250",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews\1500",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
+    #             if (body.Layer != 1)
+    #                 continue;
 
-
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\004-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\005-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\006-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-020.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\6mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\6mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\008-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\8mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\8mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\8mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\010-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\10mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\10mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\10mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\012-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\12mm-dwl-025.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\12mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\016-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\16mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\16mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\020-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\20mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\20mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\024-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\030-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\Metric\SocketHeadCapScrews-2x\036-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\Dowels\24mm-dwl-050.prt",
-    #                         @"G:\0Library\Fasteners\Metric\JackScrews\12mm-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0006-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0008-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0010-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0250-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0250-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0250-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0313-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0313-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0313-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0313-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0375-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0375-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0375-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0375-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0500-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0500-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0500-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0625-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0625-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0625-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0750-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\0875-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\0750-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\1000-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\1250-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 },
-    #                 {
-    #                     @"G:\0Library\Fasteners\English\SocketHeadCapScrews-2x\1500-2x",
-    #                     new[]
-    #                     {
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-100.prt",
-    #                         @"G:\0Library\Fasteners\English\Dowels\1000-dwl-200.prt",
-    #                         @"G:\0Library\Fasteners\English\JackScrews\_0500-jck-screw-tsg.prt"
-    #                     }
-    #                 }
-    #             };
-    #             }
-    #         }
-    #     }
-
-
-    #     public struct CycleAddStruct
-    #     {
-    #         public CycleAddStruct(string shcsDir, string dwlPathMin, string dwlPathMax, string jckTsgPath)
-    #         {
-    #             ShcsDir = shcsDir;
-    #             DwlPathMin = dwlPathMin;
-    #             DwlPathMax = dwlPathMax;
-    #             JckTsgPath = jckTsgPath;
-    #         }
-
-    #         public string ShcsDir { get; }
-
-    #         public string DwlPathMin { get; }
-
-    #         public string DwlPathMax { get; }
-
-    #         public string JckTsgPath { get; }
-
-    #         public static double MetricCycle;
-
-    #         public static double EnglishCycle;
-
-    #         public const int METRIC_DELIMETER = 30;
-
-    #         public const int ENGLISH_DELIMETER = 125;
-
-    #         private const string metric_shcs_dir = "G:\\0Library\\Fasteners\\Metric\\SocketHeadCapScrews\\";
-    #         private const string metric_dwls_dir = "G:\\0Library\\Fasteners\\Metric\\Dowels\\";
-    #         private const string metric_jck_tsg_dir = "G:\\0Library\\Fasteners\\Metric\\JackScrews\\";
-
-    #         private const string english_shcs_dir = "G:\\0Library\\Fasteners\\English\\SocketHeadCapScrews\\";
-    #         private const string english_dwls_dir = "G:\\0Library\\Fasteners\\English\\Dowels\\";
-    #         private const string english_jck_tsg_dir = "G:\\0Library\\Fasteners\\English\\JackScrews\\";
-
-    #         public static readonly IDictionary<string, CycleAddStruct> CycleAddDict = new Dictionary<string, CycleAddStruct>
-    #         {
-    #             [metric_shcs_dir + "004"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "004.prt",
-    #                 metric_dwls_dir + "6mm-dwl-020.prt",
-    #                 metric_dwls_dir + "6mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "6mm-jck-screw-tsg.prt.prt"),
-
-    #             [metric_shcs_dir + "005"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "005.prt",
-    #                 metric_dwls_dir + "6mm-dwl-020.prt",
-    #                 metric_dwls_dir + "6mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "6mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "006"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "006.prt",
-    #                 metric_dwls_dir + "6mm-dwl-020.prt",
-    #                 metric_dwls_dir + "6mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "6mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "008"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "008.prt",
-    #                 metric_dwls_dir + "8mm-dwl-025.prt",
-    #                 metric_dwls_dir + "8mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "8mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "010"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "010.prt",
-    #                 metric_dwls_dir + "10mm-dwl-025.prt",
-    #                 metric_dwls_dir + "10mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "10mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "012"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "012.prt",
-    #                 metric_dwls_dir + "12mm-dwl-025.prt",
-    #                 metric_dwls_dir + "12mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "016"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "016.prt",
-    #                 metric_dwls_dir + "16mm-dwl-050.prt",
-    #                 metric_dwls_dir + "16mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "020"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "020.prt",
-    #                 metric_dwls_dir + "20mm-dwl-050.prt",
-    #                 metric_dwls_dir + "20mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "024"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "024.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "030"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "030.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [metric_shcs_dir + "036"] = new CycleAddStruct(
-    #                 metric_shcs_dir + "036.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_dwls_dir + "24mm-dwl-050.prt",
-    #                 metric_jck_tsg_dir + "12mm-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0006"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0006.prt",
-    #                 english_dwls_dir + "0250-dwl-100.prt",
-    #                 english_dwls_dir + "0250-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0250-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0008"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0008.prt",
-    #                 english_dwls_dir + "0250-dwl-100.prt",
-    #                 english_dwls_dir + "0250-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0250-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0010"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0010.prt",
-    #                 english_dwls_dir + "0250-dwl-100.prt",
-    #                 english_dwls_dir + "0250-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0250-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0250"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0250.prt",
-    #                 english_dwls_dir + "0250-dwl-100.prt",
-    #                 english_dwls_dir + "0250-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0250-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0313"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0313.prt",
-    #                 english_dwls_dir + "0313-dwl-100.prt",
-    #                 english_dwls_dir + "0313-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0375-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0375"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0375.prt",
-    #                 english_dwls_dir + "0375-dwl-100.prt",
-    #                 english_dwls_dir + "0375-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0375-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0500"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0500.prt",
-    #                 english_dwls_dir + "0500-dwl-100.prt",
-    #                 english_dwls_dir + "0500-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0750"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0750.prt",
-    #                 english_dwls_dir + "0750-dwl-100.prt",
-    #                 english_dwls_dir + "0750-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "0875"] = new CycleAddStruct(
-    #                 english_shcs_dir + "0875.prt",
-    #                 english_dwls_dir + "0750-dwl-100.prt",
-    #                 english_dwls_dir + "0750-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "1000"] = new CycleAddStruct(
-    #                 english_shcs_dir + "1000.prt",
-    #                 english_dwls_dir + "1000-dwl-100.prt",
-    #                 english_dwls_dir + "1000-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "1250"] = new CycleAddStruct(
-    #                 english_shcs_dir + "1250.prt",
-    #                 english_dwls_dir + "1000-dwl-100.prt",
-    #                 english_dwls_dir + "1000-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt"),
-
-    #             [english_shcs_dir + "1500"] = new CycleAddStruct(
-    #                 english_shcs_dir + "1500.prt",
-    #                 english_dwls_dir + "1000-dwl-100.prt",
-    #                 english_dwls_dir + "1000-dwl-200.prt",
-    #                 english_jck_tsg_dir + "_0500-jck-screw-tsg.prt")
-    #         };
-    #     }
-
-
-    #     public class FastenerListItem
-    #     {
-    #         public FastenerListItem(string __text, string __value)
-    #         {
-    #             Text = __text;
-    #             Value = __value;
-    #         }
-
-    #         public string Text { get; set; }
-
-    #         public string Value { get; }
-    #     }
-
-
-
-    #     public struct GridSpacing
-    #     {
-    #         public double Value { get; private set; }
-
-    #         public string StringValue { get; }
-
-    #         public GridSpacing(double value, string stringValue)
-    #             : this()
-    #         {
-    #             Value = value;
-    #             StringValue = stringValue;
-    #         }
-
-    #         public override string ToString()
-    #         {
-    #             return StringValue;
+    #             myLinks[0].AssociatedObject = body;
+    #             myLinks[0].Status = UserDefinedObject.LinkStatus.UpToDate;
+    #             myUdo.SetLinks(UserDefinedObject.LinkType.Type1, myLinks);
+    #             int[] updateOff = { 1 };
+    #             myUdo.SetIntegers(updateOff);
     #         }
     #     }
     # }
     pass
 
 
-
-class UFuncAddPierceComponents:
-
-
-
-#     public partial class AddPierceComponents : _UFuncForm
-#     {
-#         private static List<Tuple<Component, Face>> _addedComponents;
-
-#         public AddPierceComponents()
-#         {
-#             InitializeComponent();
-#         }
-
-#         internal static string PunchDetail { get; set; }
-
-#         internal static string ButtonDetail { get; set; }
-
-#         internal static string RetainerDetail { get; set; }
-
-#         private void btnSelect_Click(object sender, EventArgs e)
-#         {
-#             try
-#             {
-#                 Hide();
-
-#                 #region Revision • 1.1 – 2017 / 11 / 28
-
-#                 string[] controls = session_.Parts.ToArray().Select(part => part.FullPath)
-#                     .Where(s => s.Contains("strip-control")).ToArray();
-#                 switch (controls.Length)
-#                 {
-#                     case 0:
-#                         print("There is no strip control loaded. Please load one before continuing.");
-#                         return;
-#                     case 1:
-#                         break;
-#                     default:
-#                         print("More than one strip control is loaded:");
-#                         controls.ToList().ForEach(print);
-#                         return;
-#                 }
-
-#                 #endregion
-
-#                 ButtonDetail = txtButton.Text;
-#                 PunchDetail = txtPunch.Text;
-#                 RetainerDetail = txtRetainer.Text;
-#                 using (session_.__UsingDisplayPartReset())
-#                 {
-#                     if (chkAssembly.Checked)
-#                         SameAssembly(rdoMetric.Checked, chkButton.Checked, chkPunch.Checked, chkRetainer.Checked);
-#                     else
-# #pragma warning disable CS0612 // Type or member is obsolete
-#                         DifferentAssemblies(rdoMetric.Checked, chkButton.Checked, chkPunch.Checked,
-#                             chkRetainer.Checked);
-# #pragma warning restore CS0612 // Type or member is obsolete
-#                 }
-#             }
-#             catch (Exception ex)
-#             {
-#                 ex.__PrintException();
-#             }
-#             finally
-#             {
-#                 Show();
-#             }
-#         }
-
-#         public static string GetNextDetailNumber(Part snapUspLsp)
-#         {
-#             string detailDirectory = Path.GetDirectoryName(snapUspLsp.FullPath);
-#             string partLeaf = snapUspLsp.Leaf.ToLower();
-#             Regex shortRegex = new Regex("^([0-9]+)-([0-9]{3,})-(lsp|usp)([0-9]{1})$");
-#             Match match = shortRegex.Match(partLeaf);
-#             if (match.Success)
-#             {
-#                 string customerJobNumber = match.Groups[1].Value;
-#                 string partOp = match.Groups[2].Value;
-#                 string uspLsp = match.Groups[3].Value;
-#                 int uspLspOp = int.Parse(match.Groups[4].Value);
-#                 bool isLower = uspLsp == "lsp";
-#                 int detailNumber = isLower
-#                     ? GetLspDetailNumberShort(uspLspOp)
-#                     : GetUspDetailNumberShort(uspLspOp);
-#                 string newDisplayName;
-#                 do
-#                 {
-#                     newDisplayName = $"{customerJobNumber}-{partOp}-{detailNumber++}";
-
-#                     if (snapUspLsp.ComponentAssembly.RootComponent.GetChildren()
-#                         .Any(component => component.DisplayName == newDisplayName))
-#                         continue;
-
-#                     string newFullPath = $"{detailDirectory}\\{newDisplayName}.prt";
-
-#                     if (File.Exists(newFullPath))
-#                         continue;
-
-#                     if (isLower && detailNumber > 499)
-#                         throw new Exception("Exceeded the detail numbers for the Lower");
-
-#                     if (detailNumber > 990)
-#                         throw new Exception("Exceeded the detail numbers for the Upper");
-
-#                     return newFullPath;
-#                 }
-#                 while (true);
-#             }
-
-#             Regex longRegex = new Regex("^([0-9]{4,5})-([0-9]{3,})-(lsp|usp)([0-9]{3})$");
-#             match = longRegex.Match(partLeaf);
-#             if (!match.Success) throw new ArgumentException("Part is not a valid Usp or Lsp.", nameof(snapUspLsp));
-#             {
-#                 string customerJobNumber = match.Groups[1].Value;
-#                 string partOp = match.Groups[2].Value;
-#                 string uspLsp = match.Groups[3].Value;
-#                 int uspLspOp = int.Parse(match.Groups[4].Value);
-#                 bool isLower = uspLsp == "lsp";
-#                 int detailNumber = isLower
-#                     ? GetLspDetailNumberLong(uspLspOp)
-#                     : GetUspDetailNumberLong(uspLspOp);
-#                 string newDisplayName;
-#                 do
-#                 {
-#                     newDisplayName = $"{customerJobNumber}-{partOp}-{detailNumber++}";
-
-#                     if (snapUspLsp.ComponentAssembly.RootComponent.GetChildren()
-#                         .Any(component => component.DisplayName == newDisplayName))
-#                         continue;
-
-#                     string newFullPath = $"{detailDirectory}\\{newDisplayName}.prt";
-
-#                     if (File.Exists(newFullPath))
-#                         continue;
-
-#                     if (isLower && detailNumber > 499)
-#                         throw new Exception("Exceeded the detail numbers for the Lower");
-
-#                     if (detailNumber > 990)
-#                         throw new Exception("Exceeded the detail numbers for the Upper");
-
-#                     return newFullPath;
-#                 }
-#                 while (true);
-#             }
-#         }
-
-#         /// <summary>
-#         ///     The path to the "Smart Button Metric.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartButtonMetric => "G:\\0Library\\Button\\Smart Button Metric.prt";
-
-#         /// <summary>
-#         ///     The path to the "Smart Button English.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartButtonEnglish => "G:\\0Library\\Button\\Smart Button English.prt";
-
-#         /// <summary>
-#         ///     The path to the "Smart Punch Metric.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartPunchMetric => "G:\\0Library\\PunchPilot\\Metric\\Smart Punch Metric.prt";
-
-#         /// <summary>
-#         ///     The path to the "Smart Punch English.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartPunchEnglish => "G:\\0Library\\PunchPilot\\English\\Smart Punch English.prt";
-
-#         /// <summary>
-#         ///     The path to the "Smart Ball Lock Retainer Metric.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartBallLockRetainerMetric =>
-#             "G:\\0Library\\Retainers\\Metric\\Smart Ball Lock Retainer Metric.prt";
-
-#         /// <summary>
-#         ///     The path to the "Smart Ball Lock Retainer English.prt" file in G:\\0Library.
-#         /// </summary>
-#         public static string SmartBallLockRetainerEnglish =>
-#             "G:\\0Library\\Retainers\\English\\Smart Ball Lock Retainer English.prt";
-
-#         /// <summary>
-#         ///     Returns the name of the reference set to be used for AddPierceComponents.
-#         /// </summary>
-#         public static string SlugRefsetName => "SLUG BUTTON ALIGN";
-
-#         // ReSharper disable once StringLiteralTypo
-#         public static string RetainerAlignPunchFaceName => "ALIGNPUNCH";
-
-#         // ReSharper disable once StringLiteralTypo
-#         public static string PunchTopFaceName => "PUNCHTOPFACE";
-
-#         public static string PiercedP => "PIERCED_P";
-
-#         public static string PiercedW => "PIERCED_W";
-
-#         public static string PiercedType => "PIERCED_TYPE";
-
-#         public static Regex PiercedFaceRegex => new Regex("^PIERCED_([0-9]{1,})$");
-
-#         public static int GetUspDetailNumberShort(int number)
-#         {
-#             switch (number)
-#             {
-#                 case 1:
-#                     return 600;
-#                 case 2:
-#                     return 700;
-#                 case 3:
-#                     return 800;
-#                 case 4:
-#                     return 900;
-#                 case 5:
-#                     return 650;
-#                 case 6:
-#                     return 750;
-#                 case 7:
-#                     return 850;
-#                 case 8:
-#                     return 950;
-#                 case 9:
-#                     return 675;
-#                 case 10:
-#                     return 775;
-#                 case 11:
-#                     return 875;
-#                 case 12:
-#                     return 975;
-#                 case 13:
-#                     return 680;
-#                 case 14:
-#                     return 780;
-#                 case 15:
-#                     return 880;
-#                 default:
-#                     return 881;
-#             }
-#         }
-
-#         public static int GetLspDetailNumberShort(int number)
-#         {
-#             switch (number)
-#             {
-#                 case 1:
-#                     return 100;
-#                 case 2:
-#                     return 200;
-#                 case 3:
-#                     return 300;
-#                 case 4:
-#                     return 400;
-#                 case 5:
-#                     return 150;
-#                 case 6:
-#                     return 250;
-#                 case 7:
-#                     return 350;
-#                 case 8:
-#                     return 450;
-#                 case 9:
-#                     return 175;
-#                 case 10:
-#                     return 275;
-#                 case 11:
-#                     return 375;
-#                 case 12:
-#                     return 475;
-#                 case 13:
-#                     return 180;
-#                 case 14:
-#                     return 280;
-#                 case 15:
-#                     return 380;
-#                 default:
-#                     return 381;
-#             }
-#         }
-
-#         public static int GetUspDetailNumberLong(int number)
-#         {
-#             switch (number)
-#             {
-#                 case 10:
-#                     return 600;
-#                 case 20:
-#                     return 700;
-#                 case 30:
-#                     return 800;
-#                 case 40:
-#                     return 900;
-#                 case 50:
-#                     return 650;
-#                 case 60:
-#                     return 750;
-#                 case 70:
-#                     return 850;
-#                 case 80:
-#                     return 950;
-#                 case 90:
-#                     return 675;
-#                 case 100:
-#                     return 775;
-#                 case 110:
-#                     return 875;
-#                 case 120:
-#                     return 975;
-#                 case 130:
-#                     return 680;
-#                 case 140:
-#                     return 780;
-#                 case 150:
-#                     return 880;
-#                 default:
-#                     return 881;
-#             }
-#         }
-
-#         public static int GetLspDetailNumberLong(int number)
-#         {
-#             switch (number)
-#             {
-#                 case 10:
-#                     return 100;
-#                 case 20:
-#                     return 200;
-#                 case 30:
-#                     return 300;
-#                 case 40:
-#                     return 400;
-#                 case 50:
-#                     return 150;
-#                 case 60:
-#                     return 250;
-#                 case 70:
-#                     return 350;
-#                 case 80:
-#                     return 450;
-#                 case 90:
-#                     return 175;
-#                 case 100:
-#                     return 275;
-#                 case 110:
-#                     return 375;
-#                 case 120:
-#                     return 475;
-#                 case 130:
-#                     return 180;
-#                 case 140:
-#                     return 280;
-#                 case 150:
-#                     return 380;
-#                 default:
-#                     return 381;
-#             }
-#         }
-
-#         /// <summary>
-#         ///     Gets the current detail number of all the children of <paramref name="snapComponent" /> who passes the Regex
-#         ///     <see cref="Constants.Regex_Detail" />, or returns -1 if no valid children are found.
-#         /// </summary>
-#         /// <param name="snapComponent">The component.</param>
-#         /// <returns>The highest/current detail or -1 if <paramref name="snapComponent" /> doesn't have any child who are valid.</returns>
-#         public static int GetCurrentDetailNumberOfChildren(Component snapComponent)
-#         {
-#             int[] validDetailNumbers = snapComponent.GetChildren()
-#                 .Select(component => component.DisplayName)
-#                 .Select(s => Regex.Match(s, RegexDetail))
-#                 .Where(match => match.Success)
-#                 .Select(match => int.Parse(match.Groups[3].Value))
-#                 .ToArray();
-
-#             return validDetailNumbers.Length >= 0
-#                 ? -1
-#                 : validDetailNumbers.Max();
-#         }
-
-#         /// <summary>
-#         ///     Checks to see if a face is named properly for AddPierceComponents.
-#         /// </summary>
-#         /// <param name="snapFace">The face whose name is to be checked.</param>
-#         /// <remarks>
-#         ///     The integer that is tagged at the end of the face name will be used to find the
-#         ///     <see cref="NXOpen.Features. DatumCsys" /> that
-#         ///     is associated with the face.
-#         /// </remarks>
-#         /// <exception cref="ArgumentNullException">When <paramref name="snapFace" /> is null.</exception>
-#         /// <returns>True if the name of the face starts with "PIERCED_FACE_" followed immediately by a non-negative integer.</returns>
-#         public static bool IsFaceNameValid(Face snapFace)
-#         {
-#             if (snapFace == null) throw new ArgumentNullException(nameof(snapFace));
-#             return PiercedFaceRegex.IsMatch(snapFace.Name);
-#         }
-
-#         /// <summary>
-#         ///     Gets the integer used to find a <see cref="NXOpen.Features. DatumCsys" />.
-#         /// </summary>
-#         /// <param name="snapFace">The face to parse an integer from it's name.</param>
-#         /// <exception cref="ArgumentNullException">When <paramref name="snapFace" /> is null.</exception>
-#         /// <exception cref="FormatException">If <paramref name="snapFace" />.Name isn't valid.</exception>
-#         /// <returns>Returns integer that corresponds to a <see cref="NXOpen.Features. DatumCsys" />. </returns>
-#         public static int GetFaceNameInteger(Face snapFace)
-#         {
-#             if (snapFace == null) throw new ArgumentNullException(nameof(snapFace));
-#             Match match = PiercedFaceRegex.Match(snapFace.Name);
-#             if (!match.Success) throw new FormatException("\"" + snapFace.Name + "\" is invalid.");
-#             return int.Parse(match.Groups[1].Value);
-#         }
-
-#         /// <summary>
-#         ///     Creates a new a snapButton and adds it to the current __work_part_.
-#         /// </summary>
-#         /// <remarks>
-#         ///     Adds the snapButton using the <paramref name="csys" /> layer, Origin, and Orientation as parameters for the
-#         ///     added snapButton.
-#         /// </remarks>
-#         /// <param name="buttonUnit">The unit type of the added component.</param>
-#         /// <param name="csys">The csys whose parameters will be used for the added component.</param>
-#         /// <exception cref="ArgumentNullException"><paramref name="csys" /> is null.</exception>
-#         /// <returns>The added snapButton.</returns>
-#         public static Component AddButton(BasePart.Units buttonUnit, CoordinateSystem csys)
-#         {
-#             if (csys == null) throw new ArgumentNullException(nameof(csys));
-#             double multiplier;
-
-#             string buttonPath;
-#             switch (buttonUnit)
-#             {
-#                 case BasePart.Units.Inches:
-#                     buttonPath = SmartButtonEnglish;
-#                     multiplier = 1.0;
-#                     break;
-#                 case BasePart.Units.Millimeters:
-#                     buttonPath = SmartButtonMetric;
-#                     multiplier = 25.4;
-#                     break;
-#                 default:
-#                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
-#             }
-
-#             CartesianCoordinateSystem absCys = __display_part_.__CreateCsys();
-#             CartesianCoordinateSystem tempCsys = __display_part_.__CreateCsys(csys.Origin, csys.Orientation.Element);
-#             Point3d mappedOrigin = csys.Origin.__MapCsysToCsys(absCys, tempCsys);
-#             mappedOrigin = new Point3d(mappedOrigin.X, mappedOrigin.Y, mappedOrigin.Z + 6 / multiplier);
-#             Point3d newOrigin = mappedOrigin.__MapCsysToCsys(tempCsys, absCys);
-#             return __work_part_.ComponentAssembly.AddComponent(buttonPath, "ALIGN",
-#                 Path.GetFileNameWithoutExtension(buttonPath), newOrigin, csys.Orientation.Element, csys.Layer, out _);
-#         }
-
-#         public static Component AddPunch(BasePart.Units buttonUnit, CoordinateSystem csys)
-#         {
-#             if (csys == null) throw new ArgumentNullException(nameof(csys));
-#             string punchPath;
-#             switch (buttonUnit)
-#             {
-#                 case BasePart.Units.Inches:
-#                     punchPath = SmartPunchEnglish;
-#                     break;
-#                 case BasePart.Units.Millimeters:
-#                     punchPath = SmartPunchMetric;
-#                     break;
-#                 default:
-#                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
-#             }
-
-#             return AddComponent(punchPath, csys, "ALIGN");
-#         }
-
-#         public static Component AddRetainer(BasePart.Units buttonUnit, CoordinateSystem csys)
-#         {
-#             if (csys == null) throw new ArgumentNullException(nameof(csys));
-#             string retainerPath;
-#             switch (buttonUnit)
-#             {
-#                 case BasePart.Units.Inches:
-#                     retainerPath = SmartBallLockRetainerEnglish;
-#                     break;
-#                 case BasePart.Units.Millimeters:
-#                     retainerPath = SmartBallLockRetainerMetric;
-#                     break;
-#                 default:
-#                     throw new ArgumentOutOfRangeException(nameof(buttonUnit));
-#             }
-
-#             return AddComponent(retainerPath, csys, "MATE");
-#         }
-
-#         private static Component AddComponent(string path, CoordinateSystem csys, string referenceSet)
-#         {
-#             CartesianCoordinateSystem absCys = __display_part_.__CreateCsys();
-#             CartesianCoordinateSystem tempCsys = __display_part_.__CreateCsys(csys.Origin, csys.Orientation.Element);
-#             Point3d mappedOrigin = csys.Origin.__MapCsysToCsys(absCys, tempCsys);
-#             Point3d newOrigin = mappedOrigin.__MapCsysToCsys(tempCsys, absCys);
-
-#             return __work_part_.ComponentAssembly.AddComponent(
-#                 path,
-#                 referenceSet,
-#                 Path.GetFileNameWithoutExtension(path),
-#                 newOrigin,
-#                 csys.Orientation.Element,
-#                 csys.Layer,
-#                 out _);
-#         }
-
-#         private static bool IsUsp(Part snapPart)
-#         {
-#             return snapPart.Leaf.Contains("usp");
-#         }
-
-#         private static void GetPartPaths(bool isMetric, out string buttonPath, out string retainerPath,
-#             out string punchPath)
-#         {
-#             string directory = Path.GetDirectoryName(__display_part_.FullPath);
-
-#             var details = (from file in Directory.GetFiles(directory, "*.prt", SearchOption.TopDirectoryOnly)
-#                            where file.__IsDetail()
-#                            let detailNumber = file.__AskDetailNumber()
-#                            select new { file, detailNumber }).ToArray();
-
-#             if (string.IsNullOrEmpty(ButtonDetail))
-#             {
-#                 buttonPath = isMetric ? SmartButtonMetric : SmartButtonEnglish;
-#             }
-#             else
-#             {
-#                 var argDetail = details.SingleOrDefault(arg => arg.file == ButtonDetail)
-#                                 ??
-#                                 throw new InvalidOperationException("Could not find a detail with # \'" + ButtonDetail +
-#                                                                     "\' in folderWithCtsNumber \'" + directory + "\'.");
-
-#                 Part tempPart = session_.__FindOrOpen(argDetail.file);
-
-#                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
-#                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
-
-#                 string expectedLibraryAttributeValue = Path.GetFileNameWithoutExtension(isMetric
-#                     ? SmartButtonMetric
-#                     : SmartButtonEnglish);
-#                 string libraryAttributeValue =
-#                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
-
-#                 if (expectedLibraryAttributeValue != libraryAttributeValue)
-#                     throw new InvalidOperationException(
-#                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
-
-#                 buttonPath = tempPart.FullPath;
-#             }
-
-#             if (string.IsNullOrEmpty(PunchDetail))
-#             {
-#                 punchPath = isMetric ? SmartPunchMetric : SmartPunchEnglish;
-#             }
-#             else
-#             {
-#                 var argDetail = details.SingleOrDefault(arg => arg.file == PunchDetail)
-#                                 ??
-#                                 throw new InvalidOperationException("Could not find a detail with # \'" + PunchDetail +
-#                                                                     "\' in folderWithCtsNumber \'" + directory + "\'.");
-
-#                 Part tempPart = session_.__FindOrOpen(argDetail.file);
-
-#                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
-#                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
-
-#                 string expectedLibraryAttributeValue =
-#                     Path.GetFileNameWithoutExtension(isMetric
-#                         ? SmartPunchMetric
-#                         : SmartPunchEnglish);
-#                 string libraryAttributeValue =
-#                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
-
-#                 if (expectedLibraryAttributeValue != libraryAttributeValue)
-#                     throw new InvalidOperationException(
-#                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
-
-#                 punchPath = tempPart.FullPath;
-#             }
-
-#             if (string.IsNullOrEmpty(RetainerDetail))
-#             {
-#                 retainerPath = isMetric
-#                     ? SmartBallLockRetainerMetric
-#                     : SmartBallLockRetainerEnglish;
-#             }
-#             else
-#             {
-#                 var argDetail = details.SingleOrDefault(arg => arg.file == RetainerDetail)
-#                                 ??
-#                                 throw new InvalidOperationException("Could not find a detail with # \'" +
-#                                                                     RetainerDetail + "\' in folderWithCtsNumber \'" +
-#                                                                     directory + "\'.");
-
-#                 Part tempPart = session_.__FindOrOpen(argDetail.file);
-
-#                 if (!tempPart.HasUserAttribute("LIBRARY", NXObject.AttributeType.String, -1))
-#                     throw new InvalidOperationException("The selected part does not have a \'LIBRARY\' attribute.");
-
-#                 string expectedLibraryAttributeValue =
-#                     Path.GetFileNameWithoutExtension(isMetric
-#                         ? SmartBallLockRetainerMetric
-#                         : SmartBallLockRetainerEnglish);
-#                 string libraryAttributeValue =
-#                     tempPart.GetUserAttributeAsString("LIBRARY", NXObject.AttributeType.String, -1);
-
-#                 if (expectedLibraryAttributeValue != libraryAttributeValue)
-#                     throw new InvalidOperationException(
-#                         $"The library attribute value {tempPart.Leaf} does not equal {expectedLibraryAttributeValue}.");
-
-#                 retainerPath = tempPart.FullPath;
-#             }
-#         }
-
-#         private static void ConfirmStripControlAndEExpression()
-#         {
-#             string[] stripControls = session_.Parts
-#                 .OfType<Part>()
-#                 .Select(part => part.Leaf.ToLower())
-#                 .Where(s => s.Contains("strip-control"))
-#                 .ToArray();
-
-#             if (stripControls.Length < 1)
-#                 throw new InvalidOperationException("You need to have a strip control loaded.");
-
-#             string[] expressions = __display_part_.Expressions
-#                 .ToArray()
-#                 .Select(expression => expression.Name.ToLower())
-#                 .Where(s => s == "e")
-#                 .ToArray();
-
-#             if (expressions.Length < 1)
-#                 throw new InvalidOperationException("Unable to find an expression with the name of \'e\'.");
-#         }
-
-#         public static void SameAssembly(bool isMetric, bool addButton, bool addPunch, bool addRetainer)
-#         {
-#             ConfirmStripControlAndEExpression();
-#             _addedComponents = new List<Tuple<Component, Face>>();
-#             GetPartPaths(isMetric, out string buttonPath, out string retainerPath, out string punchPath);
-#             Regex uspLspRegex = new Regex("^[0-9]{4,5}-([0-9]{3})-[l|u]sp([0-9]{1,})$");
-#             string _display_part_DisplayName = Path.GetFileNameWithoutExtension(__display_part_.FullPath);
-#             if (_display_part_DisplayName == null) throw new NullReferenceException("_display_part_DisplayName");
-#             Match nameMatch = uspLspRegex.Match(_display_part_DisplayName);
-#             if (!nameMatch.Success)
-#                 throw new FormatException(_display_part_DisplayName + " is not a valid usp or lsp.");
-#             GFolder folder = GFolder.create_or_null(__work_part_);
-#             if (folder is null)
-#                 throw new InvalidOperationException("The current displayed part does not reside within a GFolder.");
-#             string op = nameMatch.Groups[1].Value;
-#             int uspLspNumberAsInteger = int.Parse(nameMatch.Groups[2].Value);
-#             Part uspLspPart = session_.__FindOrOpen(_display_part_DisplayName);
-
-#             /////////////////////////////////////////////
-#             /////////////////////////////////////////////
-
-#             __SetUndoMark(MarkVisibility.Visible, "FastClass");
-
-#             try
-#             {
-#                 Face[] faces = Ui.Selection.SelectManyFaces();
-
-#                 IDictionary<string, List<Face>> dictionaryShape =
-#                     faces.__ToILookIDict(face => face.GetStringUserAttribute("PIERCED_TYPE", -1));
-
-#                 foreach (string keyShape in dictionaryShape.Keys)
-#                 {
-#                     List<Face> shapeFaces = dictionaryShape[keyShape];
-#                     // Revision • 1.2 – 2017 / 12 / 07
-#                     IDictionary<double, List<Face>> dictionaryP = shapeFaces.__ToILookIDict(face =>
-#                         System.Math.Round(face.GetRealUserAttribute("PIERCED_P", -1), 4));
-#                     foreach (double keyP in dictionaryP.Keys)
-#                     {
-#                         List<Face> pFaces = dictionaryP[keyP];
-#                         // Revision • 1.2 – 2017 / 12 / 07
-#                         IDictionary<double, List<Face>> dictionaryW = pFaces.__ToILookIDict(face =>
-#                             System.Math.Round(face.GetRealUserAttribute("PIERCED_W", -1), 4));
-#                         foreach (double keyW in dictionaryW.Keys)
-#                         {
-#                             string partOfThePath = $"{folder.dir_op(op)}\\{folder.CustomerNumber}-{op}-";
-#                             int currentLowerDetailNumber =
-#                                 GetCurrentDetailNumberOfChildren(uspLspPart.__RootComponent());
-#                             if (currentLowerDetailNumber == -1)
-#                                 // Revision • 1.2 – 2017 / 12 / 07
-#                                 currentLowerDetailNumber = IsUsp(uspLspPart)
-#                                     ? !folder.is_cts_job()
-#                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
-#                                         : GetUspDetailNumberShort(uspLspNumberAsInteger)
-#                                     : !folder.is_cts_job()
-#                                         ? GetLspDetailNumberLong(uspLspNumberAsInteger)
-#                                         : GetLspDetailNumberShort(uspLspNumberAsInteger);
-#                             string newButtonPath = buttonPath.StartsWith("G:\\0Library")
-#                                 ? GetNewPartPath(partOfThePath, buttonPath, currentLowerDetailNumber)
-#                                 : buttonPath;
-#                             string newRetainerPath = retainerPath.StartsWith("G:\\0Library")
-#                                 ? GetNewPartPath(partOfThePath, retainerPath, currentLowerDetailNumber)
-#                                 : retainerPath;
-#                             string newPunchPath = punchPath.StartsWith("G:\\0Library")
-#                                 ? GetNewPartPath(partOfThePath, punchPath, currentLowerDetailNumber)
-#                                 : punchPath;
-#                             foreach (Face faceW in dictionaryW[keyW])
-#                             {
-#                                 Component button = null, punch = null, retainer = null;
-#                                 Component layoutComponent = faceW.OwningComponent;
-#                                 string originalRefset = layoutComponent.ReferenceSet;
-#                                 layoutComponent.__ReferenceSet(SlugRefsetName);
-#                                 Expression expression = __display_part_.Expressions
-#                                     .ToArray()
-#                                     .SingleOrDefault(tempExpression => tempExpression.Name == "e");
-#                                 int layer = uspLspPart.Leaf.Contains("lsp") ? 1 : 101;
-
-#                                 if (addPunch)
-#                                     punch = AddComponentAndConstrain(faceW, newPunchPath, uspLspPart, "ALIGN", layer,
-#                                         expression);
-
-#                                 if (addRetainer)
-#                                     retainer = AddComponentAndConstrain(faceW, newRetainerPath, uspLspPart, "MATE",
-#                                         layer);
-
-#                                 if (addButton)
-#                                     button = AddComponentAndConstrain(faceW, newButtonPath, uspLspPart, "ALIGN", layer,
-#                                         expression);
-
-#                                 if (retainer != null && punch != null)
-#                                     ConstrainPunchAndRetainer(punch, retainer);
-
-#                                 List<Component> listComps = new List<Component>();
-
-#                                 if (button != null)
-#                                     listComps.Add(button);
-
-#                                 if (retainer != null)
-#                                     listComps.Add(retainer);
-
-#                                 if (punch != null)
-#                                     listComps.Add(punch);
-
-#                                 ChangeRefsets("BODY", listComps.ToArray());
-#                                 layoutComponent.__ReferenceSet(originalRefset);
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#             finally
-#             {
-# #pragma warning disable CS0612 // Type or member is obsolete
-#                 PrintResults(isMetric);
-# #pragma warning restore CS0612 // Type or member is obsolete
-#             }
-#         }
-
-#         [Obsolete]
-#         public static void DifferentAssemblies(bool isMetric, bool addButton, bool addPunch, bool addRetainer)
-#         {
-#             GFolder folder = GFolder.create_or_null(__work_part_)
-#                              ??
-#                              throw new InvalidOperationException(
-#                                  "The current work part does not reside within a job folder.");
-
-#             ConfirmStripControlAndEExpression();
-#             _addedComponents = new List<Tuple<Component, Face>>();
-#             GetPartPaths(isMetric, out string buttonPath, out string retainerPath, out string punchPath);
-
-#             string _display_part_DisplayName = Path.GetFileNameWithoutExtension(__display_part_.FullPath)
-#                                                ??
-#                                                throw new NullReferenceException("_display_part_DisplayName");
-
-#             Match nameMatch = Regex.Match(_display_part_DisplayName, RegexLspUsp);
-
-#             if (!nameMatch.Success)
-#                 throw new FormatException($"{_display_part_DisplayName} is not a valid usp or lsp.");
-
-#             string op = nameMatch.Groups["opNum"].Value;
-#             string uspLspNumberAsString = nameMatch.Groups["extraOpNum"].Value;
-#             int uspLspNumberAsInteger = int.Parse(uspLspNumberAsString);
-#             string lspName = $"{folder.CustomerNumber}-{op}-lsp{uspLspNumberAsString}";
-#             string uspName = $"{folder.CustomerNumber}-{op}-usp{uspLspNumberAsString}";
-#             BasePart lspPart = session_.Parts.ToArray().SingleOrDefault(part => part.FullPath.Contains(lspName));
-#             BasePart uspPart = session_.Parts.ToArray().SingleOrDefault(part => part.FullPath.Contains(uspName));
-
-#             if (addButton && lspPart == null)
-#                 throw new InvalidOperationException($"Could not find part \"{lspName}\" loaded in your session.");
-
-#             if ((addPunch || addRetainer) && uspPart == null)
-#                 throw new InvalidOperationException("Could not find part " + "\"" + uspName +
-#                                                     "\" loaded in your session.");
-
-#             /////////////////////////////////////////////
-#             /////////////////////////////////////////////
-
-#             __SetUndoMark(MarkVisibility.Visible, "FastClass");
-#             try
-#             {
-#                 Face[] faces = Ui.Selection.SelectManyFaces();
-
-#                 IDictionary<string, List<Face>> dictionaryShape =
-#                     faces.__ToILookIDict(face => face.GetStringUserAttribute("PIERCED_TYPE", -1));
-
-#                 foreach (string keyShape in dictionaryShape.Keys)
-#                 {
-#                     List<Face> shapeFaces = dictionaryShape[keyShape];
-#                     // Revision • 1.2 – 2017 / 12 / 01
-#                     IDictionary<double, List<Face>> dictionaryP = shapeFaces.__ToILookIDict(face =>
-#                         System.Math.Round(face.GetRealUserAttribute("PIERCED_P", -1), 4));
-#                     foreach (double keyP in dictionaryP.Keys)
-#                     {
-#                         List<Face> pFaces = dictionaryP[keyP];
-#                         // Revision • 1.2 – 2017 / 12 / 01
-#                         IDictionary<double, List<Face>> dictionaryW = pFaces.__ToILookIDict(face =>
-#                             System.Math.Round(face.GetRealUserAttribute("PIERCED_W", -1), 4));
-#                         foreach (double keyW in dictionaryW.Keys)
-#                         {
-#                             string partOfThePath = $"{folder.dir_op(op)}\\{folder.CustomerNumber}-{op}-";
-#                             string newPunchPath = null, newRetainerPath = null, newButtonPath = null;
-#                             if (lspPart != null)
-#                             {
-#                                 int currentLowerDetailNumber =
-#                                     GetCurrentDetailNumberOfChildren(lspPart.ComponentAssembly.RootComponent);
-#                                 if (currentLowerDetailNumber == -1)
-#                                     // Revision • 1.2 – 2017 / 12 / 07
-#                                     currentLowerDetailNumber = !folder.is_cts_job()
-#                                         ? GetLspDetailNumberLong(uspLspNumberAsInteger)
-#                                         : GetLspDetailNumberShort(uspLspNumberAsInteger);
-#                                 newButtonPath = buttonPath.StartsWith("G:\\0Library")
-#                                     ? GetNewPartPath(partOfThePath, buttonPath, currentLowerDetailNumber)
-#                                     : buttonPath;
-#                             }
-
-#                             if (uspPart != null)
-#                             {
-#                                 int currentUpperDetailNumber =
-#                                     GetCurrentDetailNumberOfChildren(uspPart.ComponentAssembly.RootComponent);
-#                                 if (currentUpperDetailNumber == -1)
-#                                     // Revision • 1.2 – 2017 / 12 / 07
-#                                     currentUpperDetailNumber = !folder.is_cts_job()
-#                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
-#                                         : GetUspDetailNumberShort(uspLspNumberAsInteger);
-
-#                                 newRetainerPath = retainerPath.StartsWith("G:\\0Library")
-#                                     ? GetNewPartPath(partOfThePath, retainerPath, currentUpperDetailNumber)
-#                                     : retainerPath;
-#                                 currentUpperDetailNumber =
-#                                     GetCurrentDetailNumberOfChildren(uspPart.ComponentAssembly.RootComponent);
-#                                 if (currentUpperDetailNumber == -1)
-#                                     // Revision • 1.2 – 2017 / 12 / 07
-#                                     currentUpperDetailNumber = !folder.is_cts_job()
-#                                         ? GetUspDetailNumberLong(uspLspNumberAsInteger)
-#                                         : GetUspDetailNumberShort(uspLspNumberAsInteger);
-#                                 newPunchPath = punchPath.StartsWith("G:\\0Library")
-#                                     ? GetNewPartPath(partOfThePath, punchPath, currentUpperDetailNumber)
-#                                     : punchPath;
-#                             }
-
-
-#                             foreach (Face faceW in dictionaryW[keyW])
-#                             {
-#                                 Component button = null, punch = null, retainer = null;
-#                                 Component layoutComponent = faceW.OwningComponent;
-#                                 string originalRefset = layoutComponent.ReferenceSet;
-#                                 layoutComponent.__ReferenceSet(SlugRefsetName);
-#                                 Expression expression = __display_part_.Expressions
-#                                     .ToArray()
-#                                     .SingleOrDefault(tempExpression => tempExpression.Name == "e");
-
-#                                 if (addPunch)
-#                                     punch = AddComponentAndConstrain(faceW, newPunchPath, (Part)uspPart, "ALIGN", 101,
-#                                         expression);
-
-#                                 // Revision • 1.3 – 2017 / 12 / 28
-#                                 if (addRetainer)
-#                                     retainer = AddComponentAndConstrain(faceW, newRetainerPath, (Part)uspPart, "MATE",
-#                                         101);
-
-#                                 // Revision • 1.3 – 2017 / 12 / 28
-#                                 if (addButton)
-#                                     button = AddComponentAndConstrain(faceW, newButtonPath, (Part)lspPart, "ALIGN", 1,
-#                                         expression);
-
-#                                 if (retainer != null && punch != null)
-#                                     ConstrainPunchAndRetainer(punch, retainer);
-
-#                                 List<Component> listComps = new List<Component>();
-
-#                                 if (button != null)
-#                                     listComps.Add(button);
-
-#                                 if (retainer != null)
-#                                     listComps.Add(retainer);
-
-#                                 if (punch != null)
-#                                     listComps.Add(punch);
-
-#                                 ChangeRefsets("BODY", listComps.ToArray());
-#                                 layoutComponent.__ReferenceSet(originalRefset);
-#                             }
-#                         }
-#                     }
-#                 }
-#             }
-#             finally
-#             {
-#                 PrintResults(isMetric);
-#             }
-#         }
-
-#         [Obsolete]
-#         private static void PrintResults(bool isMetric)
-#         {
-#             throw new NotImplementedException();
-#             //try
-#             //{
-#             //    print_("Results:");
-#             //    BasePart stripControl = session_.Parts.ToArray().Single(part => part.Leaf.Contains("strip-control"));
-#             //    Expression materialThicknessExp = stripControl.Expressions.ToArray()
-#             //        .SingleOrDefault(expression => expression.Name == "M");
-#             //    if (materialThicknessExp == null)
-#             //        print_("Unable to find Material Thickness.");
-#             //    else
-#             //        print_("Material Thickness (M): " + materialThicknessExp.RightHandSide);
-
-#             //    if (_addedComponents == null)
-#             //    {
-#             //        print_("  addedComponents was null");
-#             //        return;
-#             //    }
-
-#             //    if (_addedComponents.Count <= 0)
-#             //    {
-#             //        print_("  addedComponents was empty");
-#             //        return;
-#             //    }
-
-#             //    IOrderedEnumerable<Tuple<Component, Face>> trimmedTuples = _addedComponents
-#             //        .DistinctBy(tup => tup.Item1.DisplayName)
-#             //        .OrderBy(tuple => tuple, new Comparer());
-
-#             //    double divider = isMetric ? 1.0 : 25.4;
-
-#             //    foreach (Tuple<NXOpen.Assemblies.Component, NXOpen.Face> tuple in trimmedTuples)
-#             //    {
-#             //        const string circle = "Circle";
-#             //        const string roundedRectangle = "RoundedRectangle";
-#             //        double p = Math.Round(tuple.Item1.GetRealUserAttribute(PiercedP, -1) / divider, 4);
-#             //        double w = Math.Round(tuple.Item1.GetRealUserAttribute(PiercedW, -1) / divider, 4);
-#             //        string type = tuple.Item1.GetStringUserAttribute(PiercedType, -1);
-#             //        switch (type)
-#             //        {
-#             //            case circle:
-#             //                print_($"{tuple.Item1.DisplayName}, P = {p}");
-#             //                break;
-#             //            case roundedRectangle:
-#             //                double radius = tuple.Item2.GetEdges().Select(edge => Snap.NX.Edge.Wrap(edge.Tag)).OfType<Snap.NX.Edge.Arc>().First().Geometry.Radius;
-#             //                print_($"{tuple.Item1.DisplayName}, P = {p}, W = {w}, R = {radius}");
-#             //                break;
-#             //            default:
-#             //                print_($"{tuple.Item1.DisplayName}, P = {p}, W = {w}");
-#             //                break;
-#             //        }
-#             //    }
-#             //    throw new NotImplementedException();
-#             //}
-#             //catch (Exception ex)
-#             //{
-#             //    ex.__PrintException();
-#             //}
-#         }
-
-#         private static void ConstrainPunchAndRetainer(Component punch, Component retainer)
-#         {
-#             __display_part_ = (Part)punch.OwningComponent.Prototype;
-#             __work_part_ = __display_part_;
-#             Constraints.ConstrainFixPunch(punch);
-#             Constraints.ConstrainZAxes(__work_part_, punch, retainer);
-#             Constraints.ConstrainFaces(__work_part_, punch, retainer);
-#             Constraints.ConstrainAlignBallSetAndPlane(punch, retainer);
-#         }
-
-#         private static void ChangeRefsets(string refsetName, params Component[] components)
-#         {
-#             components?.Where(component => component != null).ToList()
-#                 .ForEach(component => component.__ReferenceSet(refsetName));
-#         }
-
-#         private static string GetNewPartPath(string partOfThePath, string originalPartPath,
-#             int currentUpperDetailNumber)
-#         {
-#             string newPath = "";
-#             for (int i = 0; i < 1000; i++)
-#             {
-#                 newPath = partOfThePath + (currentUpperDetailNumber + i) + ".prt";
-#                 if (File.Exists(newPath)) continue;
-#                 File.Copy(originalPartPath, newPath);
-#                 break;
-#             }
-
-#             return newPath;
-#         }
-
-#         public static Component AddComponentAndConstrain(
-#             Face snapFace,
-#             string path,
-#             Part part,
-#             string referenceSet,
-#             int layer,
-#             Expression zOffsetExpression = null)
-#         {
-#             __display_part_ = part;
-#             __work_part_ = __display_part_;
-#             snapFace.Unhighlight();
-#             int integer = GetFaceNameInteger(snapFace);
-
-#             // Revision • 1.2 – 2017 / 12 / 07
-#             Component layout = snapFace.OwningComponent;
-#             DatumAxis xAxis = layout.__Members().OfType<DatumAxis>()
-#                 .Single(axis => axis.Name == "PIERCED_AXIS_X_" + integer);
-#             DatumAxis yAxis = layout.__Members().OfType<DatumAxis>()
-#                 .Single(axis => axis.Name == "PIERCED_AXIS_Y_" + integer);
-#             DatumAxis zAxis = layout.__Members().OfType<DatumAxis>()
-#                 .Single(axis => axis.Name == "PIERCED_AXIS_Z_" + integer);
-#             Matrix3x3 orientation = xAxis.Direction.__ToMatrix3x3(yAxis.Direction);
-#             Point3d newOrigin = xAxis.Origin;
-#             if (zOffsetExpression != null)
-#                 newOrigin = new Point3d(xAxis.Origin.X, xAxis.Origin.Y, xAxis.Origin.Z + zOffsetExpression.Value);
-
-#             Component addedComponent = part.ComponentAssembly.AddComponent(
-#                 path,
-#                 referenceSet,
-#                 Path.GetFileNameWithoutExtension(path),
-#                 newOrigin,
-#                 orientation,
-#                 layer,
-#                 out _);
-
-#             addedComponent.SetUserAttribute(PiercedP, -1,
-#                 snapFace.GetStringUserAttribute(PiercedP, -1), NXOpen.Update.Option.Now);
-
-#             addedComponent.SetUserAttribute(PiercedW, -1,
-#                 snapFace.GetStringUserAttribute(PiercedW, -1), NXOpen.Update.Option.Now);
-
-#             addedComponent.SetUserAttribute(PiercedType, -1,
-#                 snapFace.GetStringUserAttribute(PiercedType, -1), NXOpen.Update.Option.Now);
-
-#             addedComponent.__ReferenceSet(referenceSet);
-
-#             using (new ReferenceSetReset(addedComponent))
-#             {
-#                 addedComponent.__ReferenceSet("BODY");
-#                 Part owningPart = addedComponent.OwningComponent.__Prototype();
-#                 ReferenceSet bodyReferenceSet = owningPart.__FindReferenceSetOrNull("BODY");
-#                 bodyReferenceSet?.AddObjectsToReferenceSet(new NXObject[] { addedComponent });
-#             }
-
-#             DatumAxis zAxisComponent = addedComponent.__Members()
-#                 .OfType<DatumAxis>()
-#                 .Single(axis => axis.Direction.__IsEqual(__Vector3dZ()));
-
-#             DisplayedConstraint constraint = Constraints.CreateAlign(__work_part_, zAxisComponent, zAxis);
-#             session_.__DeleteObjects(constraint);
-
-#             if (!addedComponent.GetStringUserAttribute("LIBRARY", -1).ToLower().Contains("retainer"))
-#                 _addedComponents.Add(new Tuple<Component, Face>(addedComponent, snapFace));
-
-#             return addedComponent;
-#         }
-
-#         [Obsolete]
-#         public static class Selection
-#         {
-#             // ReSharper disable once ReturnTypeCanBeEnumerable.Global
-#             [Obsolete]
-#             public static Face[] SelectFaces()
-#             {
-#                 //const string message = "Select Faces";
-#                 //const int scope = UFConstants.UF_UI_SEL_SCOPE_ANY_IN_ASSEMBLY;
-#                 //UFUi.SelInitFnT initialProcess = InitialProcess;
-#                 //IntPtr userData = IntPtr.Zero;
-#                 //Tag[] objects = null;
-#                 //try
-#                 //{
-#                 //    TheUFSession.Ui.LockUgAccess(UFConstants.UF_UI_FROM_CUSTOM);
-#                 //    TheUFSession.Ui.SelectWithClassDialog(message, message, scope, initialProcess, userData, out _,
-#                 //        out _, out objects);
-#                 //}
-#                 //catch (Exception ex)
-#                 //{
-#                 //    ex.__PrintException();
-#                 //}
-#                 //finally
-#                 //{
-#                 //    TheUFSession.Ui.UnlockUgAccess(UFConstants.UF_UI_FROM_CUSTOM);
-#                 //}
-
-#                 //return objects == null || objects.Length == 0 ? new NXOpen.Face[0] : objects.Select(tag => Snap.NX.Face.Wrap(tag).NXOpenFace).ToArray();
-
-#                 throw new NotImplementedException();
-#             }
-
-#             private static int InitialProcess(IntPtr select, IntPtr userData)
-#             {
-#                 UFUi.Mask mask = new UFUi.Mask
-#                 {
-#                     object_type = UFConstants.UF_face_type,
-#                     object_subtype = 0,
-#                     solid_type = 0
-#                 };
-#                 ufsession_.Ui.SetSelMask(select, UFUi.SelMaskAction.SelMaskClearAndEnableSpecific, 1, new[] { mask });
-#                 ufsession_.Ui.SetSelProcs(select, FilterProcess, null /* SelectionCallback*/, userData);
-#                 return UFConstants.UF_UI_SEL_SUCCESS;
-#             }
-
-#             private static int FilterProcess(Tag _object, int[] type, IntPtr userData, IntPtr select)
-#             {
-#                 var snapFace = _object.__To<Face>();
-
-#                 if (!snapFace.Name.StartsWith("PIERCED_"))
-#                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
-
-#                 if (!snapFace.IsOccurrence)
-#                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
-
-#                 if (!snapFace.__IsPlanar())
-#                     return NXOpen.UF.UFConstants.UF_UI_SEL_REJECT;
-
-#                 return snapFace.__NormalVector().__IsEqual(__Vector3dZ().__Negate())
-#                     ? NXOpen.UF.UFConstants.UF_UI_SEL_REJECT
-#                     : NXOpen.UF.UFConstants.UF_UI_SEL_ACCEPT;
-#             }
-#         }
-
-#         private class Comparer : IComparer<Tuple<Component, Face>>
-#         {
-#             #region Implementation of IComparer<in Tuple<Component,Face>>
-
-#             public int Compare(Tuple<Component, Face> x, Tuple<Component, Face> y)
-#             {
-#                 if (x == null) throw new ArgumentNullException(nameof(x));
-#                 if (y == null) throw new ArgumentNullException(nameof(y));
-#                 return string.Compare(x.Item1.DisplayName, y.Item1.DisplayName, StringComparison.Ordinal);
-#             }
-
-#             #endregion
-#         }
-
-#         public static class Constraints
-#         {
-#             /// <summary>
-#             ///     The path to the "Smart Button Metric.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartButtonMetric => "G:\\0Library\\Button\\Smart Button Metric.prt";
-
-#             /// <summary>
-#             ///     The path to the "Smart Button English.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartButtonEnglish => "G:\\0Library\\Button\\Smart Button English.prt";
-
-#             /// <summary>
-#             ///     The path to the "Smart Punch Metric.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartPunchMetric => "G:\\0Library\\PunchPilot\\Metric\\Smart Punch Metric.prt";
-
-#             /// <summary>
-#             ///     The path to the "Smart Punch English.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartPunchEnglish => "G:\\0Library\\PunchPilot\\English\\Smart Punch English.prt";
-
-#             /// <summary>
-#             ///     The path to the "Smart Ball Lock Retainer Metric.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartBallLockRetainerMetric =>
-#                 "G:\\0Library\\Retainers\\Metric\\Smart Ball Lock Retainer Metric.prt";
-
-#             /// <summary>
-#             ///     The path to the "Smart Ball Lock Retainer English.prt" file in G:\\0Library.
-#             /// </summary>
-#             public static string SmartBallLockRetainerEnglish =>
-#                 "G:\\0Library\\Retainers\\English\\Smart Ball Lock Retainer English.prt";
-
-#             /// <summary>
-#             ///     Returns the name of the reference set to be used for AddPierceComponents.
-#             /// </summary>
-#             public static string SlugRefsetName => "SLUG BUTTON ALIGN";
-
-#             // ReSharper disable once StringLiteralTypo
-#             public static string RetainerAlignPunchFaceName => "ALIGNPUNCH";
-
-#             // ReSharper disable once StringLiteralTypo
-#             public static string PunchTopFaceName => "PUNCHTOPFACE";
-
-#             // ReSharper disable once InconsistentNaming
-#             public static string Pierced_P => "PIERCED_P";
-
-#             // ReSharper disable once InconsistentNaming
-#             public static string Pierced_W => "PIERCED_W";
-
-#             // ReSharper disable once InconsistentNaming
-#             public static string Pierced_Type => "PIERCED_TYPE";
-
-#             public static Regex PiercedFaceRegex => new Regex("^PIERCED_([0-9]{1,})$");
-
-#             public static DisplayedConstraint CreateAlign(
-#                 Part part,
-#                 NXObject movableObject,
-#                 NXObject nonMovableObject)
-#             {
-#                 return CreateTouchAlignImpl(part, Constraint.Alignment.CoAlign, movableObject, nonMovableObject);
-#             }
-
-#             public static void ConstrainZAxes(Part part, Component punch, Component retainer)
-#             {
-#                 punch.__ReferenceSet("ALIGN");
-#                 retainer.__ReferenceSet("MATE");
-#                 DatumAxis retainerZAxis = (DatumAxis)retainer.__Members().Single(o => o.Name == "ZAXIS");
-#                 CartesianCoordinateSystem punchCartesian = punch.__Members().OfType<CartesianCoordinateSystem>().Single();
-#                 var punchOrientation = punchCartesian.Orientation.Element;
-
-#                 DatumAxis punchZAxis = punch.__Members()
-#                     .OfType<DatumAxis>()
-#                     .Single(axis => new Vector3d(axis.Direction.X, axis.Direction.Y, axis.Direction.Z)
-#                         .__IsEqual(punchOrientation.__AxisZ()));
-
-#                 DisplayedConstraint constraint = CreateAlign(part, retainerZAxis, punchZAxis);
-#                 constraint.__Layer(254);
-#             }
-
-#             public static DisplayedConstraint CreateTouchAlignImpl(
-#                 Part part,
-#                 Constraint.Alignment alignmentType,
-#                 NXObject movableObject, NXObject nonMovableObject)
-#             {
-#                 ComponentAssembly componentAssembly = part.ComponentAssembly;
-#                 ComponentPositioner positioner = componentAssembly.Positioner;
-#                 positioner.ClearNetwork();
-#                 positioner.PrimaryArrangement = componentAssembly.Arrangements.FindObject("Arrangement 1");
-#                 positioner.BeginAssemblyConstraints();
-#                 ComponentNetwork componentNetwork = (ComponentNetwork)positioner.EstablishNetwork();
-#                 componentNetwork.MoveObjectsState = true;
-#                 componentNetwork.NetworkArrangementsMode = ComponentNetwork.ArrangementsMode.Existing;
-#                 ComponentConstraint constraint = (ComponentConstraint)positioner.CreateConstraint(true);
-#                 constraint.ConstraintAlignment = alignmentType;
-#                 constraint.ConstraintType = Constraint.Type.Touch;
-#                 constraint.CreateConstraintReference(movableObject.OwningComponent, movableObject, false, false, false);
-#                 constraint.CreateConstraintReference(nonMovableObject.OwningComponent, nonMovableObject, false, false,
-#                     false);
-#                 componentNetwork.Solve();
-#                 positioner.ClearNetwork();
-#                 session_.__DeleteObjects(componentNetwork);
-#                 positioner.EndAssemblyConstraints();
-#                 return constraint.GetDisplayedConstraint();
-#             }
-
-
-#             public static DisplayedConstraint CreateTouch(Part part, NXObject movableObject, NXObject nonMovableObject)
-#             {
-#                 return CreateTouchAlignImpl(part, Constraint.Alignment.ContraAlign, movableObject, nonMovableObject);
-#             }
-
-#             public static void ConstrainFaces(Part part, Component punch, Component retainer)
-#             {
-#                 punch.__ReferenceSet("ALIGN");
-#                 retainer.__ReferenceSet("MATE");
-
-#                 Face punchFace = punch.__Members()
-#                     .OfType<Face>()
-#                     .Single(face => face.Name == PunchTopFaceName);
-
-#                 Face retainerFace = retainer.__Members()
-#                     .OfType<Face>()
-#                     .Single(face => face.Name == RetainerAlignPunchFaceName);
-
-#                 DisplayedConstraint constraint = CreateTouch(part, retainerFace, punchFace);
-#                 constraint.__Layer(254);
-#             }
-
-#             public static DisplayedConstraint CreateParallelConstraint(NXObject movableObject, NXObject geometry)
-#             {
-#                 ComponentPositioner positioner = _WorkPart.ComponentAssembly.Positioner;
-#                 positioner.ClearNetwork();
-#                 positioner.PrimaryArrangement = _WorkPart.ComponentAssembly.Arrangements.FindObject("Arrangement 1");
-#                 positioner.BeginAssemblyConstraints();
-#                 ComponentNetwork componentNetwork = (ComponentNetwork)positioner.EstablishNetwork();
-#                 componentNetwork.MoveObjectsState = true;
-#                 componentNetwork.NetworkArrangementsMode = 0;
-#                 Constraint constraint = positioner.CreateConstraint(true);
-#                 ComponentConstraint componentConstraint = (ComponentConstraint)constraint;
-#                 componentConstraint.ConstraintType = (Constraint.Type)5;
-#                 componentConstraint.CreateConstraintReference(movableObject.OwningComponent, movableObject, false, false, false);
-#                 componentConstraint.CreateConstraintReference(geometry.OwningComponent, geometry, false, false, false);
-#                 componentNetwork.Solve();
-#                 positioner.ClearNetwork();
-#                 componentNetwork.__Delete();
-#                 positioner.DeleteNonPersistentConstraints();
-#                 positioner.EndAssemblyConstraints();
-#                 return constraint.GetDisplayedConstraint();
-#                 throw new NotImplementedException();
-#             }
-
-#             public static void ConstrainAlignBallSetAndPlane(Component punch, Component retainer)
-#             {
-#                 punch.__ReferenceSet("MATE");
-#                 retainer.__ReferenceSet("MATE");
-#                 DatumPlane retainerXZPlane = (DatumPlane)retainer.__Members().Single(o => o.Name == "XZPLANE");
-#                 DatumPlane punchBallSeatPlane = (DatumPlane)punch.__Members().Single(o => o.Name == "BALL_SEAT_ANGLE");
-#                 DisplayedConstraint constraint = CreateParallelConstraint(retainerXZPlane, punchBallSeatPlane);
-#                 constraint.__Layer(254);
-#             }
-
-#             public static void ConstrainFixPunch(Component punch)
-#             {
-#                 DisplayedConstraint constraint = CreateFixedConstraint(punch);
-#                 constraint.__Layer(254);
-#             }
-
-#             public static DisplayedConstraint CreateFixedConstraint(Component component)
-#             {
-#                 ComponentPositioner positioner = __work_part_.ComponentAssembly.Positioner;
-#                 positioner.ClearNetwork();
-#                 positioner.PrimaryArrangement = __work_part_.ComponentAssembly.Arrangements.FindObject("Arrangement 1");
-#                 positioner.BeginAssemblyConstraints();
-#                 ComponentConstraint constraint = (ComponentConstraint)positioner.CreateConstraint(true);
-#                 constraint.ConstraintType = (Constraint.Type)3;
-#                 constraint.CreateConstraintReference(component, component, false, false, false);
-#                 positioner.EndAssemblyConstraints();
-#                 return constraint.GetDisplayedConstraint();
-#             }
-#         }
-
-#         #region Obsolete Methods, look before you delete.
-
-#         public static DatumAxis GetZAxisOccurenceOfSlug(Face face)
-#         {
-#             int integer = GetFaceNameInteger(face);
-#             return face.OwningComponent.__Members()
-#                 .OfType<DatumAxis>()
-#                 .Single(plane => plane.Name == "PIERCED_AXIS_Z_" + integer);
-#         }
-
-#         public static DatumPlane GetYZPlaneOccurenceOfSlug(Face face)
-#         {
-#             int integer = GetFaceNameInteger(face);
-#             return face.OwningComponent.__Members()
-#                 .OfType<DatumPlane>()
-#                 .Single(plane => plane.Name == "PIERCED_PLANE_YZ_" + integer);
-#         }
-
-#         [Obsolete(nameof(NotImplementedException))]
-#         public static DatumAxis GetZAxisOccurence(Component snapButton)
-#         {
-#             //NXOpen.CoordinateSystem tempCsys = snapButton.__Members().OfType<NXOpen.CoordinateSystem>().Single();
-#             //IEnumerable<NXOpen.DatumAxis> DatumAxis = snapButton.__Members()
-#             //    .OfType<NXOpen.DatumAxis>();
-#             //foreach (NXOpen.DatumAxis axis in DatumAxis)
-#             //    if (((NXOpen.Assemblies.Component)(tempCsys.Tag)).orientation.z_vec._IsEqualTo(axis.Direction))
-#             //        return axis;
-#             //throw new ArgumentException("End Exception");
-#             throw new NotImplementedException();
-#         }
-
-#         [Obsolete(nameof(NotImplementedException))]
-#         public static DatumPlane GetYZPlaneOccurence(Component snapButton)
-#         {
-#             //NXOpen.CoordinateSystem tempCsys = snapButton.__Members().OfType<NXOpen.CoordinateSystem>().Single();
-#             //IEnumerable<NXOpen.DatumPlane> planes = snapButton.__Members()
-#             //    .OfType<NXOpen.DatumPlane>();
-#             //foreach (NXOpen.DatumPlane plane in planes)
-#             //    if (((NXOpen.Assemblies.Component)(tempCsys.Tag)).orientation.z_vec._IsEqualTo(plane.Normal))
-#             //        return plane;
-
-#             //throw new ArgumentException("End Exception");
-#             throw new NotImplementedException();
-#         }
-
-#         public static Face GetTopFaceOfPunch(Component snapPunch)
-#         {
-#             // ReSharper disable once StringLiteralTypo
-#             return snapPunch.__Members().OfType<Face>().Single(face => face.Name == "PUNCHTOPFACE");
-#         }
-
-#         public static Face GetAlignFaceOfRetainer(Component snapPunch)
-#         {
-#             // ReSharper disable once StringLiteralTypo
-#             return snapPunch.__Members().OfType<Face>().Single(face => face.Name == "ALIGNPUNCH");
-#         }
-
-#         internal static string EditInteger(int integer)
-#         {
-#             if (integer < 0)
-#                 throw new ArgumentOutOfRangeException(nameof(integer));
-#             if (integer < 10)
-#                 return "00" + integer;
-#             if (integer < 100)
-#                 return "0" + integer;
-#             return integer.ToString();
-#         }
-
-#         public static Part _Prototype(Component component) => component.Prototype as Part ?? throw new Exception();
-
-#         [Obsolete]
-#         internal static DatumAxis GetZAxisOccurenceOfRetainer(Component retainer)
-#         {
-#             //string retainerRefset = retainer.ReferenceSet;
-
-#             //print_(retainer.__Prototype().GetAllReferenceSets().Single(set => set.Name == retainerRefset).AskMembersInReferenceSet()
-#             //    .OfType<NXOpen.CoordinateSystem>().Count());
-
-#             //Snap.NX.CoordinateSystem tempCsys = retainer.__Members().Select(obj => (Snap.NX.NXObject)obj).OfType<Snap.NX.CoordinateSystem>().Single();
-#             //IEnumerable<NXOpen.DatumAxis> k = retainer.__Members()
-#             //    .OfType<NXOpen.DatumAxis>();
-#             //foreach (NXOpen.DatumAxis axis in k)
-#             //    if (new NXOpen.Vector3d(axis.Direction.X, axis.Direction.Y, axis.Direction.Z).__IsEqualTo(tempCsys.AxisZ))
-#             //        return axis;
-
-#             //throw new ArgumentException("End Exception");
-
-#             throw new NotImplementedException();
-#         }
-
-#         #endregion
-
-#         private void AddPierceComponents_Load(object sender, EventArgs e)
-#         {
-#             Text = AssemblyFileVersion;
-#             Location = Properties.Settings.Default.add_pierce_components_form_window_location;
-#         }
-
-#         private void AddPierceComponents_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
-#         {
-#             Properties.Settings.Default.add_pierce_components_form_window_location = Location;
-#             Properties.Settings.Default.Save();
-#         }
-#     }
-    pass
-
-
-
-class UFuncAssemblyExportDesignData:
-#  public partial class AssemblyExportDesignData : _UFuncForm
-#  {
-#      public AssemblyExportDesignData()
-#      {
-#          InitializeComponent();
-#      }
-
-#      public static Part _WorkPart => Session.GetSession().Parts.Work;
-
-#      private void ResetForm()
-#      {
-#          if (__display_part_ is null)
-#          {
-#              Enabled = false;
-#              return;
-#          }
-
-#          Enabled = true;
-
-#          if (!rdoChange.Checked && !rdoRto.Checked && !rdoReview50.Checked && !rdoReview90.Checked &&
-#              !rdoReview100.Checked && !rdoOther.Checked)
-#              rdoReview50.Checked = true;
-
-#          GFolder folder = GFolder.create_or_null(_WorkPart);
-
-#          if (folder is null)
-#              return;
-
-#          if (folder.CustomerNumber.Length == 6)
-#          {
-#              if (rdoRto.Checked || rdoChange.Checked)
-#              {
-#                  txtFolderName.Text = "";
-#                  txtFolderName.Enabled = false;
-#                  return;
-#              }
-
-#              txtFolderName.Enabled = true;
-
-#              return;
-#          }
-
-#          txtFolderName.Enabled = true;
-#      }
-
-#      private void BtnData_Clicked(object sender, EventArgs e)
-#      {
-#          Hide();
-
-#          try
-#          {
-#              if (sender == btnDesignAccept)
-#                  Export_Design();
-#              else if (sender == btnSelectComponents)
-#                  ManualExport(false);
-#              else if (sender == btnSelectAll)
-#                  ManualExport(true);
-#          }
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-#          finally
-#          {
-#              print("Complete");
-#              Show();
-#          }
-
-#          //stopwatch.Stop();
-
-#          //print_($"Time: {stopwatch.Elapsed.TotalMinutes:f2}");            
-#      }
-
-#      private void ManualExport(bool selectAll)
-#      {
-#          Part __display_part_ = Session.GetSession().Parts.Display;
-
-#          List<Component> components = selectAll
-#              ? __display_part_.ComponentAssembly.RootComponent.__Descendants().ToList()
-#              : Selection.SelectManyComponents().ToList();
-
-#          if (components.Count == 0)
-#              return;
-
-#          components.Add(__display_part_.ComponentAssembly.RootComponent);
-
-#          if (chk4ViewDwg.Checked)
-#              try
-#              {
-#                  ExportDwg4Views(components);
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-
-#          Export1.Design(
-#              __display_part_,
-#              components.ToArray(),
-#              null,
-#              false,
-#              false,
-#              chk4ViewPDF.Checked,
-#              false,
-#              chkDetailStep.Checked,
-#              chkSee3DData.Checked,
-#              chkBurnout.Checked,
-#              chkParasolids.Checked,
-#              chkCastings.Checked,
-#              chkPrintData.Checked,
-#              rdoChange.Checked);
-#      }
-
-#      private void ExportDwg4Views(List<Component> components)
-#      {
-#          GFolder folder = GFolder.Create(__display_part_.FullPath);
-
-#          Part[] parts = components.Select(c => c.Prototype)
-#              .OfType<Part>()
-#              .Where(p => p.__HasDrawingSheet("4-VIEW"))
-#              .Distinct()
-#              .ToArray();
-
-#          var parts_to_export = from part in parts
-#                                where part.__IsPartDetail()
-#                                let op = part.__AskDetailOp()
-#                                let match = Regex.Match(part.Leaf, "^(\\d+-\\d+)-\\d+$")
-#                                where match.Success
-#                                let dir = $"{folder.dir_op(op)}\\{match.Groups[1].Value}-dwg-4-views"
-#                                let output = $"{dir}\\{part.Leaf}.dwg"
-#                                select new
-#                                {
-#                                    input_part = part.FullPath,
-#                                    output_part = output,
-#                                };
-
-#          foreach (var p in parts_to_export)
-#              try
-#              {
-#                  string dir = Path.GetDirectoryName(p.output_part);
-
-#                  if (!Directory.Exists(dir))
-#                      Directory.CreateDirectory(dir);
-
-#                  DxfdwgCreator dwgCreator = session_.DexManager.CreateDxfdwgCreator();
-
-#                  using (session_.__UsingBuilderDestroyer(dwgCreator))
-#                  {
-#                      dwgCreator.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
-#                      dwgCreator.SettingsFile = "C:\\Program Files\\Siemens\\NX1899\\dxfdwg\\dxfdwg.def";
-#                      dwgCreator.OutputFileType = DxfdwgCreator.OutputFileTypeOption.Dwg;
-#                      dwgCreator.InputFile = p.input_part;
-#                      dwgCreator.OutputFile = p.output_part;
-#                      dwgCreator.DrawingList = "4-VIEW";
-#                      dwgCreator.ProcessHoldFlag = true;
-#                      dwgCreator.Commit();
-
-
-#                  }
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#      }
-
-#      private void Export_Design()
-#      {
-#          Component[] components;
-
-#          bool isRto = false;
-
-#          if (rdoRto.Checked)
-#          {
-#              isRto = true;
-#              components = __display_part_.ComponentAssembly.RootComponent.__Descendants().ToArray();
-#          }
-#          else if (rdoChange.Checked)
-#          {
-#              isRto = true;
-#              components = Selection.SelectManyComponents();
-#          }
-#          else if (rdoReview50.Checked || rdoReview90.Checked || rdoReview100.Checked || rdoOther.Checked)
-#          {
-#              isRto = false;
-#              components = __display_part_.ComponentAssembly.RootComponent.__Descendants().ToArray();
-#          }
-#          else
-#          {
-#              throw new ArgumentException();
-#          }
-
-#          if (components.Length == 0)
-#              return;
-
-#          Export1.Design(
-#              __display_part_,
-#              components,
-#              txtFolderName.Text,
-#              isRto || rdoChange.Checked,
-#              true,
-#              print4Views: isRto && chkPrintDesign.Checked,
-#              isChange: rdoChange.Checked);
-#      }
-
-#      private void Rdo_CheckedChanged(object sender, EventArgs e)
-#      {
-#          try
-#          {
-#              chkPrintDesign.Enabled = rdoRto.Checked || rdoChange.Checked;
-
-#              btnDesignAccept.Text = rdoChange.Checked
-#                  ? "Select"
-#                  : "Execute";
-
-#              if (__display_part_ is null)
-#                  return;
-
-#              GFolder folder = GFolder.create_or_null(_WorkPart);
-
-#              if (folder is null)
-#                  return;
-
-#              switch (folder.CustomerNumber.Length)
-#              {
-#                  case 6:
-#                      txtFolderName.Enabled = !rdoChange.Checked && !rdoRto.Checked;
-#                      break;
-#                  default:
-#                      txtFolderName.Enabled = true;
-#                      break;
-#              }
-
-#              string folderName = $"{TodaysDate}-----{__display_part_.Leaf}-----";
-
-#              if (sender == rdoReview50)
-#                  txtFolderName.Text = folderName + @"50% Review";
-
-#              else if (sender == rdoReview90)
-#                  txtFolderName.Text = folderName + @"90% Review";
-
-#              else if (sender == rdoReview100)
-#                  txtFolderName.Text = folderName + @"100% Review";
-
-#              else if (sender == rdoRto)
-#                  txtFolderName.Text = folderName + @"RTO";
-
-#              else if (sender == rdoOther)
-#                  txtFolderName.Text = folderName + @"-----";
-
-#              else if (sender == rdoChange)
-#                  txtFolderName.Text = folderName + @"-----";
-#          }
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-#      }
-
-#      private void TabControl_Selected(object sender, TabControlEventArgs e)
-#      {
-#          if (tabControl.SelectedTab == tabDesign)
-#              Size = new Size(275, 249);
-#          else if (tabControl.SelectedTab == tabData)
-#              Size = new Size(182, 385);
-#      }
-
-#      private void AssemblyExportDesignDataForm_Load(object sender, EventArgs e)
-#      {
-#          Text = $"{AssemblyFileVersion} - Assembly Export";
-#          ResetForm();
-#          Location = Settings.Default.assembly_export_design_data_form_window_location;
-#      }
-
-#      private void AssemblyExportDesignDataForm_FormClosed(object sender, FormClosedEventArgs e)
-#      {
-#          Settings.Default.assembly_export_design_data_form_window_location = Location;
-#          Settings.Default.Save();
-#      }
-
-#      public class Export1
-#      {
-#          private const string ExportImportExe =
-#              @"U:\NX110\Concept\NX110library\Ufunc\ExportImportData\ExportImportData.exe";
-
-#          private const string Step214Ug = @"C:\Program Files\Siemens\NX 11.0\STEP214UG\step214ug.exe";
-
-#          public const string _printerCts = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
-
-#          // sql
-#          public static readonly int[] Layers = { 1, 94, 100, 111, 200, 230 };
-
-#          public static void Design(
-#              Part topLevelAssembly,
-#              Component[] __components,
-#              string outgoingDirectoryName = null,
-#              bool isRto = false,
-#              bool zipAssembly = false,
-#              bool pdf4Views = false,
-#              bool stp999 = false,
-#              bool stpDetails = false,
-#              bool stpSee3DData = false,
-#              bool dwgBurnout = false,
-#              bool parasolid = false,
-#              bool paraCasting = false,
-#              bool print4Views = false,
-#              bool isChange = false)
-#          {
-#              using (session_.__UsingDisplayPartReset())
-#              {
-#                  //using (session_.__UsingSuppressDisplay())
-#                  {
-#                      ufsession_.Ui.SetPrompt("Filtering components to export.");
-#                      GFolder folder = GFolder.Create(topLevelAssembly.FullPath);
-
-#                      if (!__components.All(comp => comp.OwningPart.Tag == topLevelAssembly.Tag))
-#                          throw new InvalidOperationException(
-#                              "All valid components must be under the top level display part.");
-
-#                      bool isSixDigit = folder.CustomerNumber.Length == 6;
-#                      HashSet<Part> hashedParts = new HashSet<Part>();
-
-#                      foreach (Component comp in __components)
-#                      {
-#                          if (!(comp.Prototype is Part part))
-#                              continue;
-
-#                          hashedParts.Add(part);
-#                      }
-
-#                      Part[] validParts = hashedParts.ToArray();
-
-#                      // sql
-#                      const string sevenZip = @"C:\Program Files\7-Zip\7z.exe";
-
-#                      if (!File.Exists(sevenZip))
-#                          throw new FileNotFoundException($"Could not find \"{sevenZip}\".");
-
-#                      string parentFolder = isSixDigit
-#                          ? folder.DirDesignInformation
-#                          : folder.DirOutgoing;
-
-#                      string exportDirectory = string.IsNullOrEmpty(outgoingDirectoryName)
-#                          ? null
-#                          : $"{parentFolder}\\{outgoingDirectoryName}";
-
-
-#                      if (!(isRto && isSixDigit) && zipAssembly && exportDirectory != null && Directory.Exists(exportDirectory))
-#                          switch (MessageBox.Show($@"{exportDirectory} already exisits, would you like to overwrite it?",
-#                                      @"Warning", MessageBoxButtons.YesNo))
-#                          {
-#                              case DialogResult.Yes:
-#                                  Directory.Delete(exportDirectory, true);
-#                                  break;
-#                              default:
-#                                  return;
-#                          }
-
-#                      if (!(isRto && isSixDigit))
-#                          if (!string.IsNullOrEmpty(outgoingDirectoryName))
-#                              Directory.CreateDirectory(exportDirectory);
-
-#                      // If this is an RTO, then we need to delete the data files in the appropriate op folders.
-#                      if (isRto && !isChange)
-#                          try
-#                          {
-#                              DeleteOpFolders(__display_part_, folder);
-#                          }
-#                          catch (Exception ex)
-#                          {
-#                              ex.__PrintException();
-#                          }
-
-#                      if (exportDirectory != null)
-#                          Directory.CreateDirectory(exportDirectory);
-
-#                      Regex detailRegex = new Regex(RegexDetail, RegexOptions.IgnoreCase);
-#                      validParts = validParts.Distinct(new EqualityLeaf()).ToArray();
-
-#                      IDictionary<string, ISet<Part>> exportDict = SortPartsForExport(validParts);
-
-#                      //#pragma warning disable CS0612 // Type or member is obsolete
-#                      //                        if (!CheckSizeDescriptions(exportDict["PDF_4-VIEW"]))
-#                      //                            switch (MessageBox.Show(
-#                      //                                        "At least one block did not match its' description. Would you like to continue?",
-#                      //                                        "Warning", MessageBoxButtons.YesNo))
-#                      //                            {
-#                      //                                case DialogResult.Yes:
-#                      //                                    break;
-#                      //                                default:
-#                      //                                    return;
-#                      //                            }
-#                      //#pragma warning restore CS0612 // Type or member is obsolete
-
-#                      __display_part_.__Save();
-
-#                      Stopwatch stop_watch = new Stopwatch();
-
-#                      stop_watch.Start();
-
-#                      try
-#                      {
-#                          /////////////////////                   
-#                          Process assemblyProcess = null;
-
-#                          // Sets up the strip.
-#                          if (isRto || stpDetails || zipAssembly)
-#                              using (session_.__UsingDisplayPartReset())
-#                                  SetUpStrip(folder);
-
-#                          UpdateParts(
-#                              isRto,
-#                              pdf4Views, stpDetails, exportDict["PDF_4-VIEW"],
-#                              print4Views, exportDict["PDF_4-VIEW"],
-#                              dwgBurnout, exportDict["DWG_BURNOUT"],
-#                              stp999, exportDict["STP_999"],
-#                              stpSee3DData, exportDict["STP_SEE3D"],
-#                              paraCasting, exportDict["X_T_CASTING"],
-#                              __components);
-
-#                          Dictionary<string, Process> dict = new Dictionary<string, Process>();
-
-#                          if (isRto && detailRegex.IsMatch(topLevelAssembly.Leaf))
-#                          {
-#                              string stpPath = CreatePath(folder, topLevelAssembly, "-Step-Assembly", ".stp");
-
-#                              string dir = Path.GetDirectoryName(stpPath);
-
-#                              if (!Directory.Exists(dir))
-#                                  Directory.CreateDirectory(dir);
-
-#                              AssemblyExportDesignDataStp(topLevelAssembly.FullPath, stpPath, FilePathExternalStepAssemblyDef);
-#                          }
-
-#                          // Prints the parts with 4-Views.
-#                          if (print4Views)
-#                              using (session_.__UsingDisplayPartReset())
-#                              {
-#                                  PrintPdfs(exportDict["PDF_4-VIEW"]);
-#                              }
-
-#                          // Gets the processes that will create the pdf 4-Views.
-#                          if (isRto || pdf4Views)
-#                              foreach (Part part in exportDict["PDF_4-VIEW"])
-#                                  try
-#                                  {
-#                                      if (part.Leaf.EndsWith("000"))
-#                                          continue;
-
-#                                      string pdfPath = CreatePath(folder, part, "-Pdf-4-Views", ".pdf");
-
-#                                      string dir = Path.GetDirectoryName(pdfPath);
-
-#                                      if (!Directory.Exists(dir))
-#                                          Directory.CreateDirectory(dir);
-
-#                                      if (File.Exists(pdfPath))
-#                                          File.Delete(pdfPath);
-
-#                                      print($"PDF 4-VIEW -> {pdfPath}");
-#                                      AssemblyExportDesignDataPdf(part, "4-VIEW", pdfPath);
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#                          // If this is a RTO then 
-#                          if (isRto || stpDetails)
-#                              foreach (Part part in exportDict["PDF_4-VIEW"])
-#                              {
-#                                  string stpPath = CreatePath(folder, part, "-Step-Details", ".stp");
-
-#                                  string dir = Path.GetDirectoryName(stpPath);
-
-#                                  if (!Directory.Exists(dir))
-#                                      Directory.CreateDirectory(dir);
-
-#                                  if (File.Exists(stpPath))
-#                                      File.Delete(stpPath);
-
-#                                  print($"Step Details -> {part.FullPath}");
-#                                  AssemblyExportDesignDataStp(part.FullPath, stpPath, FilePathExternalStepDetailDef);
-#                              }
-
-#                          if (zipAssembly && !(isRto || stpDetails))
-#                              try
-#                              {
-#                                  string path = $"{exportDirectory}\\{topLevelAssembly.Leaf}.stp";
-
-#                                  string dir = Path.GetDirectoryName(path);
-
-#                                  if (!Directory.Exists(dir))
-#                                      Directory.CreateDirectory(dir);
-
-#                                  print($"{nameof(AssemblyExportDesignDataStp)} - {topLevelAssembly}");
-
-#                                  AssemblyExportDesignDataStp(topLevelAssembly.FullPath, path, FilePathExternalStepDetailDef);
-#                              }
-#                              catch (Exception ex)
-#                              {
-#                                  ex.__PrintException();
-#                              }
-
-#                          // Gets the processes that create stp see 3d data.
-#                          if (isRto || stpSee3DData)
-#                              foreach (Part part in exportDict["STP_SEE3D"])
-#                                  try
-#                                  {
-#                                      string output = CreatePath(folder, part, "-Step-See-3D-Data", ".stp");
-
-#                                      string dir = Path.GetDirectoryName(output);
-
-#                                      if (!Directory.Exists(dir))
-#                                          Directory.CreateDirectory(dir);
-
-#                                      print($"STEP See 3d - {part.FullPath}");
-
-#                                      AssemblyExportDesignDataStp(part.FullPath, output, @"U:\nxFiles\Step Translator\ExternalStep_Detail.def");
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#                          // Gets the processes that create stp 999 details.
-#                          if (isRto || stp999)
-#                              foreach (Part part in exportDict["STP_999"])
-#                                  try
-#                                  {
-#                                      string output = CreatePath(folder, part, "-Step-999", ".stp");
-
-#                                      string dir = Path.GetDirectoryName(output);
-
-#                                      if (!Directory.Exists(dir))
-#                                          Directory.CreateDirectory(dir);
-
-#                                      print($"999 - {part.FullPath}");
-#                                      AssemblyExportDesignDataStp(part.FullPath, output, @"U:\nxFiles\Step Translator\ExternalStep_Detail.def");
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#                          // Gets the processes that create burnout dwgs.
-#                          if (isRto || dwgBurnout)
-#                              foreach (Part part in exportDict["DWG_BURNOUT"])
-#                                  try
-#                                  {
-#                                      string output = CreatePath(folder, part, "-Dwg-Burnouts", ".dwg");
-
-#                                      string dir = Path.GetDirectoryName(output);
-
-#                                      if (!Directory.Exists(dir))
-#                                          Directory.CreateDirectory(dir);
-
-#                                      print($"BURNOUT - {part.FullPath}");
-
-#                                      AssemblyExportDesignDataDwg(part.FullPath, "BURNOUT", output);
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#                          //if (dwg4Views)
-#                          //    foreach (Part part in hashedParts)
-#                          //        try
-#                          //        {
-#                          //            string output = CreatePath(folder, part, "-Dwg-4-Views", ".dwg");
-
-#                          //            string dir = Path.GetDirectoryName(output);
-
-#                          //            if (!Directory.Exists(dir))
-#                          //                Directory.CreateDirectory(dir);
-
-#                          //            //print($"BURNOUT - {part.FullPath}");
-
-#                          //            Dwg(part.FullPath, "4-VIEW", output);
-#                          //        }
-#                          //        catch (Exception ex)
-#                          //        {
-#                          //            ex.__PrintException();
-#                          //        }
-
-#                          // Creates casting parasolids.
-#                          if (isRto || paraCasting)
-#                              foreach (Part castingPart in exportDict["X_T_CASTING"])
-#                                  try
-#                                  {
-#                                      print($"{nameof(CreateCasting)} - {castingPart.FullPath}");
-#                                      CreateCasting(castingPart, folder);
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#                          HashSet<string> expectedFiles = new HashSet<string>(dict.Keys);
-
-#                          HashSet<string> directoriesToExport = new HashSet<string>(expectedFiles.Select(Path.GetDirectoryName));
-
-#                          CreateDirectoriesDeleteFiles(expectedFiles);
-
-#                          string zipPath = $"{exportDirectory}\\{topLevelAssembly.Leaf}_NX.7z";
-
-#                          if ((isRto && !isSixDigit) || (zipAssembly && !isRto))
-#                          {
-#                              print(nameof(Assembly));
-#                              assemblyProcess = Assembly(topLevelAssembly, false, zipPath);
-#                              assemblyProcess.Start();
-#                          }
-
-#                          prompt("Validating Stp Files.");
-
-#                          print(nameof(WriteStpCyanFiles));
-#                          WriteStpCyanFiles(expectedFiles);
-
-#                          prompt("Zipping up data folders.");
-
-#                          // Gets all the data folders that were created and zips them up and places them in the proper outgoingData folderWithCtsNumber if this is an RTO.
-#                          if (isRto && !isSixDigit)
-#                          {
-#                              print(nameof(ZipUpDataFolders));
-#                              ZipUpDataFolders(directoriesToExport, exportDirectory);
-#                          }
-
-#                          if (isRto && !isSixDigit)
-#                          {
-#                              print(nameof(ZipupDirectories));
-#                              ZipupDirectories(sevenZip, directoriesToExport, zipPath);
-#                          }
-
-#                          foreach (string file_key in dict.Keys)
-#                              try
-#                              {
-#                                  Process process = dict[file_key];
-
-#                                  if (File.Exists(file_key))
-#                                      continue;
-
-#                                  print($"Recreating: {file_key}");
-#                                  prompt($"Recreating: {file_key}");
-
-#                                  process.Start();
-
-#                                  process.WaitForExit();
-#                              }
-#                              catch (Exception ex)
-#                              {
-#                                  ex.__PrintException();
-#                              }
-
-#                          // Checks to make sure that any expected data files were actually created.
-#                          if (expectedFiles.Count > 0)
-#                          {
-#                              print(nameof(ErrorCheck));
-#                              ErrorCheck(isRto, zipAssembly, expectedFiles);
-#                          }
-
-#                          // Moves the sim report to the out going folderWithCtsNumber if one exists.
-#                          if (isRto && !isSixDigit && !(exportDirectory is null))
-#                          {
-#                              print(nameof(MoveSimReport));
-#                              MoveSimReport(folder, exportDirectory);
-#                          }
-
-#                          // Moves the stock list to the outgoing folderWithCtsNumber if one exists.
-#                          if (isRto && !isSixDigit && !(exportDirectory is null))
-#                          {
-#                              print(nameof(MoveStocklist));
-#                              MoveStocklist(folder, topLevelAssembly.Leaf, exportDirectory);
-#                          }
-
-#                          if (!(exportDirectory is null))
-#                          {
-#                              print(nameof(ZipupDataDirectories));
-#                              ZipupDataDirectories(exportDirectory, assemblyProcess);
-#                          }
-
-#                          /////////////////////////
-#                      }
-#                      finally
-#                      {
-#                          stop_watch.Stop();
-
-#                          print($"{stop_watch.Elapsed.Minutes}:{stop_watch.Elapsed.Seconds}");
-#                      }
-#                  }
-#              }
-#          }
-
-#          public static void DeleteOpFolders(Part part, GFolder folder)
-#          {
-#              if (folder is null)
-#                  throw new ArgumentException();
-
-#              // Matches the {part.Leaf} to 000 regex.
-#              Match top_match = Regex.Match(part.Leaf, RegexOp000Holder, RegexOptions.IgnoreCase);
-
-#              // If the {match} is not a success, then {part} is not a "000".
-#              if (!top_match.Success)
-#                  throw new Exception($"Part \"{part.FullPath}\" is not a 000.");
-
-#              // Gets the op of the {part}.
-#              string op = top_match.Groups["opNum"].Value;
-
-#              // The set that holds the data directories to delete.
-#              HashSet<string> directoriesToDelete = new HashSet<string>();
-
-#              switch (op)
-#              {
-#                  // Matches the 900 000's.
-#                  case "900":
-#                      {
-#                          directoriesToDelete.Add($"{folder.dir_op("900")}\\{folder.CustomerNumber}-900-Step-Assembly");
-
-#                          foreach (Component component in part.ComponentAssembly.RootComponent.GetChildren())
-#                          {
-#                              Match match = Regex.Match(component.DisplayName, RegexLwr);
-
-#                              if (!match.Success)
-#                                  continue;
-
-#                              string assembly_op = match.Groups["opNum"].Value;
-
-#                              if (assembly_op.Length % 2 != 0)
-#                                  continue;
-
-#                              for (int i = 0; i < assembly_op.Length - 1; i += 2)
-#                              {
-#                                  string temp_op = assembly_op[i] + "" + assembly_op[i + 1] + "0";
-
-#                                  string directory = folder.dir_op(temp_op);
-
-#                                  directoriesToDelete.Add(
-#                                      $"{directory}\\{folder.CustomerNumber}-{temp_op}-Parasolids-Castings");
-#                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Pdf-4-Views");
-#                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-Details");
-#                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-Assembly");
-#                                  directoriesToDelete.Add($"{directory}\\{folder.CustomerNumber}-{temp_op}-Dwg-Burnouts");
-#                                  directoriesToDelete.Add(
-#                                      $"{directory}\\{folder.CustomerNumber}-{temp_op}-Step-See-3D-Data");
-#                              }
-#                          }
-#                      }
-#                      break;
-
-#                  // This matches all the regular op 010, 020, 030 and so 000's.
-#                  case var _ when op.Length == 3:
-#                      {
-#                          // Gets the assembly folderWithCtsNumber correpsonding to the {assemblyOp000}.
-#                          string assemblyFolder = folder.dir_op(op);
-
-#                          // If the directory {assemblyFolder} doesn't exist, then we want to throw.
-#                          if (!Directory.Exists(assemblyFolder))
-#                              throw new DirectoryNotFoundException($"Could not find directory \"{assemblyFolder}\".");
-
-#                          foreach (string directory in Directory.GetDirectories(assemblyFolder))
-#                          {
-#                              string dirName = Path.GetFileName(directory);
-
-#                              if (dirName == null)
-#                                  continue;
-
-#                              if (!dirName.StartsWith($"{folder.CustomerNumber}-{op}"))
-#                                  continue;
-
-#                              // Adds the {directory} to the {directoriesToDelete}.
-#                              directoriesToDelete.Add(directory);
-#                          }
-#                      }
-#                      break;
-
-#                  // Matches the assembly holder by ensuring that the op has an even amount of characters.
-#                  case var _ when op.Length % 2 == 0:
-#                      {
-#                          // A list to hold the ops.
-#                          List<string> opList = new List<string>();
-
-#                          // Gets the character array of the {assemblyHolder}.
-#                          char[] charArray = op.ToCharArray();
-
-#                          // Grab the op characters two at a time.
-#                          for (int i = 0; i < charArray.Length; i += 2)
-#                              opList.Add(charArray[i] + "" + charArray[i + 1] + "0");
-
-#                          foreach (string assemblyOp in opList)
-#                          {
-#                              // Gets the assembly folderWithCtsNumber correpsonding to the {assemblyOp000}.
-#                              string assemblyFolder = folder.dir_op(assemblyOp);
-
-#                              // If the directory {assemblyFolder} doesn't exist, then we want to throw.
-#                              if (!Directory.Exists(assemblyFolder))
-#                                  throw new DirectoryNotFoundException($"Could not find directory \"{assemblyFolder}\".");
-
-#                              foreach (string directory in Directory.GetDirectories(assemblyFolder))
-#                              {
-#                                  string dirName = Path.GetFileName(directory);
-
-#                                  if (dirName == null)
-#                                      continue;
-
-#                                  if (!dirName.StartsWith($"{folder.CustomerNumber}-{assemblyOp}"))
-#                                      continue;
-
-#                                  // Adds the {directory} to the {directoriesToDelete}.
-#                                  directoriesToDelete.Add(directory);
-#                              }
-#                          }
-#                      }
-#                      break;
-#              }
-
-#              foreach (string dir in directoriesToDelete)
-#                  if (Directory.Exists(dir))
-#                      Directory.Delete(dir, true);
-#          }
-
-
-#          public static void WriteStpCyanFiles(IEnumerable<string> expectedFiles)
-#          {
-#              foreach (string expected in expectedFiles)
-#              {
-#                  if (!expected.EndsWith(".stp") || !File.Exists(expected))
-#                      continue;
-
-#                  string fileText = File.ReadAllText(expected);
-
-#                  if (!fileText.Contains("Cyan"))
-#                      continue;
-
-#                  File.WriteAllText(expected, fileText.Replace("Cyan", "cyan"));
-#              }
-#          }
-
-#          public static void CreateDirectoriesDeleteFiles(IEnumerable<string> expectedFiles)
-#          {
-#              foreach (string file in expectedFiles)
-#                  try
-#                  {
-#                      string directory = Path.GetDirectoryName(file);
-#                      Directory.CreateDirectory(directory ?? throw new Exception());
-#                      File.Delete(file);
-#                  }
-#                  catch (Exception ex)
-#                  {
-#                      ex.__PrintException();
-#                  }
-#          }
-
-#          [Obsolete]
-#          public static bool CheckSizeDescriptions(IEnumerable<Part> partsInBom)
-#          {
-#              //bool allPassed = true;
-#              //foreach (Part part in partsInBom)
-#              //    try
-#              //    {
-#              //        if (!SizeDescription1.Validate(part, out string message))
-#              //        {
-#              //            if (message == "Part does not contain a Dynamic Block.")
-#              //                continue;
-#              //            allPassed = false;
-#              //            print_($"{part.Leaf}:\n{message}\n");
-#              //        }
-#              //    }
-#              //    catch (Exception ex)
-#              //    {
-#              //        ex.__PrintException();
-#              //    }
-
-#              //return allPassed;
-
-#              throw new NotImplementedException();
-#          }
-
-#          public static string CreatePath(GFolder folder, Part part, string directoryTag, string extension)
-#          {
-#              string directory =
-#                  $"{folder.DirJob}\\{folder.CustomerNumber}-{part.__AskDetailOp()}\\{folder.CustomerNumber}-{part.__AskDetailOp()}{directoryTag}";
-#              string stpPath = $"{directory}\\{part.Leaf}{extension}";
-#              return stpPath;
-#          }
-
-#          public static void SetLayers()
-#          {
-#              __display_part_.Layers.SetState(1, NXOpen.Layer.State.WorkLayer);
-
-
-#              for (int i = 2; i <= 256; i++)
-#                  if (Layers.Contains(i))
-#                      __display_part_.Layers.SetState(i, NXOpen.Layer.State.Selectable);
-#                  else
-#                      __display_part_.Layers.SetState(i, NXOpen.Layer.State.Hidden);
-#          }
-
-#          public static void CreateCasting(Part part, GFolder folder)
-#          {
-#              using (session_.__UsingDisplayPartReset())
-#              {
-#                  __display_part_ = part;
-
-#                  string op = part.__AskDetailOp();
-
-#                  string castingDirectory =
-#                      $"{folder.DirJob}\\{folder.CustomerNumber}-{op}\\{folder.CustomerNumber}-{op}-Parasolids-Castings";
-
-#                  if (!Directory.Exists(castingDirectory))
-#                      Directory.CreateDirectory(castingDirectory);
-
-#                  print($"Casting Step - {part.FullPath}");
-#                  CreateCastingStep(part, castingDirectory);
-
-#                  string castingPath = $"{castingDirectory}\\{part.Leaf}.x_t";
-
-#                  if (File.Exists(castingPath))
-#                      File.Delete(castingPath);
-
-#                  List<Tag> tagBodies = part.Bodies
-#                      .ToArray()
-#                      .OfType<Body>()
-#                      .Where(body => body.Layer == 1)
-#                      .Select(body => body.Tag)
-#                      .ToList();
-
-#                  if (tagBodies.Count == 0)
-#                  {
-#                      print($"Did not find any solid bodies on layer 1 in part {part.Leaf}");
-
-#                      return;
-#                  }
-
-#                  if (!(part.ComponentAssembly.RootComponent is null))
-#                      foreach (Component child in part.ComponentAssembly.RootComponent.GetChildren())
-#                      {
-#                          if (child.IsSuppressed)
-#                              continue;
-
-#                          if (child.Layer != 96)
-#                              continue;
-
-#                          if (child.ReferenceSet == "Empty")
-#                              continue;
-
-#                          foreach (Body __body in child.__Members().OfType<Body>().Where(__b => __b.IsSolidBody))
-#                              tagBodies.Add(__body.Tag);
-#                      }
-
-#                  string castingFile =
-#                      $"{folder.DirJob}\\{folder.CustomerNumber}-{op}\\{folder.CustomerNumber}-{op}-Parasolids-Castings\\{part.Leaf}.x_t";
-
-#                  ufsession_.Ps.ExportData(tagBodies.ToArray(), castingFile);
-#              }
-
-#              string FullPath = part.FullPath;
-
-#              part.Close(BasePart.CloseWholeTree.False, BasePart.CloseModified.CloseModified, null);
-
-#              session_.__FindOrOpen(FullPath);
-#          }
-
-#          private static void CreateCastingStep(Part part, string castingDirectory)
-#          {
-#              try
-#              {
-#                  string step_path = $"{castingDirectory}\\{part.Leaf}.stp";
-
-#                  if (File.Exists(step_path))
-#                      File.Delete(step_path);
-
-#                  using (session_.__UsingLockUgUpdates())
-
-#                  {
-#                      foreach (Component child in __display_part_.ComponentAssembly.RootComponent.GetChildren())
-#                      {
-#                          // sql
-#                          if (child.Layer == 96)
-#                              continue;
-
-#                          if (child.IsSuppressed)
-#                              continue;
-
-#                          child.Suppress();
-#                      }
-#                  }
-
-#                  Session theSession = Session.GetSession();
-#                  Part workPart = theSession.Parts.Work;
-#                  Part displayPart = theSession.Parts.Display;
-#                  // ----------------------------------------------
-#                  //   Menu: File->Export->STEP...
-#                  // ----------------------------------------------
-#                  Session.UndoMarkId markId1;
-#                  markId1 = theSession.SetUndoMark(Session.MarkVisibility.Visible, "Start");
-
-#                  StepCreator stepCreator1;
-#                  stepCreator1 = theSession.DexManager.CreateStepCreator();
-
-#                  // sql
-#                  stepCreator1.ExportAs = StepCreator.ExportAsOption.Ap214;
-
-#                  stepCreator1.BsplineTol = 0.001;
-
-#                  stepCreator1.SettingsFile = "C:\\Program Files\\Siemens\\NX1899\\step214ug\\ugstep214.def";
-
-#                  stepCreator1.BsplineTol = 0.001;
-
-#                  stepCreator1.InputFile = part.FullPath;
-
-#                  theSession.SetUndoMarkName(markId1, "Export STEP File Dialog");
-
-#                  Session.UndoMarkId markId2;
-#                  markId2 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "Export STEP File");
-
-#                  theSession.DeleteUndoMark(markId2, null);
-
-#                  Session.UndoMarkId markId3;
-#                  markId3 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "Export STEP File");
-
-#                  stepCreator1.OutputFile = step_path;
-
-#                  stepCreator1.FileSaveFlag = false;
-
-#                  stepCreator1.LayerMask = "1,96";
-
-#                  stepCreator1.ProcessHoldFlag = true;
-
-#                  NXObject nXObject1;
-#                  nXObject1 = stepCreator1.Commit();
-
-#                  theSession.DeleteUndoMark(markId3, null);
-
-#                  theSession.SetUndoMarkName(markId1, "Export STEP File");
-
-#                  stepCreator1.Destroy();
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static void SetLayersInBlanksAndLayoutsAndAddDummies(Part snapStrip010)
-#          {
-#              if (!Regex.IsMatch(snapStrip010.Leaf, RegexStrip, RegexOptions.IgnoreCase))
-#                  throw new ArgumentException(@"Must be an op 010 strip.", nameof(snapStrip010));
-
-#              using (session_.__UsingDisplayPartReset())
-#              {
-#                  // sql
-#                  Regex blankNameRegex = new Regex("^BLANK-([0-9]{1,})$");
-
-#                  Regex layoutNameRegex = new Regex("^LAYOUT-([0-9]{1,})$");
-
-#                  Part layoutPart = __display_part_.ComponentAssembly.RootComponent.__Descendants()
-#                      .Select(component => component.Prototype)
-#                      .OfType<Part>()
-#                      .FirstOrDefault(component => Regex.IsMatch(component.Leaf, RegexLayout, RegexOptions.IgnoreCase));
-
-#                  Part blankPart = __display_part_.ComponentAssembly.RootComponent.__Descendants()
-#                      .Select(component => component.Prototype)
-#                      .OfType<Part>()
-#                      .FirstOrDefault(component => Regex.IsMatch(component.Leaf, RegexBlank, RegexOptions.IgnoreCase));
-
-#                  HashSet<int> layoutLayers = new HashSet<int>();
-
-#                  HashSet<int> blankLayers = new HashSet<int>();
-
-#                  foreach (Component child in __display_part_.ComponentAssembly.RootComponent.__Descendants())
-#                  {
-#                      if (!(child.Prototype is Part))
-#                          continue;
-
-#                      if (child.IsSuppressed)
-#                          continue;
-
-#                      Match blankMatch = blankNameRegex.Match(child.Name);
-#                      Match layoutMatch = layoutNameRegex.Match(child.Name);
-
-#                      if (blankMatch.Success)
-#                      {
-#                          int layer = int.Parse(blankMatch.Groups[1].Value) + 10;
-#                          blankLayers.Add(layer);
-#                      }
-
-#                      if (!layoutMatch.Success) continue;
-#                      {
-#                          int layer = int.Parse(layoutMatch.Groups[1].Value) * 10;
-#                          layoutLayers.Add(layer);
-#                          layoutLayers.Add(layer + 1);
-#                      }
-#                  }
-
-#                  if (blankLayers.Count != 0 && blankPart != null)
-#                  {
-#                      __display_part_ = blankPart;
-#                      __work_part_ = __display_part_;
-#                      AddDummy(blankPart, blankLayers);
-#                      ufsession_.Ui.SetPrompt($"Saving: {blankPart.Leaf}.");
-#                      Session.GetSession().Parts.Display
-#                          .Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-#                  }
-
-#                  if (layoutLayers.Count != 0 && layoutPart != null)
-#                  {
-#                      __display_part_ = layoutPart;
-#                      __work_part_ = __display_part_;
-#                      AddDummy(layoutPart, layoutLayers);
-#                      ufsession_.Ui.SetPrompt($"Saving: {layoutPart.Leaf}.");
-#                      session_.Parts.Display.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-#                  }
-#              }
-
-#              snapStrip010.__Save();
-#          }
-
-#          private static void AddDummy(Part part, IEnumerable<int> layers)
-#          {
-#              ufsession_.Ui.SetPrompt($"Setting layers in {__display_part_.Leaf}.");
-#              int[] layerArray = layers.ToArray();
-#              __display_part_.Layers.SetState(1, NXOpen.Layer.State.WorkLayer);
-
-#              for (int i = 2; i < +256; i++)
-#                  __display_part_.Layers.SetState(i, layerArray.Contains(i)
-#                      ? NXOpen.Layer.State.Selectable
-#                      : NXOpen.Layer.State.Hidden);
-
-#              __display_part_.Layers.SetState(layerArray.Min(), NXOpen.Layer.State.WorkLayer);
-#              __display_part_.Layers.SetState(1, NXOpen.Layer.State.Hidden);
-
-#              if (!(part.ComponentAssembly.RootComponent is null))
-#              {
-#                  Component validChild = part.ComponentAssembly.RootComponent
-#                      .GetChildren()
-#                      .Where(component => component.__IsLoaded())
-#                      .FirstOrDefault(component => !component.IsSuppressed);
-
-#                  if (validChild != null)
-#                      return;
-#              }
-
-#              Part dummyPart = session_.__FindOrOpen(DummyPath);
-#              ufsession_.Ui.SetPrompt($"Adding dummy file to {part.Leaf}.");
-#              __work_part_.ComponentAssembly.AddComponent(dummyPart, "Entire Part", "DUMMY", _Point3dOrigin,
-#                  _Matrix3x3Identity, 1, out _);
-#          }
-
-#          public static void CheckAssemblyDummyFiles()
-#          {
-#              ufsession_.Ui.SetPrompt("Checking Dummy files exist.");
-
-#              if (__display_part_.ComponentAssembly.RootComponent == null)
-#                  return;
-
-#              foreach (Component childOfStrip in __display_part_.ComponentAssembly.RootComponent.GetChildren())
-#              {
-#                  if (childOfStrip.IsSuppressed)
-#                      continue;
-
-#                  if (!childOfStrip.__IsLoaded())
-#                      continue;
-
-#                  if (!Regex.IsMatch(childOfStrip.DisplayName, RegexPressAssembly, RegexOptions.IgnoreCase))
-#                      continue;
-
-#                  if (childOfStrip.GetChildren().Length == 0)
-#                      throw new InvalidOperationException(
-#                          $"A press exists in your assembly without any children. {childOfStrip.__AssemblyPathString()}");
-
-#                  switch (childOfStrip.GetChildren().Length)
-#                  {
-#                      case 1:
-#                          throw new InvalidOperationException(
-#                              $"A press exists in your assembly with only one child. Expecting a ram and a bolster. {childOfStrip.__AssemblyPathString()}");
-#                      case 2:
-#                          foreach (Component childOfPress in childOfStrip.GetChildren())
-#                          {
-#                              if (!childOfPress.__IsLoaded())
-#                                  throw new InvalidOperationException(
-#                                      $"The child of a press must be loaded. {childOfPress.__AssemblyPathString()}");
-
-#                              if (childOfPress.IsSuppressed)
-#                                  throw new InvalidOperationException(
-#                                      $"The child of a press cannot be suppressed. {childOfPress.__AssemblyPathString()}");
-
-#                              if (childOfPress.GetChildren().Length != 0 && childOfPress.GetChildren()
-#                                      .Select(component => component)
-#                                      .Any(component => !component.IsSuppressed && component.Prototype is Part))
-#                                  continue;
-
-#                              throw new InvalidOperationException(
-#                                  $"The child of a bolster or ram under a press must be the Dummy file: {DummyPath}. {childOfPress.__AssemblyPathString()}");
-#                          }
-
-#                          break;
-#                  }
-#              }
-#          }
-
-#          public static void ZipupDataDirectories(string exportDirectory, Process assemblyProcess)
-#          {
-#              try
-#              {
-#                  string[] stpFilesInOutGoingFolder =
-#                      Directory.GetFiles(exportDirectory, "*.stp", SearchOption.TopDirectoryOnly);
-
-#                  if (stpFilesInOutGoingFolder.Length != 0)
-#                  {
-#                      string displayName = Path.GetFileNameWithoutExtension(stpFilesInOutGoingFolder.First());
-
-#                      Process stpZipProcess = AssemblyExportDesignDataCreate7ZipProcess($"{exportDirectory}\\{displayName}_STP.7z",
-#                          stpFilesInOutGoingFolder);
-
-#                      stpZipProcess.Start();
-
-#                      stpZipProcess.WaitForExit();
-
-#                      foreach (string file in stpFilesInOutGoingFolder)
-#                          try
-#                          {
-#                              if (File.Exists(file)) File.Delete(file);
-#                          }
-#                          catch (Exception ex)
-#                          {
-#                              ex.__PrintException();
-#                          }
-#                  }
-
-#                  assemblyProcess?.WaitForExit();
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          /// <summary>
-#          ///     Gets the file paths of all Sim Reports with the specified <paramref name="ctsJobNumber" />.
-#          /// </summary>
-#          /// <param name="ctsJobNumber">The job number.</param>
-#          /// <returns>An array of SimReport file paths.</returns>
-#          public static string[] GetReports(string ctsJobNumber)
-#          {
-#              return (from directory in Directory.GetDirectories("X:\\")
-#                      let directoryName = Path.GetFileName(directory)
-#                      where directoryName != null
-#                      // sql
-#                      let match = new Regex("^Reports-([0-9]{4})-([0-9]{4})$").Match(directoryName)
-#                      where match.Success
-#                      let startRange = int.Parse(match.Groups[1].Value)
-#                      let endRange = int.Parse(match.Groups[2].Value)
-#                      let jobNumber = int.Parse(ctsJobNumber)
-#                      where startRange <= jobNumber && jobNumber <= endRange
-#                      from report in Directory.GetFiles(directory, "*.7z")
-#                      let fileName = Path.GetFileNameWithoutExtension(report)
-#                      where fileName.StartsWith(ctsJobNumber)
-#                      select report).ToArray();
-#          }
-
-#          public static IDictionary<string, ISet<Part>> SortPartsForExport(IEnumerable<Part> validParts)
-#          {
-#              Regex detailRegex = new Regex(RegexDetail, RegexOptions.IgnoreCase);
-
-#              IDictionary<string, ISet<Part>> exportDict = new Dictionary<string, ISet<Part>>
-#          {
-#              { "PDF_4-VIEW", new HashSet<Part>() },
-#              { "STP_DETAIL", new HashSet<Part>() },
-#              { "DWG_BURNOUT", new HashSet<Part>() },
-#              { "STP_999", new HashSet<Part>() },
-#              { "STP_SEE3D", new HashSet<Part>() },
-#              { "X_T_CASTING", new HashSet<Part>() },
-#              { "X_T", new HashSet<Part>() }
-#          };
-
-#              foreach (Part part in validParts)
-#              {
-#                  Match match = detailRegex.Match(part.Leaf);
-
-#                  if (!match.Success)
-#                      continue;
-
-#                  if (part.Leaf.__IsAssemblyHolder())
-#                      continue;
-
-#                  if (part.Leaf.EndsWith("000"))
-#                      continue;
-
-#                  if (part.__HasDrawingSheet("4-VIEW"))
-#                      exportDict["PDF_4-VIEW"].Add(part);
-
-#                  if (part.__HasDrawingSheet("BURNOUT"))
-#                      exportDict["DWG_BURNOUT"].Add(part);
-
-#                  if (part.__IsSee3DData())
-#                      exportDict["STP_SEE3D"].Add(part);
-
-#                  if (part.__Is999())
-#                      exportDict["STP_999"].Add(part);
-
-#                  if (part.__IsCasting())
-#                      exportDict["X_T_CASTING"].Add(part);
-
-#                  if (part.__HasReferenceSet("BODY"))
-#                      exportDict["X_T"].Add(part);
-#              }
-
-#              return exportDict;
-#          }
-
-#          public static void UpdateParts(
-#              bool isRto,
-#              bool pdf4Views, bool stpDetails, IEnumerable<Part> partsWith4ViewsNoAssemblyHolders,
-#              bool print4Views, IEnumerable<Part> partsWith4Views,
-#              bool dwgBurnout, IEnumerable<Part> burnoutParts,
-#              bool stp999, IEnumerable<Part> nine99Parts,
-#              bool stpSee3DData, IEnumerable<Part> see3DDataParts,
-#              bool paraCasting, IEnumerable<Part> castingParts,
-#              Component[] selected_components)
-#          {
-#              using (session_.__UsingDisplayPartReset())
-#              {
-#                  ISet<Part> selected_parts =
-#                      new HashSet<Part>(selected_components.Select(__c => __c.Prototype).OfType<Part>());
-
-#                  ISet<Part> partsToUpdate = new HashSet<Part>();
-
-#                  if (isRto || pdf4Views || stpDetails)
-#                      foreach (Part part in partsWith4ViewsNoAssemblyHolders)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (isRto || dwgBurnout)
-#                      foreach (Part part in burnoutParts)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (isRto || print4Views)
-#                      foreach (Part part in partsWith4Views)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (isRto || paraCasting)
-#                      foreach (Part part in castingParts)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (isRto || stp999)
-#                      foreach (Part part in nine99Parts)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (isRto || stpSee3DData)
-#                      foreach (Part part in see3DDataParts)
-#                          if (selected_parts.Contains(part))
-#                              partsToUpdate.Add(part);
-
-#                  if (partsToUpdate.Count > 0)
-#                      UpdateParts(partsToUpdate.ToArray());
-#              }
-#          }
-
-#          public static void ZipupDirectories(string sevenZip, IEnumerable<string> directoriesToExport, string zipPath)
-#          {
-#              try
-#              {
-#                  // Constructs the arguments that deletes the sub data folders in the newly created assembly zip folderWithCtsNumber.
-#                  string arguments = $"d \"{zipPath}\" -r {directoriesToExport.Select(Path.GetFileName).Where(dir => dir != null).Aggregate("", (s1, s2) => $"{s1} \"{s2}\"")}";
-
-#                  // Starts the actual delete process.
-#                  Process deleteProcess = Process.Start(sevenZip, arguments);
-
-#                  // Waits for the {deleteProcess} to finish.
-#                  deleteProcess?.WaitForExit();
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static void MoveSimReport(GFolder folder, string exportDirectory)
-#          {
-#              try
-#              {
-#                  if (!folder.is_cts_job())
-#                      return;
-
-#                  if (GetReports(folder.CtsNumber).Length != 0)
-#                      foreach (string report in GetReports(folder.CtsNumber))
-#                      {
-#                          string reportName = Path.GetFileName(report);
-
-#                          if (reportName == null)
-#                              continue;
-
-#                          string exportedReportPath = $"{exportDirectory}\\{reportName}";
-
-#                          if (File.Exists(exportedReportPath))
-#                          {
-#                              print($"Sim report \"{exportedReportPath}\" already exists.");
-#                              continue;
-#                          }
-
-#                          File.Copy(report, exportedReportPath);
-#                      }
-#                  else
-#                      print("Unable to find a sim report to transfer.");
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static void LaunchProcesses(int numberOfProcesses, params Process[] processes)
-#          {
-#              int processesCompleted = 0;
-
-#              try
-#              {
-#                  int length = numberOfProcesses > processes.Length
-#                      ? processes.Length
-#                      : numberOfProcesses;
-#                  HashSet<Process> hashProcesses = new HashSet<Process>();
-#                  for (int i = 0; i < length; i++)
-#                  {
-#                      processes[i].Start();
-#                      hashProcesses.Add(processes[i]);
-#                      prompt($"{processesCompleted} of {processes.Length}");
-#                  }
-
-#                  for (int i = length; processesCompleted < processes.Length; i++)
-#                  {
-#                      Process first = hashProcesses.FirstOrDefault(process => process != null && process.HasExited);
-#                      if (first == null)
-#                      {
-#                          i--;
-#                          continue;
-#                      }
-
-#                      hashProcesses.Remove(first);
-#                      processesCompleted++;
-#                      if (i < processes.Length)
-#                      {
-#                          Process nextProcess = processes[i];
-#                          nextProcess.Start();
-#                          hashProcesses.Add(nextProcess);
-#                      }
-
-#                      prompt($"{processesCompleted} of {processes.Length}");
-#                  }
-
-#                  processes.ToList().ForEach(proc => proc.WaitForExit());
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-
-#              ufsession_.Ui.SetPrompt("All processes have finished.");
-#          }
-
-#          public static void UpdateParts(params Part[] parts)
-#          {
-#              Part[] validParts = parts.Where(part => !part.Leaf.__IsAssemblyHolder()).Distinct(new EqualityLeaf())
-#                  .ToArray();
-
-#              for (int i = 0; i < validParts.Length; i++)
-#                  try
-#                  {
-#                      string report = $"Updating: {i + 1} of {validParts.Length}. ";
-#                      Part part = validParts[i];
-#                      ufsession_.Ui.SetPrompt($"{report}Setting Display Part to {part.Leaf}. ");
-#                      __display_part_ = part;
-#                      __work_part_ = __display_part_;
-
-#                      if (part.__IsCasting() && !(part.ComponentAssembly.RootComponent is null))
-#                          // If it is a casting then it cannot contain a child that is a lift lug and set to entire part.
-#                          if ((from child in part.ComponentAssembly.RootComponent.GetChildren()
-#                               where child.Prototype is Part
-#                               where child.__Prototype().FullPath.Contains("LiftLugs")
-#                               where child.ReferenceSet != RefsetEmpty
-#                               select child)
-#                              .Any(child => child.ReferenceSet == RefsetEntirePart))
-#                              print(
-#                                  $"Casting part {__display_part_.Leaf} contains a Lift Lug that is set to Entire Part. Casting Part cannot be made.");
-
-#                      ufsession_.Ui.SetPrompt($"{report}Setting layers in {part.Leaf}.");
-#                      SetLayers();
-#                      ufsession_.Ui.SetPrompt($"{report}Finding DisplayableObjects in {part.Leaf}.");
-#                      List<DisplayableObject> objects = new List<DisplayableObject>();
-
-#                      foreach (int layer in Layers)
-#                          objects.AddRange(__display_part_.Layers.GetAllObjectsOnLayer(layer)
-#                              .OfType<DisplayableObject>());
-
-#                      ufsession_.Ui.SetPrompt($"{report}Unblanking objects in {part.Leaf}.");
-#                      session_.DisplayManager.UnblankObjects(objects.ToArray());
-
-#                      foreach (DraftingView view in __display_part_.DraftingViews)
-#                          view.Update();
-
-#                      ufsession_.Ui.SetPrompt($"{report}Switching back to modeling in {part.Leaf}.");
-#                      session_.ApplicationSwitchImmediate("UG_APP_MODELING");
-#                      __work_part_.Drafting.ExitDraftingApplication();
-#                      ufsession_.Ui.SetPrompt($"{report}Saving {part.Leaf}.");
-#                      part.__Save();
-#                  }
-#                  catch (Exception ex)
-#                  {
-#                      ex.__PrintException(validParts[i].Leaf);
-#                  }
-#          }
-
-#          public static void SetUpStrip(GFolder folder)
-#          {
-#              try
-#              {
-#                  string strip_010 = folder.file_strip("010");
-
-#                  if (!File.Exists(strip_010))
-#                      return;
-
-#                  Part op010Strip = session_.__FindOrOpen(strip_010);
-
-#                  SetLayersInBlanksAndLayoutsAndAddDummies(op010Strip);
-
-#                  CheckAssemblyDummyFiles();
-
-#                  op010Strip.__Save();
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static Process Assembly(Part snapPart, bool waitForProcess, string zipPath)
-#          {
-#              HashSet<string> filePaths = new HashSet<string>();
-
-#              foreach (Component component in GetAssembly(snapPart.ComponentAssembly.RootComponent))
-#                  filePaths.Add(component.__Prototype().FullPath);
-
-#              return AssemblyExportDesignDataCreate7ZipProcess(zipPath, filePaths.ToArray());
-#          }
-
-#          /// <summary>Gets all the components under the given <paramref name="snapComponent" />.</summary>
-#          /// <remarks>The program will not go past components that are suppressed or end with "simulation"</remarks>
-#          /// <param name="snapComponent">The component to get the descendants from.</param>
-#          private static IEnumerable<Component> GetAssembly(Component snapComponent)
-#          {
-#              if (!snapComponent.__IsLoaded())
-#                  yield break;
-
-#              if (snapComponent.DisplayName.ToLower().EndsWith("-simulation"))
-#                  yield break;
-
-#              if (snapComponent.IsSuppressed)
-#                  yield break;
-
-#              yield return snapComponent;
-
-#              foreach (Component child in snapComponent.GetChildren())
-#                  foreach (Component comp in GetAssembly(child))
-#                      yield return comp;
-#          }
-
-#          public static void PrintPdfs(IEnumerable<Part> partsWith4Views)
-#          {
-#              using (session_.__UsingSuppressDisplay())
-#              {
-#                  try
-#                  {
-#                      UFSession.GetUFSession().Disp.SetDisplay(UFConstants.UF_DISP_UNSUPPRESS_DISPLAY);
-#                      UFSession.GetUFSession().Disp.RegenerateDisplay();
-#                      Print4Views(partsWith4Views);
-#                  }
-#                  catch (Exception ex)
-#                  {
-#                      ex.__PrintException();
-#                  }
-#              }
-#          }
-
-#          public static void ErrorCheck(bool isRto, bool zipAssembly, IEnumerable<string> expectedFiles)
-#          {
-#              string[] enumerable = expectedFiles as string[] ?? expectedFiles.ToArray();
-
-#              int fileCreatedCount = enumerable.Where(File.Exists).Count();
-
-#              print($"Created {fileCreatedCount} file(s).");
-
-#              if (!isRto && !zipAssembly)
-#                  print(
-#                      "Created files will have to be manually moved to outgoingData folderWithCtsNumber if that is desired. (Example: RTO)");
-
-#              List<string> filesThatWereNotCreated = enumerable.Where(s => !File.Exists(s)).ToList();
-
-#              List<Tuple<string, string>> errorList = new List<Tuple<string, string>>();
-
-#              foreach (string file in filesThatWereNotCreated)
-#              {
-#                  string extension = Path.GetExtension(file);
-
-#                  if (extension == null)
-#                      continue;
-
-#                  string errorFilePath = file.Replace(extension, ".err");
-
-#                  if (File.Exists(errorFilePath))
-#                  {
-#                      string[] fileContents = File.ReadAllLines(errorFilePath);
-
-#                      errorList.Add(new Tuple<string, string>(file, fileContents[0]));
-
-#                      File.Delete(errorFilePath);
-#                  }
-#                  else
-#                  {
-#                      errorList.Add(new Tuple<string, string>(file, "Unknown error."));
-#                  }
-#              }
-
-#              if (errorList.Count <= 0)
-#                  return;
-
-#              print("Files that were not created.");
-
-#              errorList.ForEach(print);
-#          }
-
-#          public static void ZipUpDataFolders(IEnumerable<string> directoriesToExport, string exportDirectory)
-#          {
-#              LaunchProcesses(10, (
-#                  from directory in directoriesToExport
-#                  let directoryName = Path.GetFileName(directory)
-#                  select AssemblyExportDesignDataCreate7ZipProcess($"{exportDirectory}\\{directoryName}.7z", directory)
-#              ).ToArray());
-#          }
-
-#          public static void Print4Views(IEnumerable<Part> allParts)
-#          {
-#              try
-#              {
-#                  bool IsNotAssembly(Part part)
-#                  {
-#                      string name = Path.GetFileNameWithoutExtension(part.FullPath);
-
-#                      if (name == null)
-#                          return false;
-
-#                      name = name.ToLower();
-
-#                      if (name.EndsWith("000") || name.EndsWith("lsh") || name.EndsWith("ush") || name.EndsWith("lwr") ||
-#                          name.EndsWith("upr"))
-#                          return false;
-
-#                      return !name.Contains("lsp") && !name.Contains("usp");
-#                  }
-
-#                  List<Part> parts = allParts
-#                      .Where(part => Regex.IsMatch(part.Leaf, RegexDetail, RegexOptions.IgnoreCase))
-#                      .Where(IsNotAssembly)
-#                      .Where(part => part.DraftingDrawingSheets.ToArray().Any(__d => __d.Name.ToUpper() == "4-VIEW"))
-#                      .ToList();
-
-#                  parts.Sort((part1, part2) => string.Compare(part1.Leaf, part2.Leaf, StringComparison.Ordinal));
-
-#                  for (int i = 0; i < parts.Count; i++)
-#                  {
-#                      Part part = parts[i];
-
-#                      ufsession_.Ui.SetPrompt($"{i + 1} of {parts.Count}. Printing 4-VIEW of {part.Leaf}.");
-
-#                      __display_part_ = part;
-
-#                      __work_part_ = __display_part_;
-
-#                      PrintBuilder printBuilder = __work_part_.PlotManager.CreatePrintBuilder();
-
-#                      using (new Destroyer(printBuilder))
-#                      {
-#                          // sql
-#                          printBuilder.Copies = 1;
-
-#                          printBuilder.ThinWidth = 1.0;
-
-#                          printBuilder.NormalWidth = 2.0;
-
-#                          printBuilder.ThickWidth = 3.0;
-
-#                          printBuilder.Output = PrintBuilder.OutputOption.WireframeBlackWhite;
-
-#                          printBuilder.ShadedGeometry = true;
-
-#                          DrawingSheet drawingSheet = __work_part_.DraftingDrawingSheets.FindObject("4-VIEW");
-
-#                          drawingSheet.Open();
-
-#                          printBuilder.SourceBuilder.SetSheets(new NXObject[] { drawingSheet });
-
-#                          printBuilder.PrinterText = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
-
-#                          printBuilder.Orientation = PrintBuilder.OrientationOption.Landscape;
-
-#                          printBuilder.Paper = PrintBuilder.PaperSize.Letter;
-
-#                          printBuilder.Commit();
-#                      }
-#                  }
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static void MoveStocklist(GFolder folder, string topDisplayName, string exportDirectory)
-#          {
-#              try
-#              {
-#                  string stocklist = (from file in Directory.GetFiles(folder.DirStocklist)
-#                                      let name = Path.GetFileNameWithoutExtension(file)
-#                                      where name != null
-#                                      where name.EndsWith($"{topDisplayName}-stocklist")
-#                                      select file).SingleOrDefault();
-
-#                  if (stocklist is null)
-#                  {
-#                      print($"Could not find a stocklist named: {topDisplayName}-stocklist");
-#                      return;
-#                  }
-
-#                  File.Copy(stocklist, $"{exportDirectory}\\{Path.GetFileName(stocklist)}");
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static Process AssemblyExportDesignDataCreate7ZipProcess(string zipPath, params string[] filesToZip)
-#          {
-#              string tempFile = $"{Path.GetTempPath()}zipData{filesToZip.GetHashCode()}.txt";
-
-#              using (FileStream fs = File.Open(tempFile, FileMode.Create))
-#              {
-#                  fs.Close();
-#              }
-
-#              using (StreamWriter writer = new StreamWriter(tempFile))
-#              {
-#                  filesToZip.ToList().ForEach(writer.WriteLine);
-#              }
-
-#              return new Process
-#              {
-#                  EnableRaisingEvents = false,
-#                  StartInfo =
-#              {
-#                  CreateNoWindow = false,
-#                  FileName = "C:\\Program Files\\7-Zip\\7z",
-#                  WindowStyle = ProcessWindowStyle.Normal,
-#                  UseShellExecute = true,
-#                  Arguments = $"a -t7z \"{zipPath}\" \"@{tempFile}\" -mx9"
-#              }
-#              };
-#          }
-
-#          public static void AssemblyExportDesignDataSevenZip(string path, bool wait, params string[] fileNames)
-#          {
-#              string directory = Path.GetDirectoryName(path);
-
-#              string str = directory + "\\" + "zipData.txt";
-
-#              try
-#              {
-#                  using (FileStream fileStream = File.Open(str, FileMode.Create))
-#                  {
-#                      fileStream.Close();
-#                  }
-
-#                  using (StreamWriter streamWriter = new StreamWriter(str))
-#                  {
-#                      foreach (string fileName in fileNames)
-#                          streamWriter.WriteLine(fileName);
-#                  }
-
-#                  AssemblyExportDesignDataSevenZip(path, wait, str);
-#              }
-#              finally
-#              {
-#                  File.Delete(str);
-#              }
-#          }
-
-#          public static void AssemblyExportDesignDataSevenZip(string path, bool wait, string textFileToRead)
-#          {
-#              if (string.IsNullOrEmpty(path))
-#                  throw new ArgumentException(@"Invalid path.", nameof(path));
-
-#              if (File.Exists(path))
-#                  throw new IOException("The specified output_path already exists.");
-
-#              if (!File.Exists(textFileToRead))
-#                  throw new FileNotFoundException();
-
-#              // sql
-#              string fileToRead = "a -t7z \"" + path + "\" \"@" + textFileToRead + "\" -mx9";
-
-#              Process process = new Process
-#              {
-#                  EnableRaisingEvents = false,
-#                  StartInfo =
-#              {
-#                  FileName = "C:\\Program Files\\7-Zip\\7z",
-#                  Arguments = fileToRead
-#              }
-#              };
-
-#              process.Start();
-
-#              if (!wait)
-#                  return;
-
-#              process.WaitForExit();
-
-#              print(File.Exists(path)
-#                  ? $"Successfully created \"{path}\"."
-#                  : $"Unsuccessfully created \"{path}\".");
-#          }
-
-#          public static void AssemblyExportDesignDataPdf(Part part, string drawingSheetName, string filePath)
-#          {
-#              string directory = Path.GetDirectoryName(filePath);
-
-#              if (!filePath.EndsWith(".pdf"))
-#                  throw new InvalidOperationException("File path for PDF must end with \".pdf\".");
-
-#              if (File.Exists(filePath))
-#                  throw new ArgumentOutOfRangeException("output_path", "PDF \"" + filePath + "\" already exists.");
-
-#              //We can use SingleOrDefault here because NX will prevent the naming of two drawing sheets the exact same string.
-#              DrawingSheet sheet = part.DrawingSheets
-#                                       .ToArray()
-#                                       .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
-#                                   ??
-#                                   throw new ArgumentException(
-#                                       $@"Part ""{part.Leaf}"" does not have a sheet named ""{drawingSheetName}"".",
-#                                       "drawingSheetName");
-
-#              __display_part_ = part;
-#              session_.__SetDisplayToWork();
-#              SetLayers();
-
-#              PrintPDFBuilder pdfBuilder = part.PlotManager.CreatePrintPdfbuilder();
-
-#              using (session_.__UsingBuilderDestroyer(pdfBuilder))
-#              {
-#                  // sql
-#                  pdfBuilder.Scale = 1.0;
-#                  pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor;
-#                  pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines;
-#                  pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English;
-#                  pdfBuilder.XDimension = 8.5;
-#                  pdfBuilder.YDimension = 11.0;
-#                  pdfBuilder.RasterImages = true;
-#                  pdfBuilder.Colors = PrintPDFBuilder.Color.BlackOnWhite;
-#                  pdfBuilder.Watermark = "";
-#                  UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
-
-#                  if (flag)
-#                  {
-#                      UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
-#                      part.__Save();
-#                  }
-
-#                  sheet.Open();
-#                  pdfBuilder.SourceBuilder.SetSheets(new NXObject[] { sheet });
-#                  pdfBuilder.Filename = filePath;
-#                  pdfBuilder.Commit();
-#              }
-#          }
-
-#          public static void AssemblyExportDesignDataStp(string partPath, string output_path, string settings_file)
-#          {
-#              try
-#              {
-#                  if (!output_path.EndsWith(".stp"))
-#                      throw new InvalidOperationException("File path for STP must end with \".stp\".");
-
-#                  if (File.Exists(output_path))
-#                      throw new ArgumentOutOfRangeException("output_path", "STP \"" + output_path + "\" already exists.");
-
-#                  if (!File.Exists(partPath))
-#                      throw new FileNotFoundException("Could not find file location \"" + partPath + "\".");
-
-#                  session_.__FindOrOpen(partPath);
-
-#                  StepCreator stepCreator = Session.GetSession().DexManager.CreateStepCreator();
-
-#                  using (session_.__UsingBuilderDestroyer(stepCreator))
-#                  {
-#                      // sql
-#                      stepCreator.ExportAs = StepCreator.ExportAsOption.Ap214;
-#                      stepCreator.SettingsFile = settings_file;
-#                      stepCreator.ObjectTypes.Solids = true;
-#                      stepCreator.OutputFile = output_path;
-#                      stepCreator.BsplineTol = 0.0254;
-#                      stepCreator.ObjectTypes.Annotations = true;
-#                      stepCreator.ExportFrom = StepCreator.ExportFromOption.ExistingPart;
-#                      stepCreator.InputFile = partPath;
-#                      stepCreator.FileSaveFlag = false;
-#                      stepCreator.LayerMask = "1, 96";
-#                      stepCreator.ProcessHoldFlag = true;
-#                      stepCreator.Commit();
-#                  }
-
-#                  string switchFilePath = output_path.Replace(".stp", ".log");
-
-#                  if (File.Exists(switchFilePath))
-#                      File.Delete(switchFilePath);
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          public static void AssemblyExportDesignDataDwg(string partPath, string drawingSheetName, string filePath)
-#          {
-#              string directory = Path.GetDirectoryName(filePath);
-
-#              if (File.Exists(filePath))
-#                  throw new ArgumentOutOfRangeException("output_path", "DWG \"" + filePath + "\" already exists.");
-
-#              Part part = session_.__FindOrOpen(partPath);
-
-#              DrawingSheet sheet = part.DrawingSheets
-#                                       .ToArray()
-#                                       .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
-#                                   ??
-#                                   throw new ArgumentException(
-#                                       $"Part \"{part.Leaf}\" does not have a sheet named \"{drawingSheetName}\".",
-#                                       "drawingSheetName");
-
-#              UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
-
-#              if (flag)
-#              {
-#                  SetLayers();
-#                  UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
-#                  part.__Save();
-#              }
-
-#              DxfdwgCreator dxfdwgCreator1 = session_.DexManager.CreateDxfdwgCreator();
-#              using (session_.__UsingBuilderDestroyer(dxfdwgCreator1))
-#              {
-#                  // sql
-#                  dxfdwgCreator1.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
-#                  dxfdwgCreator1.AutoCADRevision = DxfdwgCreator.AutoCADRevisionOptions.R2004;
-#                  dxfdwgCreator1.ViewEditMode = true;
-#                  dxfdwgCreator1.FlattenAssembly = true;
-#                  dxfdwgCreator1.SettingsFile = "C:\\Program Files\\Siemens\\NX 11.0\\dxfdwg\\dxfdwg.def";
-#                  dxfdwgCreator1.ExportFrom = DxfdwgCreator.ExportFromOption.ExistingPart;
-#                  dxfdwgCreator1.OutputFileType = DxfdwgCreator.OutputFileTypeOption.Dwg;
-#                  dxfdwgCreator1.ObjectTypes.Curves = true;
-#                  dxfdwgCreator1.ObjectTypes.Annotations = true;
-#                  dxfdwgCreator1.ObjectTypes.Structures = true;
-#                  dxfdwgCreator1.FlattenAssembly = false;
-#                  dxfdwgCreator1.ExportData = DxfdwgCreator.ExportDataOption.Drawing;
-#                  dxfdwgCreator1.InputFile = part.FullPath;
-#                  dxfdwgCreator1.ProcessHoldFlag = true;
-#                  dxfdwgCreator1.OutputFile = filePath;
-#                  dxfdwgCreator1.WidthFactorMode = DxfdwgCreator.WidthfactorMethodOptions.AutomaticCalculation;
-#                  dxfdwgCreator1.LayerMask = "1-256";
-#                  dxfdwgCreator1.DrawingList = drawingSheetName;
-#                  dxfdwgCreator1.Commit();
-#              }
-
-#              string switchFilePath = filePath.Replace(".dwg", ".log");
-
-#              if (File.Exists(switchFilePath))
-#                  File.Delete(switchFilePath);
-#          }
-#      }
-#  }
-
-
-
-    pass
-
-
-
-
-class UFuncAssemblyWaveLink:
-#      public partial class AssemblyWavelink : _UFuncForm
-#  {
-#      public AssemblyWavelink()
-#      {
-#          InitializeComponent();
-#      }
-
-#      private void AssemblyWavelink_Load(object sender, EventArgs e)
-#      {
-#          Location = Settings.Default.assembly_wave_link_form_window_location;
-#          Text = AssemblyFileVersion;
-#      }
-
-#      private void AssemblyWavelink_FormClosed(object sender, FormClosedEventArgs e)
-#      {
-#          Settings.Default.assembly_wave_link_form_window_location = Location;
-#          Settings.Default.Save();
-#      }
-
-#      private void buttonShortTapReam_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetShortTap, RefsetReamShort, null);
-#      }
-
-#      private void buttonTapReam_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetTap, RefsetReam, null);
-#      }
-
-#      private void buttonTap_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetTap, null, null);
-#      }
-
-#      private void buttonReam_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, null, RefsetReam, null);
-#      }
-
-#      private void buttonShortTap_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetShortTap, null, null);
-#      }
-
-#      private void buttonReamShort_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, null, RefsetReamShort, null);
-#      }
-
-#      private void buttonClrHole_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetClrHole, RefsetClrHole, RefsetClrHole);
-#      }
-
-#      private void buttonCbore_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkFasteners(chkBlankTools.Checked, RefsetCBore, RefsetCBore, null);
-#      }
-
-#      private void buttonSubTool_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WavelinkSubtool();
-#      }
-
-#      private void buttonSubtract_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Subtract);
-#      }
-
-#      private void buttonUnite_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Unite);
-#      }
-
-#      private void buttonLink_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Create);
-#      }
-
-#      private void buttonIntersect_Click(object sender, EventArgs e)
-#      {
-#          using (session_.__UsingFormShowHide(this))
-#              WaveLinkBoolean(chkBlankTools.Checked, Feature.BooleanType.Intersect);
-#      }
-
-#      public void WavelinkSubtool()
-#      {
-#          session_.SetUndoMark(Session.MarkVisibility.Visible, $"{ufunc_rev_name} - {nameof(WavelinkSubtool)}");
-
-#          Body target = SelectSingleSolidBody1(body => true);
-
-#          if (target is null)
-#              return;
-
-#          Component[] tools = SelectManyComponents1(c =>
-#          {
-#              if (!(c is Component comp))
-#                  return false;
-
-#              return comp.Tag != target.OwningComponent.Tag
-#              && (from refset in comp.__Prototype().GetAllReferenceSets()
-#                  let name = refset.Name.ToUpper()
-#                  where name == "SUB_TOOL" || Name == "SUB-TOOL" || name == "SUBTOOL"
-#                  select refset
-#                   ).Any() && !comp.DisplayName.__IsAssemblyHolder();
-#          }
-
-#                   );
-
-#          if (tools.Length == 0)
-#              return;
-
-#          using (session_.__UsingDisplayPartReset())
-#          using (session_.__UsingSuppressDisplay())
-#              try
-#              {
-
-#                  var current = __display_part_.Layers.WorkLayer;
-
-#                  try
-#                  {
-
-#                      __work_component_ = target.OwningComponent;
-
-#                      __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
-#                      foreach (Component tool in tools)
-#                          using (tool.__UsingReferenceSetReset())
-#                              try
-#                              {
-#                                  ReferenceSet reference_set = tool.__Prototype()
-#                                      .GetAllReferenceSets()
-#                                      .SingleOrDefault(refset => refset.Name == "SUB_TOOL" || refset.Name == "SUB-TOOL" || refset.Name == "SUBTOOL");
-
-#                                  if (reference_set is null)
-#                                  {
-#                                      print($"Didn't find any sub tool reference sets for {tool.DisplayName} - {tool.Name} - {tool.Tag}");
-#                                      continue;
-#                                  }
-
-#                                  tool.__ReferenceSet(reference_set.Name);
-#                                  ExtractFace linked_body = tool.__CreateLinkedBody();
-#                                  print("//////////////////");
-#                                  print($"Created {linked_body.GetFeatureName()} in {linked_body.OwningPart.Leaf}");
-#                                  BooleanFeature boolean_feature = target.__Subtract(linked_body.GetBodies());
-#                                  print($"Created {boolean_feature.GetFeatureName()} in {linked_body.OwningPart.Leaf}");
-
-#                              }
-#                              catch (NXException ex) when (ex.ErrorCode == 670030)
-#                              {
-#                                  print($"Error occurred when trying to subtract {tool.DisplayName}, no interference.");
-#                              }
-#                              catch (InvalidOperationException)
-#                              {
-#                                  print($"Found more than one sub tool reference set for {tool.DisplayName} - {tool.Name} - {tool.Tag}");
-#                              }
-#                  }
-#                  finally
-#                  {
-#                      __display_part_.Layers.SetState(current, NXOpen.Layer.State.WorkLayer);
-#                  }
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#      }
-
-#      public void WaveLinkFasteners(bool blank_tools, string shcs_ref_set, string dwl_ref_set, string jck_ref_set)
-#      {
-#          session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
-
-#          using (session_.__UsingDisplayPartReset())
-#              try
-#              {
-#                  Body[] targets = SelectMultipleTaggedObjects1(
-#                      "Select Target Body",
-#                      "select Target Body",
-#                      new[] { BodyMask },
-#                      k =>
-#                      {
-
-#                          if (!(k is Body b))
-#                              return false;
-
-#                          return b.IsOccurrence
-#                          && !b.OwningComponent.DisplayName.ToLower().Contains("strip")
-#                          && !b.OwningComponent.DisplayName.ToLower().Contains("press")
-#                          && !b.OwningComponent.DisplayName.ToLower().Contains("layout")
-#                          && !b.OwningComponent.DisplayName.__IsAssemblyHolder();
-#                      }).Cast<Body>().ToArray();
-
-#                  if (targets.Length == 0)
-#                      return;
-
-
-#                  Component[] tools = SelectMultipleTaggedObjects1(
-#                      "Select Tool Components",
-#                      "Select Tool Components",
-#                      new[] { Masks.ComponentMask },
-#                      tool1 =>
-#                      {
-
-#                          if (!(tool1 is Component tool))
-#                              return false;
-
-#                          return !tool.DisplayName._IsLayout_()
-#                          && !tool.DisplayName.ToLower().Contains("strip")
-#                          && !tool.DisplayName._IsFastenerExtended_()
-#                          && !tool.DisplayName.__IsAssemblyHolder()
-#                          && targets.All(t => t.OwningComponent.Tag != tool.Tag);
-#                      }).Cast<Component>().ToArray();
-
-#                  if (tools.Length == 0)
-#                      return;
-
-
-#                  using (session_.__UsingSuppressDisplay())
-#                      foreach (var target in targets)
-#                          foreach (Component tool in tools)
-#                              using (session_.__UsingDisplayPartReset())
-#                              using (session_.__UsingResetWorkLayer())
-#                                  try
-#                                  {
-#                                      __work_component_ = target.OwningComponent;
-#                                      __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
-
-#                                      foreach (Component child in tool.GetChildren())
-#                                          try
-#                                          {
-#                                              if (!child.__IsLoaded())
-#                                              {
-#                                                  print($"Child fastener {child.DisplayName} was not loaded.");
-#                                                  continue;
-#                                              }
-
-#                                              if (child.IsSuppressed)
-#                                                  continue;
-
-#                                              //if (child._IsJckScrewTsg_() || child._IsJckScrew_())
-#                                              //    continue;
-
-#                                              using (child.__UsingReferenceSetReset())
-#                                              {
-#                                                  string original_ref_set = child.ReferenceSet;
-#                                                  Component proto_child_fastener = child.__ProtoChildComp();
-
-#                                                  if (proto_child_fastener.Layer != LayerFastener)
-#                                                      continue;
-
-#                                                  try
-#                                                  {
-#                                                      string[] ref_sets = new[] { shcs_ref_set, dwl_ref_set, jck_ref_set }
-#                                                          .Where(__r => !string.IsNullOrEmpty(__r))
-#                                                          .ToArray();
-
-#                                                      string[] fastener_ref_set_names = proto_child_fastener.__Prototype()
-#                                                          .GetAllReferenceSets()
-#                                                          .Select(__r => __r.Name)
-#                                                          .Intersect(ref_sets)
-#                                                          .ToArray();
-
-#                                                      switch (fastener_ref_set_names.Length)
-#                                                      {
-#                                                          case 0:
-#                                                              if ((!(shcs_ref_set is null)&& child._IsShcs_())
-#                                                                  || (!(dwl_ref_set is null) && child._IsDwl_())
-#                                                                  || (!(jck_ref_set is null) && child._IsJckScrewTsg_() || child._IsJckScrew_()))
-#                                                                  print(
-#                                                                      $"Coulnd't find any valid ref sets for {child.DisplayName}");
-#                                                              continue;
-#                                                          case 1:
-#                                                              child.__ReferenceSet(fastener_ref_set_names[0]);
-#                                                              break;
-#                                                          default:
-#                                                              print(
-#                                                                  $"Found more than one valid ref set for {child.DisplayName}");
-#                                                              continue;
-#                                                      }
-
-#                                                      if (!target.__InterferesWith(child))
-#                                                      {
-#                                                          print(
-#                                                              $"Could not subtract fastener {child.DisplayName}, no interference.");
-#                                                          continue;
-#                                                      }
-
-#                                                      ExtractFace ext = child.__CreateLinkedBody();
-#                                                      //ext.__Layer(96);
-#                                                      print("//////////////////");
-#                                                      print($"Created {ext.GetFeatureName()} in {ext.OwningPart.Leaf}");
-#                                                      BooleanFeature boolean_feature = target.__Subtract(ext.GetBodies());
-#                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
-#                                                  }
-#                                                  catch (Exception ex)
-#                                                  {
-#                                                      ex.__PrintException(child.DisplayName);
-#                                                  }
-#                                              }
-#                                          }
-#                                          catch (Exception ex)
-#                                          {
-#                                              ex.__PrintException();
-#                                          }
-
-#                                      if (blank_tools)
-#                                          tool.Blank();
-#                                  }
-#                                  catch (Exception ex)
-#                                  {
-#                                      ex.__PrintException();
-#                                  }
-
-#              }
-#              catch (NothingSelectedException)
-#              {
-#                  //Control jump
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#      }
-
-#      public static void WaveLinkBoolean(bool blank_tools, Feature.BooleanType booleanType)
-#      {
-#          session_.SetUndoMark(Session.MarkVisibility.Visible, "Assembly Wavelink");
-
-#          using (session_.__UsingDisplayPartReset())
-#          {
-#              try
-#              {
-#                  Body[] targets = SelectManySolidBodies1();
-
-#                  if (targets.Length == 0)
-#                      return;
-
-#                  Component[] tools = SelectManyComponents1(c =>
-#                  {
-#                      if (!(c is Component comp))
-#                          return false;
-
-#                      return targets.All(b => b.OwningComponent.Tag != c.Tag)
-#                      && !comp.DisplayName.__IsAssemblyHolder();
-#                  });
-
-#                  if (tools.Length == 0)
-#                      return;
-
-#                  var referenceSets = tools.Select(snapComponent => new { snapComponent, snapComponent.ReferenceSet }).ToList();
-#                  RefSetForm formCts = new RefSetForm(tools);
-
-#                  if (booleanType != Feature.BooleanType.Create)
-#                      formCts.RemoveReferenceSet("BODY");
-
-#                  formCts.ShowDialog();
-
-#                  if (!formCts.IsSelected)
-#                      return;
-
-#                  foreach (var target in targets)
-#                      foreach (var child in tools)
-#                          using (session_.__UsingDisplayPartReset())
-#                          using (child.__UsingReferenceSetReset())
-#                          using (session_.__UsingResetWorkLayer())
-#                          {
-#                              var current = __display_part_.Layers.WorkLayer;
-
-#                              try
-#                              {
-#                                  __work_component_ = target.OwningComponent;
-
-#                                  __display_part_.Layers.SetState(96, NXOpen.Layer.State.WorkLayer);
-
-#                                  child.__ReferenceSet(formCts.SelectedReferenceSetName);
-
-#                                  foreach (var ext in child.__CreateLinkedBodies())
-#                                      try
-#                                      {
-#                                          print("//////////////////");
-
-#                                          print($"Created {ext.GetFeatureName()} in {ext.OwningPart.Leaf}");
-
-#                                          switch (booleanType)
-#                                          {
-#                                              case Feature.BooleanType.Subtract:
-#                                                  {
-#                                                      BooleanFeature boolean_feature = target.__Subtract(ext.GetBodies());
-#                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
-#                                                  }
-#                                                  break;
-
-#                                              case Feature.BooleanType.Unite:
-#                                                  {
-#                                                      BooleanFeature boolean_feature = target.__Unite(ext.GetBodies());
-#                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
-#                                                  }
-#                                                  break;
-
-#                                              case Feature.BooleanType.Intersect:
-#                                                  {
-#                                                      BooleanFeature boolean_feature = target.__Intersect(ext.GetBodies());
-#                                                      print($"Created {boolean_feature.GetFeatureName()} in {ext.OwningPart.Leaf}");
-#                                                  }
-#                                                  break;
-#                                          }
-#                                      }
-#                                      catch (NXException ex) when (ex.ErrorCode == 670030)
-#                                      {
-#                                          print($"Error occurred when trying to subtract {child.DisplayName}, no interference.");
-#                                      }
-#                                      catch (Exception ex)
-#                                      {
-#                                          ex.__PrintException();
-#                                      }
-#                              }
-#                              finally
-#                              {
-#                                  __display_part_.Layers.SetState(current, NXOpen.Layer.State.WorkLayer);
-#                              }
-#                          }
-
-#                  if (blank_tools)
-#                      foreach (var tool in tools)
-#                          tool.Blank();
-#              }
-#              catch (NothingSelectedException)
-#              {
-#              }
-#              catch (Exception ex)
-#              {
-#                  ex.__PrintException();
-#              }
-#          }
-#      }
-
-#  }
-    pass
-
-class UFuncAutoDetail:
-#         public partial class AutoDetail : _UFuncForm
-#     {
-#         private static readonly List<Component> _allComponents = new List<Component>();
-#         private static readonly IDictionary<string, List<string>> _holeChart = new Dictionary<string, List<string>>();
-#         private static string _borderFile;
-#         private static string _sizeFile;
-
-#         public AutoDetail()
-#         {
-#             InitializeComponent();
-#             Location = Settings.Default.assembly_auto_detail_form_window_location;
-#         }
-
-#         private void MainForm_Load(object sender, EventArgs e)
-#         {
-#             Text = AssemblyFileVersion;
-
-# 			// sql
-#             _sizeFile = FilePathUcf.PerformStreamReaderString(
-#                 ":HOLESIZE_FILE_LOCATION:",
-#                 ":END_HOLESIZE_FILE_LOCATION:");
-
-# 			// sql
-#             _borderFile =FilePathUcf.PerformStreamReaderString(
-#                 ":BORDER_FILE_LOCATION:",
-#                 ":END_BORDER_FILE_LOCATION:");
-
-#             string[] lines = File.ReadAllLines(_sizeFile)
-#                 .Where(__s => !__s.StartsWith("--"))
-#                 .Where(__s => !string.IsNullOrEmpty(__s))
-#                 .Where(__s => !string.IsNullOrWhiteSpace(__s))
-#                 .ToArray();
-
-#             for (int i = 0; i < lines.Length - 1; i += 2)
-#                 _holeChart[lines[i + 1]] = lines[i].Split(',').ToList();
-
-#             SetFormDefaults();
-#         }
-
-#         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-#         {
-#             Settings.Default.assembly_auto_detail_form_window_location = Location;
-#             Settings.Default.Save();
-#         }
-
-#         private void ButtonSelectBorderFile_Click(object sender, EventArgs e)
-#         {
-# 			// sql
-#             openFileDialog.InitialDirectory = "G:\\0Library\\Drafting";
-#             DialogResult dialogResult = openFileDialog.ShowDialog();
-
-# 			// sql
-#             _borderFile = dialogResult == DialogResult.OK
-#                 ? openFileDialog.FileName
-#                 : FilePathUcf.PerformStreamReaderString( 
-#                     ":BORDER_FILE_LOCATION:", 
-#                     ":END_BORDER_FILE_LOCATION:");
-#         }
-
-#         private void CheckBox_Clicked(object sender, EventArgs e)
-#         {
-#             bool flag = chkDetailSheet.Checked || chkHoleChart.Checked || chkUpdateViews.Checked ||
-#                         chkDrillChart.Checked;
-#             btnSelect.Enabled = flag;
-#             btnSelectAll.Enabled = flag;
-#         }
-
-#         private void CheckBoxDelete4Views_CheckedChanged(object sender, EventArgs e)
-#         {
-#             chkHoleChart.Checked = false;
-#             chkUpdateViews.Checked = false;
-
-#             if (chkDelete4Views.Checked)
-#                 chkDetailSheet.Checked = false;
-
-#             chkDetailSheet.Enabled = !chkDelete4Views.Checked;
-#             chkHoleChart.Enabled = !chkDelete4Views.Checked;
-#             chkUpdateViews.Enabled = !chkDelete4Views.Checked;
-#             btnSelect.Enabled = chkDelete4Views.Checked;
-#             btnSelectAll.Enabled = chkDelete4Views.Checked;
-#         }
-
-#         private void ButtonSelect_Click(object sender, EventArgs e)
-#         {
-#             using (session_.__UsingFormShowHide(this))
-#             {
-#                 try
-#                 {
-#                     _allComponents.Clear();
-
-#                     Component[] selectComponents = Selection.SelectManyComponents();
-
-#                     if (selectComponents.Length == 0)
-#                         return;
-
-#                     _allComponents.AddRange(selectComponents);
-
-#                     List<Component> trimmedComponents = _allComponents.Where(comp => !comp.IsSuppressed)
-#                         .Distinct(new EqualityDisplayName())
-#                         .ToList();
-
-#                     trimmedComponents.Sort((c1, c2) => string.Compare(c1.Name, c2.Name, StringComparison.Ordinal));
-
-#                     DetailComponents(trimmedComponents);
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-#             }
-#         }
-
-#         private void ButtonSelectAll_Click(object sender, EventArgs e)
-#         {
-#             using (session_.__UsingFormShowHide(this))
-#             {
-#                 try
-#                 {
-#                     if (__display_part_.ComponentAssembly.RootComponent is null)
-#                         return;
-
-#                     _allComponents.Clear();
-#                     GetChildComponents(__display_part_.ComponentAssembly.RootComponent);
-
-#                     if (_allComponents.Count == 0)
-#                     {
-#                         print("No valid components");
-#                         return;
-#                     }
-
-#                     List<CtsAttributes> materials = CreateMaterialList();
-#                     List<Component> passedComponents = new List<Component>();
-
-#                     foreach (Component comp in _allComponents)
-#                         try
-#                         {
-#                             foreach (NXObject.AttributeInformation attr in comp.GetUserAttributes())
-#                             {
-#                                 if (attr.Title.ToUpper() == "MATERIAL")
-#                                 {
-#                                     string value = comp.GetUserAttributeAsString("MATERIAL",
-#                                         NXObject.AttributeType.String,
-#                                         -1);
-
-#                                     if (value != "")
-#                                         passedComponents.AddRange(from matAttr in materials
-#                                                                   where matAttr.AttrValue == value
-#                                                                   select comp);
-#                                     else
-#                                         print($"\n{comp.DisplayName} : MATERIAL attribute equals nothing");
-#                                 }
-
-#                                 // Rev1.1 Change - Added for Scrap Chutes
-
-#                                 if (attr.Title.ToUpper() != "DESCRIPTION")
-#                                     continue;
-
-#                                 string dValue = comp.GetUserAttributeAsString("DESCRIPTION",
-#                                     NXObject.AttributeType.String,
-#                                     -1);
-
-#                                 if (dValue is null)
-#                                 {
-#                                     print("////////////////////////////////////");
-#                                     print($"Component: {comp.DisplayName} has a null DESCRIPTION value.");
-#                                     print(comp.__AssemblyPathString());
-#                                     print("////////////////////////////////////");
-#                                     continue;
-#                                 }
-
-#                                 if (dValue.ToUpper() == "CHUTE TO SUIT")
-#                                     passedComponents.Add(comp);
-
-#                                 if (dValue.ToLower().Contains("diemaker to alter"))
-#                                     passedComponents.Add(comp);
-#                                 // End of Rev1.1 change                             
-#                             }
-#                         }
-#                         catch (Exception ex)
-#                         {
-#                             ex.__PrintException(comp.DisplayName);
-#                         }
-
-#                     if (passedComponents.Count == 0)
-#                     {
-#                         print("No valid components");
-#                         return;
-#                     }
-
-#                     Component[] selectDeselectComps = passedComponents.ToArray();
-#                     passedComponents = Preselect.GetUserSelections(selectDeselectComps);
-
-#                     if (passedComponents.Count == 0)
-#                     {
-#                         print("No valid components");
-#                         return;
-#                     }
-
-#                     passedComponents = passedComponents.Where(comp => !comp.IsSuppressed)
-#                         .Distinct(new EqualityDisplayName())
-#                         .ToList();
-
-#                     passedComponents.Sort((c1, c2) => string.Compare(c1.Name, c2.Name, StringComparison.Ordinal));
-#                     DetailComponents(passedComponents);
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-#             }
-#         }
-
-#         private void DetailComponents(IEnumerable<Component> selectedComponents)
-#         {
-#             using (session_.__UsingDisplayPartReset())
-#             {
-#                 Component[] componentArray = selectedComponents.ToArray();
-
-#                 for (int index = 0; index < componentArray.Length; index++)
-#                 {
-#                     Component detailComp = componentArray[index];
-
-#                     try
-#                     {
-#                         prompt($"({index + 1} of {componentArray.Length})");
-#                         DetailComponent(detailComp);
-#                     }
-#                     catch (Exception ex)
-#                     {
-#                         ex.__PrintException(detailComp.DisplayName);
-#                     }
-#                 }
-
-#                 SetFormDefaults();
-#             }
-#         }
-
-#         public static void SetWcsToWorkPart()
-#         {
-#             Block dynamic = __work_part_.__DynamicBlock();
-
-#             if (__work_part_.Tag == __display_part_.Tag)
-#             {
-#                 __display_part_.WCS.SetOriginAndMatrix(dynamic.__Origin(), dynamic.__Orientation());
-#                 return;
-#             }
-
-#             using (__work_component_.__UsingReferenceSetReset())
-#             {
-#                 __work_component_.__ReferenceSet("Entire Part");
-
-#                 CartesianCoordinateSystem system = __work_part_.CoordinateSystems.CreateCoordinateSystem(
-#                     _Point3dOrigin,
-#                     dynamic.__Orientation(),
-#                     false);
-
-#                 NXObject ject = __work_component_.FindOccurrence(system);
-
-#                 if (!(ject is CartesianCoordinateSystem cart))
-#                     throw new Exception();
-
-#                 __display_part_.WCS.SetOriginAndMatrix(_Point3dOrigin, cart.Orientation.Element);
-#                 ufsession_.Obj.DeleteObject(system.Tag);
-#             }
-#         }
-
-#         public static ModelingView GetPlanView()
-#         {
-#             ModelingView planView = null;
-
-#             foreach (ModelingView view in __work_part_.ModelingViews)
-#                 if (view.Name == ViewPlan)
-#                 {
-#                     planView = view;
-#                     break;
-#                 }
-
-#             return planView;
-#         }
-
-#         public static void MakePlanView(CartesianCoordinateSystem csys)
-#         {
-# 			// sql
-#             const string l1 = "L1";
-#             const string top = "Top";
-#             const string plan = "PLAN";
-#             __display_part_ = __work_part_;
-#             ModelingView planView = GetPlanView();
-#             ModelingView modelingView1, modelingView2;
-#             Layout layout;
-
-#             if (planView != null)
-#             {
-#                 layout = __work_part_.Layouts.FindObject(l1);
-#                 modelingView1 = __work_part_.ModelingViews.WorkView;
-#                 modelingView2 = __work_part_.ModelingViews.FindObject(top);
-#                 layout.ReplaceView(modelingView1, modelingView2, true);
-#                 ModelingView tempView = __work_part_.ModelingViews.FindObject(plan);
-#                 ufsession_.Obj.DeleteName(tempView.Tag);
-#             }
-
-#             ufsession_.View.SetViewMatrix("", 3, csys.Tag, null);
-#             View newView = __display_part_.Views.SaveAs(__display_part_.ModelingViews.WorkView, plan, false, false);
-#             layout = __display_part_.Layouts.FindObject(l1);
-#             modelingView1 = (ModelingView)newView;
-#             modelingView2 = __display_part_.ModelingViews.FindObject(top);
-#             layout.ReplaceView(modelingView1, modelingView2, true);
-#             session_.__DeleteObjects(csys);
-#         }
-
-#         private void DetailComponent(Component detailComp)
-#         {
-#             print("////////////////////////");
-
-#             if (!detailComp.__IsLoaded())
-#             {
-#                 print($"Component {detailComp.DisplayName} is not loaded");
-#                 print("4-VIEW will not be created for this component");
-
-#                 return;
-#             }
-
-#             using (session_.__UsingSuppressDisplay())
-#             {
-#                 __display_part_ = detailComp.__Prototype();
-
-#                 new CleanBodyRefSet().execute(__display_part_);
-
-#                 try
-#                 {
-#                     if (__work_part_.__HasDynamicBlock())
-#                         SetWcsToWorkPart();
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-
-#                 //try
-#                 //{
-#                 //    MakePlanView(__display_part_.WCS.Save());
-#                 //}
-#                 //catch (NXException ex) when (ex.ErrorCode == 925019)
-#                 //{
-#                 //    print_($"Could not replace view in {__work_part_.Leaf}");
-#                 //}
-#                 //catch (Exception ex)
-#                 //{
-#                 //    ex.__PrintException();
-#                 //}
-
-#                 if (__display_part_.Layers.GetState(111) != State.WorkLayer)
-#                     __display_part_.Layers.SetState(111, State.Selectable);
-
-#                 using (new ResetShadeRendering())
-#                 {
-#                     PreferencesBuilder preferencesBuilder1 = __work_part_.SettingsManager.CreatePreferencesBuilder();
-
-#                     using (new Destroyer(preferencesBuilder1))
-#                         if (chkColorDetailSheet.Checked)
-#                         {
-#                             preferencesBuilder1.ViewStyle.ViewStyleShading.RenderingStyle = ShadingRenderingStyleOption.FullyShaded;
-#                             preferencesBuilder1.Commit();
-#                         }
-
-#                     ufsession_.Draw.SetDisplayState(1);
-#                     __display_part_.ModelingViews.WorkView.RenderingStyle = View.RenderingStyleType.ShadedWithEdges;
-
-#                     if (__display_part_.__TryGetRefset("BODY", out var dispRefSet))
-#                         foreach (NXObject refMember in dispRefSet.AskMembersInReferenceSet())
-#                         {
-#                             if (!(refMember is Curve lineLayer))
-#                                 continue;
-
-#                             if (lineLayer.Layer != 1)
-#                                 continue;
-
-#                             dispRefSet.RemoveObjectsFromReferenceSet(new[] { refMember });
-#                             lineLayer.Layer = 10;
-#                         }
-
-#                     if (chkHoleChart.Checked)
-#                         try
-#                         {
-#                             // set WCS to "PLAN" view and set "Top" as the work view
-#                             SetCsysToPlanView();
-#                             SetHoleChartLayers();
-#                             // get work view and part units and set lettering preferences
-#                             View workView = __display_part_.Views.WorkView;
-#                             SetLetteringPreferences(__display_part_.PartUnits);
-
-#                             List<NXObject> deleteNote = __display_part_.Notes
-#                                 .Cast<Note>()
-# 									// sql
-#                                 .Where(holeNote => holeNote.Layer == 230)
-#                                 .Cast<NXObject>()
-#                                 .ToList();
-
-#                             if (deleteNote.Count > 0)
-#                                 session_.__DeleteObjects(deleteNote.ToArray());
-
-#                             foreach (Body solidBody in __display_part_.Bodies)
-#                             {
-#                                 solidBody.Unblank();
-
-#                                 if (solidBody.Layer != 1 && solidBody.Layer != 94 && solidBody.Layer != 96)
-#                                     continue;
-
-#                                 foreach (Face cylFace in solidBody.GetFaces())
-#                                 {
-#                                     double[] point = new double[3];
-#                                     double[] dir = new double[3];
-#                                     double[] box = new double[6];
-#                                     ufsession_.Modl.AskFaceData(cylFace.Tag, out int type, point, dir, box,
-#                                         out double radius, out _, out _);
-
-#                                     if (cylFace.SolidFaceType != Face.FaceType.Cylindrical)
-#                                         continue;
-
-#                                     // Revision 1.45
-#                                     if (!cylFace.Name.ToUpper().Contains("HOLECHART"))
-#                                         continue;
-
-#                                     Point3d cfOrigin = point.__ToPoint3d();
-#                                     string[] cfNote = new string[1];
-#                                     double multiplier = __display_part_.PartUnits == BasePart.Units.Inches ? 1.0 : 25.4;
-
-#                                     foreach (string key in _holeChart.Keys)
-#                                         foreach (string value in _holeChart[key])
-#                                         {
-#                                             double holeDiameter = Convert.ToDouble(value);
-#                                             double faceDiameter = Convert.ToDouble(radius * 2);
-#                                             double difference = holeDiameter * .000000001;
-#                                             double abs = System.Math.Abs(holeDiameter * multiplier - faceDiameter);
-
-#                                             if (abs > difference * multiplier)
-#                                                 continue;
-
-#                                             cfNote[0] = key;
-#                                             break;
-#                                         }
-
-#                                     CreateHoleChartNote(cfOrigin, cfNote, workView.Tag);
-#                                 }
-#                             }
-
-#                             SetDefaultLayers();
-#                             print($"HoleCharted {__display_part_.Leaf}");
-#                         }
-#                         catch (Exception ex)
-#                         {
-#                             ex.__PrintException();
-#                         }
-
-#                     if (chkDetailSheet.Checked)
-#                         try
-#                         {
-#                             SetHoleChartLayers();
-#                             SetCsysToPlanView();
-
-#                             // delete existing 4-VIEW
-#                             List<NXObject> deleteView = __display_part_.DrawingSheets
-#                                 .Cast<DrawingSheet>()
-#                                 .Where(dwg => dwg.Name == "4-VIEW")
-#                                 .Cast<NXObject>()
-#                                 .ToList();
-
-#                             if (deleteView.Count > 0)
-#                                 session_.__DeleteObjects(deleteView.ToArray());
-
-#                             string[] drillChart = null;
-
-#                             if (chkDrillChart.Checked)
-#                             {
-# #pragma warning disable CS0612 // Type or member is obsolete
-#                                 drillChart = DrillChart.Main();
-# #pragma warning restore CS0612 // Type or member is obsolete
-#                                 print($"Drill Charted in {__display_part_.Leaf}");
-#                             }
-
-#                             CreateDetailSheet(drillChart);
-#                             SetDefaultLayers();
-#                             print($"Created 4-View in {__display_part_.Leaf}");
-#                         }
-#                         catch (Exception ex)
-#                         {
-#                             ex.__PrintException();
-#                         }
-
-#                     if (chkUpdateViews.Checked)
-#                         try
-#                         {
-#                             // update all views
-#                             SetDefaultLayers();
-
-#                             foreach (DrawingSheet dwg in __display_part_.DrawingSheets)
-#                             {
-#                                 // Revision 1.7 – 2018 / 02 / 09
-#                                 ufsession_.Draw.IsObjectOutOfDate(dwg.Tag, out bool outOfDate);
-
-#                                 if (!outOfDate)
-#                                     continue;
-
-#                                 dwg.Open();
-
-#                                 foreach (DraftingView drfView in dwg.GetDraftingViews())
-#                                 {
-#                                     drfView.Update();
-#                                     print($"Updated view {drfView.Name} in {__display_part_.Leaf}");
-#                                 }
-#                             }
-#                         }
-#                         catch (Exception ex)
-#                         {
-#                             ex.__PrintException();
-#                         }
-
-#                     if (!chkDelete4Views.Checked)
-#                         return;
-#                     // Revision • 1.62 – 2017 / 12 / 13
-#                     try
-#                     {
-#                         __display_part_.Notes
-#                             .ToArray()
-#                             .Where(note => note.Layer == 230)
-#                             .ToList()
-#                             .ForEach(__n => ufsession_.Obj.DeleteObject(__n.Tag));
-#                     }
-#                     catch (Exception ex)
-#                     {
-#                         ex.__PrintException();
-#                     }
-
-#                     // delete existing 4-VIEW
-#                     List<NXObject> deleteView1 = __display_part_.DrawingSheets.Cast<DrawingSheet>()
-#                         .Where(dwg => dwg.Name == "4-VIEW")
-#                         .Cast<NXObject>()
-#                         .ToList();
-
-#                     if (deleteView1.Count > 0)
-#                         session_.__DeleteObjects(deleteView1.ToArray());
-#                 }
-#             }
-#         }
-
-#         private static DraftingView ImportPlanView(double xPlacement, double yPlacement)
-#         {
-#             BaseViewBuilder baseViewBuilder = __work_part_.DraftingViews.CreateBaseViewBuilder(null);
-
-#             using (new Destroyer(baseViewBuilder))
-#             {
-#                 ModelingView planView = null;
-#                 ModelingView topView = null;
-#                 bool isPlan = false;
-#                 foreach (ModelingView mView in __work_part_.ModelingViews)
-#                     switch (mView.Name)
-#                     {
-#                         case "PLAN":
-#                             isPlan = true;
-#                             planView = mView;
-#                             break;
-#                         case "Top":
-#                             topView = mView;
-#                             break;
-#                     }
-
-#                 baseViewBuilder.SelectModelView.SelectedView = isPlan ? planView : topView;
-#                 baseViewBuilder.Style.ViewStyleBase.Part = __work_part_;
-#                 baseViewBuilder.Style.ViewStyleBase.PartName = __work_part_.FullPath;
-#                 using (__work_part_.LoadFully()) { }
-#                 baseViewBuilder.Style.ViewStyleGeneral.UVGrid = false;
-#                 baseViewBuilder.Style.ViewStyleGeneral.AutomaticAnchorPoint = false;
-#                 baseViewBuilder.Style.ViewStyleGeneral.Centerlines = false;
-#                 Point3d point = new Point3d(xPlacement, yPlacement, 0.0);
-#                 baseViewBuilder.Placement.Placement.SetValue(null, __work_part_.Views.WorkView, point);
-#                 NXObject nXObject1 = baseViewBuilder.Commit();
-#                 DraftingView nPlanView = (DraftingView)nXObject1;
-#                 return nPlanView;
-#             }
-#         }
-
-#         private static void AssignDraftObject(DraftingView drfView, CtsDimensionData dataToUse,
-#             ref UFDrf.Object dataToAssign)
-#         {
-#             dataToAssign.object_tag = dataToUse.DimEntity;
-#             dataToAssign.object_view_tag = drfView.Tag;
-#             dataToAssign.object_assoc_modifier = dataToUse.ExtPointId;
-#         }
-
-#         private static void DimensionView(
-#             DraftingView drfView,
-#             IReadOnlyList<double> drfViewPosition,
-#             double viewScale,
-#             IReadOnlyList<double> size,
-#             BasePart.Units partUnits
-#         )
-#         {
-#             // get all displayable objects for the current drafting view
-#             drfView.Update();
-#             Matrix3x3 viewMatrix = drfView.Matrix;
-#             List<DisplayableObject> objInView = new List<DisplayableObject>();
-#             Tag visObj = NXOpen.Tag.Null;
-
-#             do
-#             {
-#                 ufsession_.View.CycleObjects(drfView.Tag, UFView.CycleObjectsEnum.VisibleObjects, ref visObj);
-
-#                 if (visObj == NXOpen.Tag.Null)
-#                     continue;
-
-#                 ufsession_.Obj.AskTypeAndSubtype(visObj, out _, out _);
-#                 DisplayableObject visEdge = (DisplayableObject)NXObjectManager.Get(visObj);
-#                 objInView.Add(visEdge);
-#             }
-#             while (visObj != NXOpen.Tag.Null);
-
-
-#             // ask extreme of all displayed edges and then create CtsDimensionData for each edge
-#             List<CtsDimensionData> dimData = new List<CtsDimensionData>();
-
-#             foreach (DisplayableObject dispObj in objInView)
-#             {
-#                 double[] drfLocation = new double[2];
-#                 double[] extremePoint = new double[3];
-
-#                 switch (dispObj)
-#                 {
-#                     case Edge _:
-#                         double[] dirVectorX = viewMatrix.__AxisX().__ToArray();
-#                         double[] dirVectorY = viewMatrix.__AxisY().__ToArray();
-#                         double[] dirVectorZ = viewMatrix.__AxisZ().__ToArray();
-
-#                         ufsession_.Modl.AskExtreme(
-#                             dispObj.Tag,
-#                             dirVectorX,
-#                             dirVectorY,
-#                             dirVectorZ,
-#                             out _,
-#                             extremePoint);
-#                         break;
-#                     case Line _:
-#                         Line line = (Line)dispObj;
-#                         extremePoint = line.StartPoint.__ToArray();
-#                         break;
-#                     default:
-#                         continue;
-#                 }
-
-#                 ufsession_.View.MapModelToDrawing(drfView.Tag, extremePoint, drfLocation);
-
-#                 CtsDimensionData dimObject = new CtsDimensionData
-#                 {
-#                     DimXvalue = drfLocation[0],
-#                     DimYvalue = drfLocation[1],
-#                     DimEntity = dispObj.Tag,
-#                     Type = dispObj.GetType().ToString()
-#                 };
-
-#                 dimData.Add(dimObject);
-#             }
-
-#             // sort all CtsDimensionData objects to find mins and max
-#             if (dimData.Count <= 0)
-#                 return;
-
-#             CtsDimensionData[] objInfo = dimData.ToArray();
-#             Array.Sort(objInfo, CtsDimensionData.SortXdescending());
-
-#             CtsDimensionData CreateCtsData(int index, CtsDimensionData.ExtremePointId id)
-#             {
-#                 return new CtsDimensionData
-#                 {
-#                     DimEntity = objInfo[index].DimEntity,
-#                     DimXvalue = objInfo[index].DimXvalue,
-#                     DimYvalue = objInfo[index].DimYvalue,
-#                     ExtPointId = (int)id,
-#                     Type = objInfo[index].Type
-#                 };
-#             }
-
-#             CtsDimensionData minX = CreateCtsData(objInfo.Length - 1, CtsDimensionData.ExtremePointId.MinX);
-#             CtsDimensionData maxX = CreateCtsData(0, CtsDimensionData.ExtremePointId.MaxX);
-#             Array.Sort(objInfo, CtsDimensionData.SortYdescending());
-#             CtsDimensionData minY = CreateCtsData(objInfo.Length - 1, CtsDimensionData.ExtremePointId.MinY);
-#             CtsDimensionData maxY = CreateCtsData(0, CtsDimensionData.ExtremePointId.MaxY);
-#             minY.ExtPointId = (int)CtsDimensionData.ExtremePointId.MaxY;
-#             maxY.Type = objInfo[0].Type;
-
-#             switch (drfView.Name)
-#             {
-#                 case "4-VIEW-BOTTOM":
-#                     {
-#                         // get minX greatest Y vertex
-#                         FindEndPoints(ref minX, out Point3d vertex1, out Point3d vertex2);
-
-#                         double[] drfVertex1 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex1.__ToArray(), drfVertex1);
-
-#                         double[] drfVertex2 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex2.__ToArray(), drfVertex2);
-
-#                         minX.DimXvalue = drfVertex1[0] <= drfVertex2[0] ? drfVertex1[0] : drfVertex2[0];
-#                         minX.ExtPointId = drfVertex1[0] <= drfVertex2[0] ? (int)FirstEndPoint : (int)LastEndPoint;
-#                         minX.DimYvalue = drfVertex1[1] >= drfVertex2[1] ? drfVertex1[1] : drfVertex2[1];
-
-#                         // get maxX greatest Y vertex
-#                         FindEndPoints(ref maxX, out Point3d vertex3, out Point3d vertex4);
-
-#                         double[] drfVertex3 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex3.__ToArray(), drfVertex3);
-
-#                         double[] drfVertex4 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex4.__ToArray(), drfVertex4);
-
-#                         maxX.DimXvalue = drfVertex3[0] >= drfVertex4[0] ? drfVertex3[0] : drfVertex4[0];
-#                         maxX.ExtPointId = drfVertex3[0] >= drfVertex4[0] ? (int)FirstEndPoint : (int)LastEndPoint;
-#                         maxX.DimYvalue = drfVertex3[1] >= drfVertex4[1] ? drfVertex3[1] : drfVertex4[1];
-
-#                         // get minY greatest X vertex
-#                         FindEndPoints(ref minY, out Point3d vertex5, out Point3d vertex6);
-
-#                         double[] drfVertex5 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex5.__ToArray(), drfVertex5);
-
-#                         double[] drfVertex6 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex6.__ToArray(), drfVertex6);
-#                         minY.DimXvalue = drfVertex5[0] >= drfVertex6[0] ? drfVertex5[0] : drfVertex6[0];
-#                         minY.DimYvalue = drfVertex5[1] <= drfVertex6[1] ? drfVertex5[1] : drfVertex6[1];
-#                         minY.ExtPointId = drfVertex5[0] >= drfVertex6[0]
-#                             ? drfVertex5[1] <= drfVertex6[1] ? (int)FirstEndPoint : (int)LastEndPoint
-#                             : drfVertex5[1] <= drfVertex6[1]
-#                                 ? (int)FirstEndPoint
-#                                 : (int)LastEndPoint;
-
-#                         // get maxY greatest X vertex
-#                         FindEndPoints(ref maxY, out Point3d vertex7, out Point3d vertex8);
-
-#                         double[] drfVertex7 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex7.__ToArray(), drfVertex7);
-
-#                         double[] drfVertex8 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex8.__ToArray(), drfVertex8);
-
-#                         maxY.DimXvalue = drfVertex7[0] >= drfVertex8[0] ? drfVertex7[0] : drfVertex8[0];
-#                         maxY.DimYvalue = drfVertex7[0] >= drfVertex8[0]
-#                             ? drfVertex7[1] >= drfVertex8[1] ? drfVertex7[1] : drfVertex8[1]
-#                             : drfVertex7[1] >= drfVertex8[1]
-#                                 ? drfVertex7[1]
-#                                 : drfVertex8[1];
-#                         maxY.ExtPointId = drfVertex7[0] >= drfVertex8[0]
-#                             ? drfVertex7[1] >= drfVertex8[1] ? (int)FirstEndPoint : (int)LastEndPoint
-#                             : drfVertex7[1] >= drfVertex8[1]
-#                                 ? (int)FirstEndPoint
-#                                 : (int)LastEndPoint;
-#                         break;
-#                     }
-#                 case "4-VIEW-RIGHT":
-#                     {
-#                         // get minY least X vertex
-#                         FindEndPoints(ref minY, out Point3d vertex1, out Point3d vertex2);
-#                         double[] drfVertex1 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex1.__ToArray(), drfVertex1);
-#                         double[] drfVertex2 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex2.__ToArray(), drfVertex2);
-#                         minY.DimXvalue = drfVertex1[0] <= drfVertex2[0] ? drfVertex1[0] : drfVertex2[0];
-#                         minY.DimYvalue = drfVertex1[0] <= drfVertex2[0]
-#                             ? drfVertex1[1] <= drfVertex2[1] ? drfVertex1[1] : drfVertex2[1]
-#                             : drfVertex1[1] <= drfVertex2[1]
-#                                 ? drfVertex1[1]
-#                                 : drfVertex2[1];
-#                         minY.ExtPointId = drfVertex1[0] <= drfVertex2[0]
-#                             ? drfVertex1[1] <= drfVertex2[1] ? (int)FirstEndPoint : (int)LastEndPoint
-#                             : drfVertex1[1] <= drfVertex2[1]
-#                                 ? (int)FirstEndPoint
-#                                 : (int)LastEndPoint;
-#                         // get maxY least X vertex
-#                         FindEndPoints(ref maxY, out Point3d vertex3, out Point3d vertex4);
-#                         double[] drfVertex3 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex3.__ToArray(), drfVertex3);
-#                         double[] drfVertex4 = new double[2];
-#                         ufsession_.View.MapModelToDrawing(drfView.Tag, vertex4.__ToArray(), drfVertex4);
-#                         if (drfVertex3[0] <= drfVertex4[0])
-#                             maxY.DimXvalue = drfVertex3[0];
-#                         else
-#                             minY.DimXvalue = drfVertex4[0];
-#                         maxY.DimYvalue = drfVertex3[0] <= drfVertex4[0]
-#                             ? drfVertex3[1] >= drfVertex4[1] ? drfVertex3[1] : drfVertex4[1]
-#                             : drfVertex3[1] >= drfVertex4[1]
-#                                 ? drfVertex3[1]
-#                                 : drfVertex4[1];
-#                         maxY.ExtPointId = drfVertex3[0] <= drfVertex4[0]
-#                             ? drfVertex3[1] >= drfVertex4[1] ? (int)FirstEndPoint : (int)LastEndPoint
-#                             : drfVertex3[1] >= drfVertex4[1]
-#                                 ? (int)FirstEndPoint
-#                                 : (int)LastEndPoint;
-#                         break;
-#                     }
-#             }
-
-#             double dimSpace = partUnits == BasePart.Units.Inches ? .75 : 20;
-#             double xDistance = size[0];
-#             double zDistance = size[2];
-
-#             // orthoRight dimension placement and text value
-#             UFDrf.Text orthoRightDimText = new UFDrf.Text();
-#             double[] orthoRightDimOrigin = new double[3];
-#             orthoRightDimOrigin[0] = drfViewPosition[0] - zDistance / 2 - dimSpace * viewScale;
-#             orthoRightDimOrigin[1] = drfViewPosition[1];
-#             orthoRightDimOrigin[2] = 0;
-
-#             // orthoBottom horizontal dimension placement and text value
-#             UFDrf.Text orthoBtmDimText = new UFDrf.Text();
-#             double[] orthoBtmHorizDimOrigin = new double[3];
-#             orthoBtmHorizDimOrigin[0] = drfViewPosition[0];
-#             orthoBtmHorizDimOrigin[1] = drfViewPosition[1] + zDistance / 2 + dimSpace * viewScale;
-#             orthoBtmHorizDimOrigin[2] = 0;
-
-#             // orthoBottom vertical dimension placement and text value
-#             UFDrf.Text orthoBtmVertDimText = new UFDrf.Text();
-#             double[] orthoBtmVertDimOrigin = new double[3];
-#             orthoBtmVertDimOrigin[0] = drfViewPosition[0] + xDistance / 2 + dimSpace * viewScale;
-#             orthoBtmVertDimOrigin[1] = drfViewPosition[1];
-#             orthoBtmVertDimOrigin[2] = 0;
-#             UFDrf.Object drfObjMaxX = new UFDrf.Object();
-#             UFDrf.Object drfObjMinX = new UFDrf.Object();
-#             UFDrf.Object drfObjMaxY = new UFDrf.Object();
-#             UFDrf.Object drfObjMinY = new UFDrf.Object();
-#             ufsession_.Drf.InitObjectStructure(ref drfObjMaxX);
-#             ufsession_.Drf.InitObjectStructure(ref drfObjMinX);
-#             ufsession_.Drf.InitObjectStructure(ref drfObjMaxY);
-#             ufsession_.Drf.InitObjectStructure(ref drfObjMinY);
-
-#             if (drfView.Name == "4-VIEW-BOTTOM")
-#             {
-#                 AssignDraftObject(drfView, minX, ref drfObjMinX);
-#                 AssignDraftObject(drfView, maxX, ref drfObjMaxX);
-#                 AssignDraftObject(drfView, minY, ref drfObjMinY);
-#                 AssignDraftObject(drfView, maxY, ref drfObjMaxY);
-#                 ufsession_.Drf.CreateVerticalDim(ref drfObjMinY, ref drfObjMaxY, ref orthoBtmVertDimText,
-#                     orthoBtmVertDimOrigin, out _);
-#                 ufsession_.Drf.CreateHorizontalDim(ref drfObjMinX, ref drfObjMaxX, ref orthoBtmDimText,
-#                     orthoBtmHorizDimOrigin, out _);
-#             }
-
-#             if (drfView.Name != "4-VIEW-RIGHT")
-#                 return;
-
-#             AssignDraftObject(drfView, minY, ref drfObjMinY);
-#             AssignDraftObject(drfView, maxY, ref drfObjMaxY);
-
-#             ufsession_.Drf.CreateVerticalDim(
-#                 ref drfObjMinY,
-#                 ref drfObjMaxY,
-#                 ref orthoRightDimText,
-#                 orthoRightDimOrigin,
-#                 out _);
-#         }
-
-#         private static void FindEndPoints(ref CtsDimensionData maxY, out Point3d vertex3, out Point3d vertex4)
-#         {
-#             if (maxY.DimEntity.__ToTaggedObject() is Line line1)
-#             {
-#                 vertex3 = line1.StartPoint;
-#                 vertex4 = line1.EndPoint;
-#                 return;
-#             }
-
-#             Edge edge = (Edge)NXObjectManager.Get(maxY.DimEntity);
-#             edge.GetVertices(out vertex3, out vertex4);
-#         }
-
-#         private static void CreateHoleChartNote(Point3d noteOrigin, string[] holeDia, Tag view)
-#         {
-#             Session.UndoMarkId markIdNote = session_.SetUndoMark(Session.MarkVisibility.Invisible, "CreateOrNull Annotation");
-#             LetteringPreferences letteringPreferences1 = __work_part_.Annotations.Preferences.GetLetteringPreferences();
-
-#             UserSymbolPreferences userSymbolPreferences1 = __work_part_.Annotations.NewUserSymbolPreferences(
-#                 UserSymbolPreferences.SizeType.ScaleAspectRatio,
-#                 1.0,
-#                 1.0);
-
-#             Note note1 = __work_part_.Annotations.CreateNote(
-#                 holeDia,
-#                 noteOrigin,
-#                 AxisOrientation.Horizontal,
-#                 letteringPreferences1,
-#                 userSymbolPreferences1);
-
-#             note1.SetName("HOLECHARTNOTE");
-#             ufsession_.View.ConvertToModel(view, note1.Tag);
-#             letteringPreferences1.Dispose();
-#             userSymbolPreferences1.Dispose();
-#             session_.UpdateManager.DoUpdate(markIdNote);
-#             session_.DeleteUndoMark(markIdNote, "CreateOrNull Annotation");
-#         }
-
-#         private static void SetLayerVisibility(Tag viewToSet)
-#         {
-#             View viewObj = (View)NXObjectManager.Get(viewToSet);
-#             StateInfo[] layerVisibleInView = new StateInfo[256];
-
-#             for (int i = 0; i < layerVisibleInView.Length - 1; i++)
-#             {
-#                 layerVisibleInView[i].Layer = i + 1;
-#                 layerVisibleInView[i].State = State.Hidden;
-#             }
-
-#             layerVisibleInView[0].Layer = 1;
-#             layerVisibleInView[0].State = State.Visible;
-#             layerVisibleInView[95].Layer = 96;
-#             layerVisibleInView[95].State = State.Visible;
-#             layerVisibleInView[111].State = State.Visible;
-#             __display_part_.Layers.SetObjectsVisibilityOnLayer(viewObj, layerVisibleInView, true);
-#         }
-
-#         private static TextCfw CreateCfw(int color)
-#         {
-#             return new TextCfw(color, 1, LineWidth.Normal);
-#         }
-
-#         private static void SetLetteringPreferences(BasePart.Units units)
-#         {
-#             double size = units == BasePart.Units.Inches ? .125 : 3.175;
-
-#             using (var letteringPreferences = __display_part_.Annotations.Preferences.GetLetteringPreferences())
-#             {
-#                 Lettering generalText = new Lettering
-#                 {
-#                     Size = size,
-#                     CharacterSpaceFactor = 1.0,
-#                     AspectRatio = 1.0,
-#                     LineSpaceFactor = 1.0,
-#                     Cfw = CreateCfw(31),
-#                     Italic = false
-#                 };
-
-#                 letteringPreferences.SetGeneralText(generalText);
-
-#                 __display_part_.Annotations.Preferences.SetLetteringPreferences(letteringPreferences);
-#             }
-#         }
-
-#         private void SetDraftingPreferences(BasePart.Units units, double scale)
-#         {
-#             double unitMultiplier = units == BasePart.Units.Inches ? 1.0 : 25.4;
-
-#             using (LetteringPreferences letteringPreferences1 =
-#                    __work_part_.Annotations.Preferences.GetLetteringPreferences())
-#             {
-#                 Lettering CreateLettering(double value)
-#                 {
-#                     return new Lettering
-#                     {
-#                         Size = value * unitMultiplier * scale,
-#                         CharacterSpaceFactor = 0.9,
-#                         AspectRatio = 1.0,
-#                         LineSpaceFactor = 1.0,
-#                         Cfw = CreateCfw(7),
-#                         Italic = false
-#                     };
-#                 }
-
-#                 letteringPreferences1.SetDimensionText(CreateLettering(.125));
-#                 letteringPreferences1.SetAppendedText(CreateLettering(.0625));
-#                 letteringPreferences1.SetToleranceText(CreateLettering(.0625));
-#                 letteringPreferences1.SetGeneralText(CreateLettering(.125));
-#                 __work_part_.Annotations.Preferences.SetLetteringPreferences(letteringPreferences1);
-#             }
-
-#             using (LineAndArrowPreferences lineAndArrowPreferences1 = __work_part_.Annotations.Preferences.GetLineAndArrowPreferences())
-#             {
-#                 LineCfw Cfw(int color)
-#                 {
-#                     return new LineCfw(
-#                         color, 
-#                         DisplayableObject.ObjectFont.Solid,
-#                         LineWidth.Thin);
-#                 }
-
-#                 lineAndArrowPreferences1.SetFirstExtensionLineCfw(Cfw(141));
-#                 lineAndArrowPreferences1.SetFirstArrowheadCfw(Cfw(173));
-#                 lineAndArrowPreferences1.SetFirstArrowLineCfw(Cfw(173));
-#                 lineAndArrowPreferences1.SetSecondExtensionLineCfw(Cfw(173));
-#                 lineAndArrowPreferences1.SetSecondArrowheadCfw(Cfw(173));
-#                 lineAndArrowPreferences1.SetSecondArrowLineCfw(Cfw(173));
-#                 lineAndArrowPreferences1.ArrowheadLength = .125 * unitMultiplier;
-#                 lineAndArrowPreferences1.ArrowheadIncludedAngle = 30.0;
-#                 lineAndArrowPreferences1.StubLength = 0.25 * unitMultiplier;
-#                 lineAndArrowPreferences1.TextToLineDistance = 0.0625 * unitMultiplier;
-#                 lineAndArrowPreferences1.LinePastArrowDistance = 0.125 * unitMultiplier;
-#                 lineAndArrowPreferences1.FirstPosToExtLineDist = 0.0625 * unitMultiplier;
-#                 lineAndArrowPreferences1.SecondPosToExtLineDist = 0.0625 * unitMultiplier;
-#                 lineAndArrowPreferences1.DatumLengthPastArrow = 0.0625 * unitMultiplier;
-#                 lineAndArrowPreferences1.TextOverStubSpaceFactor = 0.1 * unitMultiplier;
-#                 __display_part_.Annotations.Preferences.SetLineAndArrowPreferences(lineAndArrowPreferences1);
-#             }
-
-#             using (var dimensionPreferences = __display_part_.Annotations.Preferences.GetDimensionPreferences())
-#             {
-#                 dimensionPreferences.ExtensionLineDisplay = ExtensionLineDisplay.Two;
-#                 dimensionPreferences.ArrowDisplay = ArrowDisplay.Two;
-#                 dimensionPreferences.TextPlacement = TextPlacement.Automatic;
-#                 dimensionPreferences.TextOrientation = TextOrientation.Horizontal;
-#                 LinearTolerance linearTolerance1 = __display_part_.Annotations.Preferences.GetLinearTolerances();
-#                 linearTolerance1.PrimaryDimensionDecimalPlaces = units == BasePart.Units.Inches ? 3 : 2;
-#                 __display_part_.Annotations.Preferences.SetLinearTolerances(linearTolerance1);
-
-#                 using (var unitsFormatPreferences = dimensionPreferences.GetUnitsFormatPreferences())
-#                 {
-#                     if (chkDualDimensions.Checked)
-#                         unitsFormatPreferences.DualDimensionPlacement = DualDimensionPlacement.Below;
-
-#                     unitsFormatPreferences.PrimaryDimensionUnit = units == BasePart.Units.Inches
-#                         ? DimensionUnit.Inches
-#                         : DimensionUnit.Millimeters;
-
-#                     unitsFormatPreferences.PrimaryDimensionTextFormat = DimensionTextFormat.Decimal;
-#                     unitsFormatPreferences.DecimalPointCharacter = DecimalPointCharacter.Period;
-#                     unitsFormatPreferences.DisplayTrailingZeros = true;
-#                     unitsFormatPreferences.TolerancePlacement = TolerancePlacement.After;
-#                     dimensionPreferences.SetUnitsFormatPreferences(unitsFormatPreferences);
-#                     __work_part_.Annotations.Preferences.SetDimensionPreferences(dimensionPreferences);
-#                 }
-#             }
-#         }
-
-#         private static void SetViewPreferences()
-#         {
-#             ViewPreferences viewPreferences = __work_part_.ViewPreferences;
-#             viewPreferences.HiddenLines.HiddenlineColor = 0;
-#             viewPreferences.HiddenLines.HiddenlineFont = NXOpen.Preferences.Font.Dashed;
-#             viewPreferences.VisibleLines.VisibleColor = 0;
-#             viewPreferences.VisibleLines.VisibleWidth = NXOpen.Preferences.Width.Original;
-#             viewPreferences.SmoothEdges.SmoothEdgeColor = 0;
-#             viewPreferences.SmoothEdges.SmoothEdgeFont = NXOpen.Preferences.Font.Invisible;
-#             viewPreferences.SmoothEdges.SmoothEdgeWidth = NXOpen.Preferences.Width.Original;
-#             viewPreferences.General.AutomaticAnchorPoint = false;
-#             viewPreferences.General.Centerlines = false;
-#             __work_part_.Preferences.ColorSettingVisualization.MonochromeDisplay = false;
-#             __work_part_.Preferences.Drafting.DisplayBorders = false;
-#         }
-
-#         private static void SetCsysToPlanView()
-#         {
-#             // Revision 1.4 – 2017 – 06 – 15
-#             // This entire method was rewritten.
-#             try
-#             {
-#                 Layout layout = __work_part_.Layouts.FindObject("L1");
-#                 ModelingView backView = __work_part_.ModelingViews.FindObject("Back");
-#                 layout.ReplaceView(__work_part_.ModelingViews.WorkView, backView, true);
-
-#                 string viewName = __display_part_.ModelingViews.ToArray().Any(__k => __k.Name == "PLAN")
-#                     ? "PLAN"
-#                     : "Top";
-
-#                 ModelingView view = __display_part_.__FindModelingView(viewName);
-#                 layout.ReplaceView(backView, view, true);
-#                 __display_part_.WCS.SetOriginAndMatrix(view.Origin, view.Matrix);
-#             }
-#             catch (NXException ex) when (ex.ErrorCode == 925019)
-#             {
-#                 print($"Could not replace view in {__work_part_.Leaf}");
-#             }
-#             catch (Exception ex)
-#             {
-#                 ex.__PrintException($"Part: {__work_part_.Leaf}");
-#             }
-#             finally
-#             {
-#                 __work_part_.ModelingViews.WorkView.UpdateDisplay();
-#             }
-#         }
-
-#         private void GetChildComponents(Component assembly)
-#         {
-#             foreach (Component child in assembly.GetChildren())
-#             {
-#                 if (child.IsSuppressed)
-#                 {
-#                     if (!IsNameValid(child))
-#                         continue;
-#                     print($"{child.DisplayName} is suppressed");
-#                     continue;
-#                 }
-
-#                 if (assembly.GetChildren() is null)
-#                     continue;
-
-#                 if (!IsNameValid(child))
-#                 {
-#                     GetChildComponents(child);
-#                     continue;
-#                 }
-
-#                 Tag instance = ufsession_.Assem.AskInstOfPartOcc(child.Tag);
-
-#                 if (instance == NXOpen.Tag.Null)
-#                     continue;
-
-#                 ufsession_.Assem.AskPartNameOfChild(instance, out string partName);
-
-#                 if (ufsession_.Part.IsLoaded(partName) == 1)
-#                 {
-#                     _allComponents.Add(child);
-#                     GetChildComponents(child);
-#                     continue;
-#                 }
-
-#                 ufsession_.Cfi.AskFileExist(partName, out int status);
-
-#                 if (status != 0)
-#                     continue;
-
-#                 ufsession_.Part.OpenQuiet(partName, out Tag partOpen, out _);
-
-#                 if (partOpen == NXOpen.Tag.Null)
-#                     continue;
-
-#                 _allComponents.Add(child);
-#                 GetChildComponents(child);
-#             }
-#         }
-
-#         public static bool IsNameValid(Component comp)
-#         {
-#             return Regex.IsMatch(comp.DisplayName, RegexDetail);
-#         }
-
-#         public static List<CtsAttributes> CreateMaterialList()
-#         {
-#             string getMaterial = FilePathUcf.PerformStreamReaderString(
-#                 ":MATERIAL_ATTRIBUTE_NAME:",
-#                 ":END_MATERIAL_ATTRIBUTE_NAME:");
-
-#             List<CtsAttributes> compMaterials = FilePathUcf.PerformStreamReaderList( 
-#                 ":COMPONENT_MATERIALS:", 
-#                 ":END_COMPONENT_MATERIALS:");
-
-#             foreach (CtsAttributes cMaterial in compMaterials)
-#                 cMaterial.AttrName = getMaterial != string.Empty ? getMaterial : "MATERIAL";
-
-#             return compMaterials;
-#         }
-
-#         private static void SetHoleChartLayers()
-#         {
-#             __display_part_.Layers.SetState(230, State.WorkLayer);
-#             SetLayers(1, 94, 96, 200, 231);
-#         }
-
-#         private static void SetDefaultLayers()
-#         {
-#             __display_part_.Layers.SetState(1, State.WorkLayer);
-#             SetLayers(94, 96, 99, 100, 111, 200, 230);
-#         }
-
-#         private static void SetLayers(params int[] layers)
-#         {
-#             using (StateCollection layerState = __display_part_.Layers.GetStates())
-#             {
-#                 foreach (Category category in __display_part_.LayerCategories)
-#                     if (category.Name == "ALL")
-#                         layerState.SetStateOfCategory(category, State.Hidden);
-#                 __display_part_.Layers.SetStates(layerState, true);
-#             }
-
-#             layers.Where(layer => __display_part_.Layers.GetState(layer) != State.WorkLayer)
-#                 .ToList()
-#                 .ForEach(layer => __display_part_.Layers.SetState(layer, State.Selectable));
-#         }
-
-#         private void SetFormDefaults()
-#         {
-#             chkHoleChart.Checked = false;
-#             chkDetailSheet.Checked = false;
-#             chkUpdateViews.Checked = false;
-#             chkDelete4Views.Checked = false;
-#             chkHoleChart.Checked = false;
-#             btnSelect.Enabled = false;
-#             btnSelectAll.Enabled = false;
-#             _allComponents.Clear();
-#         }
-
-#         private void ChkChart_CheckedChanged(object sender, EventArgs e)
-#         {
-#             if (chkDrillChart.Checked)
-#                 chkHoleChart.Checked = false;
-
-#             if (chkHoleChart.Checked)
-#                 chkDrillChart.Checked = false;
-#         }
-
-#         private double[][] GetMinsMaxs(Body body)
-#         {
-#             double[] minCorner = new double[3];
-#             double[] distances = new double[3];
-
-#             ufsession_.Modl.AskBoundingBoxAligned(body.Tag, __display_part_.WCS.CoordinateSystem.Tag, false, minCorner,
-#                 new double[3, 3], distances);
-
-#             return new[]
-#             {
-#                 minCorner,
-#                 distances
-#             };
-#         }
-
-#         private void CreateDetailSheet(string[] drillChart)
-#         {
-#             PreferencesBuilder prefBld = __work_part_.SettingsManager.CreatePreferencesBuilder();
-
-#             using (new Destroyer(prefBld))
-#             {
-#                 prefBld.ViewStyle.ViewStyleGeneral.ViewRepresentation = GeneralViewRepresentationOption.PreNx85Exact;
-#                 prefBld.ViewStyle.ViewStyleGeneral.ExtractedEdges = GeneralExtractedEdgesOption.None;
-#                 prefBld.Commit();
-#             }
-
-#             try
-#             {
-#                 const double baseWidthXDir = 11;
-#                 const double fitSheetXDir = .7;
-#                 const double baseHeightYDir = 8.5;
-#                 const double fitSheetYDir = .7;
-#                 const double borderSpace = 1;
-#                 const double viewSpace = 2;
-#                 const double viewMinFromBtm = 1;
-#                 double scale = 1;
-#                 const double increment = .125;
-
-#                 int bodyCount = __display_part_.Bodies
-#                     .Cast<Body>()
-#                     .Count(sBody1 => sBody1.Layer == 1);
-
-#                 if (bodyCount != 1)
-#                 {
-#                     print(
-#                             $"DetailPart Sheet will not be created.  {__display_part_.FullPath} :" +
-#                             $" Solid bodies on layer one = {bodyCount}"
-#                     );
-
-#                     return;
-#                 }
-
-#                 Body sBody = __display_part_.__SolidBodyLayer1OrNull();
-
-#                 if (sBody is null)
-#                 {
-#                     print($"Could not find solid body on layer 1 :' {__display_part_.Leaf}'");
-#                     return;
-#                 }
-
-#                 BasePart.Units units = __display_part_.PartUnits;
-#                 double scaledWidth;
-#                 double scaledHeight;
-#                 double[] minCorner = new double[3];
-#                 double[] distances = new double[3];
-
-#                 // import 4-VIEW border part
-#                 ImportPartModes modes = new ImportPartModes
-#                 {
-#                     layer_mode = 1,
-#                     group_mode = 1,
-#                     csys_mode = 0,
-#                     plist_mode = 0,
-#                     view_mode = 0,
-#                     cam_mode = false,
-#                     use_search_dirs = false
-#                 };
-
-#                 double[][] results = GetMinsMaxs(sBody);
-
-#                 Box3d_ boxSolid1 = new Box3d_(sBody);
-
-#                 //minCorner = boxSolid1.Origin.__ToArray();
-#                 distances = new[] { boxSolid1.XDistance, boxSolid1.YDistance, boxSolid1.ZDistance };
-
-#                 Body[] layer111SolidBodies = __display_part_.Bodies
-#                     .ToArray()
-#                     .Where(b => b.IsSolidBody && b.Layer == 111)
-#                     .ToArray();
-
-#                 double x = default;
-#                 double y = default;
-#                 double z = default;
-
-#                 foreach (Body body111 in layer111SolidBodies)
-#                 {
-#                     var box111 = new Box3d_(body111);
-#                     x = Math.Max(boxSolid1.XDistance, box111.XDistance);
-#                     y = Math.Max(boxSolid1.YDistance, box111.YDistance);
-#                     z = Math.Max(boxSolid1.ZDistance, box111.ZDistance);
-#                 }
-
-#                 double unitMultiplier = units == BasePart.Units.Inches ? 1.0 : 25.4;
-
-#                 double measureWidth = (distances[0] + distances[2]
-#                     + borderSpace * unitMultiplier * 2
-#                     + viewSpace * unitMultiplier)
-#                     / unitMultiplier;
-
-#                 double measureHeight = (distances[1] + distances[2] + borderSpace * unitMultiplier +
-#                                         viewSpace * unitMultiplier +
-#                                         viewMinFromBtm * unitMultiplier) / unitMultiplier;
-
-#                 if (measureWidth > baseWidthXDir * fitSheetXDir || measureHeight > baseHeightYDir * fitSheetYDir)
-#                     do
-#                     {
-#                         scale += increment;
-#                         scaledWidth = baseWidthXDir * fitSheetXDir * scale;
-#                         scaledHeight = baseHeightYDir * fitSheetYDir * scale;
-#                     }
-#                     while (scaledWidth < measureWidth || scaledHeight < measureHeight);
-
-#                 if (__display_part_.Expressions.ToArray().All(expression => expression.Name != "borderScale"))
-#                     using (session_.__UsingDoUpdate("Expression"))
-#                     {
-#                         __work_part_.Expressions.CreateWithUnits($"borderScale={scale}", null);
-#                     }
-
-#                 double sheetWidth = baseWidthXDir * unitMultiplier * scale;
-#                 double sheetHeight = baseHeightYDir * unitMultiplier * scale;
-
-#                 DrawingSheet.Unit drawingSheetUnits = units == BasePart.Units.Inches
-#                     ? DrawingSheet.Unit.Inches
-#                     : DrawingSheet.Unit.Millimeters;
-
-#                 DrawingSheet fourViewSheet = __display_part_.DraftingDrawingSheets.InsertSheet(
-#                     "4-VIEW",
-#                     drawingSheetUnits,
-#                     sheetHeight,
-#                     sheetWidth,
-#                     1,
-#                     1,
-#                     DrawingSheet.ProjectionAngleType.ThirdAngle);
-
-#                 SetDraftingPreferences(units, scale);
-#                 SetViewPreferences();
-
-#                 ufsession_.Part.Import(
-#                     _borderFile,
-#                     ref modes,
-#                     new double[] { 1, 0, 0, 0, 1, 0 },
-#                     new double[] { 0, 0, 0 },
-#                     scale,
-#                     out _);
-
-#                 Part temp = __display_part_;
-
-#                 try
-#                 {
-#                     if (chkDrillChart.Checked && drillChart.Length > 0)
-#                     {
-#                         Note note = (Note)session_.__FindByName(@"GRUMBLEGRUMBLE");
-#                         note.SetText(drillChart);
-#                     }
-#                     else
-#                         session_.__FindByName(@"GRUMBLEGRUMBLE").__Delete();
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-
-#                 try
-#                 {
-#                     if (chkDtsPath.Checked)
-#                     {
-#                         Note note = (Note)session_.__FindByName(@"DTS_FILE_PATH");
-#                         note.SetText(new[] { __display_part_.FullPath });
-#                     }
-#                     else
-#                         session_.__FindByName(@"DTS_FILE_PATH").__Delete();
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-
-#                 double xDistance = distances[0];
-#                 double yDistance = distances[1];
-#                 double zDistance = distances[2];
-#                 double[] pvRefPoint = new double[2];
-
-#                 pvRefPoint[0] = sheetWidth * .333 > xDistance
-#                     ? sheetWidth * .333
-#                     : borderSpace * unitMultiplier * scale + xDistance / 2;
-
-#                 pvRefPoint[1] = sheetHeight * .667 > yDistance
-#                     ? sheetHeight * .667
-#                     : (viewMinFromBtm * unitMultiplier + viewSpace * unitMultiplier) * scale + zDistance +
-#                       yDistance / 2;
-
-#                 DraftingView planDrfView = ImportPlanView(pvRefPoint[0], pvRefPoint[1]);
-#                 planDrfView.Update();
-#                 double[] orthogonalBtm = new double[2];
-#                 double[] orthogonalRight = new double[2];
-#                 orthogonalRight[0] = pvRefPoint[0] + xDistance / 2 + viewSpace * unitMultiplier * scale + zDistance / 2;
-#                 orthogonalRight[1] = pvRefPoint[1];
-#                 ufsession_.Draw.AddOrthographicView(fourViewSheet.Tag, planDrfView.Tag, UFDraw.ProjDir.ProjectRight,
-#                     orthogonalRight, out Tag rOrthoTag);
-#                 DraftingView rightDrfView = (DraftingView)NXObjectManager.Get(rOrthoTag);
-#                 rightDrfView.SetName("4-VIEW-RIGHT");
-#                 SetLayerVisibility(rOrthoTag);
-#                 StateInfo stateArray = new StateInfo(111, State.Visible);
-#                 __display_part_.Layers.SetObjectsVisibilityOnLayer(rightDrfView, new[] { stateArray }, true);
-#                 orthogonalBtm[0] = pvRefPoint[0];
-#                 orthogonalBtm[1] = pvRefPoint[1] - yDistance / 2 - viewSpace * unitMultiplier * .667 * scale -
-#                                    zDistance / 2;
-#                 ufsession_.Draw.AddOrthographicView(fourViewSheet.Tag, planDrfView.Tag, UFDraw.ProjDir.ProjectBelow,
-#                     orthogonalBtm, out Tag bOrthoTag);
-#                 DraftingView btmDrfView = (DraftingView)NXObjectManager.Get(bOrthoTag);
-#                 btmDrfView.SetName("4-VIEW-BOTTOM");
-#                 SetLayerVisibility(bOrthoTag);
-#                 __display_part_.Layers.SetObjectsVisibilityOnLayer(btmDrfView, new[] { stateArray }, true);
-
-
-
-#                 if (!__display_part_.__HasAttribute("DESCRIPTION"))
-#                     print("Does not have DESCRIPTION att");
-#                 else
-#                 {
-#                     string descValue = __display_part_.__GetAttribute("DESCRIPTION");
-
-#                     if (descValue.ToUpper() == "NITROGEN PLATE SYSTEM")
-#                         return;
-#                 }
-
-#                 DimensionView(btmDrfView, orthogonalBtm, scale, distances, units);
-#                 DimensionView(rightDrfView, orthogonalRight, scale, distances, units);
-
-#                 bool isWireTaper = false;
-#                 bool isWaitForDev = false;
-
-#                 foreach (NXObject.AttributeInformation attrNote in __display_part_.GetUserAttributes())
-#                 {
-#                     if (attrNote.Title.ToUpper() == "WTN")
-#                     {
-#                         string wtnValue = __display_part_.__GetAttribute(attrNote.Title);
-
-#                         if (wtnValue.ToUpper() == "YES")
-#                             isWireTaper = true;
-#                     }
-
-#                     if (attrNote.Title.ToUpper() != "WFTD")
-#                         continue;
-
-#                     string wfftValue =
-#                         __display_part_.__GetAttribute(attrNote.Title);
-
-#                     if (wfftValue.ToUpper() == "YES")
-#                         isWaitForDev = true;
-#                 }
-
-#                 List<NXObject> addToDelete = new List<NXObject>();
-
-#                 foreach (Note drfNote in __display_part_.Notes)
-#                 {
-#                     if (drfNote.Layer != 200)
-#                         continue;
-
-#                     string[] noteText = drfNote.GetText();
-
-#                     //Changed from "TSG STANDARD" to "STANDARD" - to work with the GE Border file. 2016-11-16 Duane VW
-#                     if (noteText[0].Contains("STANDARD") && !isWireTaper)
-#                         addToDelete.Add(drfNote);
-
-#                     if (noteText[0].Contains("WAITING FOR FINAL TRIM") && !isWaitForDev)
-#                         addToDelete.Add(drfNote);
-#                 }
-
-#                 if (addToDelete.Count != 0)
-#                     session_.__DeleteObjects(addToDelete.ToArray());
-#             }
-#             catch (Exception ex)
-#             {
-#                 ex.__PrintException(__display_part_.Leaf);
-#             }
-#         }
-
-#         public struct CtsDimensionData : IComparable
-#         {
-#             public CtsDimensionData(string objType, Tag objectTag, double x, double y, ExtremePointId extremeId) : this()
-#             {
-#                 Type = objType;
-#                 DimEntity = objectTag;
-#                 DimXvalue = x;
-#                 DimYvalue = y;
-#             }
-
-#             public string Type { get; set; }
-
-#             public Tag DimEntity { get; set; }
-
-#             public double DimXvalue { get; set; }
-
-#             public double DimYvalue { get; set; }
-
-#             public int ExtPointId { get; set; }
-
-
-#             int IComparable.CompareTo(object obj)
-#             {
-#                 return string.CompareOrdinal(Type, ((CtsDimensionData)obj).Type);
-#             }
-
-#             private class SortXdescending_ : IComparer
-#             {
-#                 int IComparer.Compare(object x, object x1)
-#                 {
-#                     if (x is null && x1 is null) return 0;
-#                     if (x is null ^ x1 is null) return 1;
-#                     if (((CtsDimensionData)x).DimXvalue > ((CtsDimensionData)x1).DimXvalue) return -1;
-#                     return ((CtsDimensionData)x).DimXvalue < ((CtsDimensionData)x1).DimXvalue ? 1 : 0;
-#                 }
-#             }
-
-#             private class SortYdescending_ : IComparer
-#             {
-#                 public int Compare(object y, object y1)
-#                 {
-#                     if (y is null && y1 is null) return 0;
-#                     if (y is null ^ y1 is null) return 1;
-#                     if (((CtsDimensionData)y).DimYvalue > ((CtsDimensionData)y1).DimYvalue) return -1;
-#                     return ((CtsDimensionData)y).DimYvalue < ((CtsDimensionData)y1).DimYvalue ? 1 : 0;
-#                 }
-#             }
-
-#             public static IComparer SortXdescending()
-#             {
-#                 return new SortXdescending_();
-#             }
-
-#             public static IComparer SortYdescending()
-#             {
-#                 return new SortYdescending_();
-#             }
-
-#             public enum ExtremePointId
-#             {
-#                 None,
-#                 MinX,
-#                 MaxX,
-#                 MinY,
-#                 MaxY,
-#                 MinZ,
-#                 MaxZ
-#             }
-
-#             public enum EndPointAssociativity
-#             {
-#                 None = 0,
-#                 FirstEndPoint = UFConstants.UF_DRF_first_end_point,
-#                 LastEndPoint = UFConstants.UF_DRF_last_end_point
-#             }
-#         }
-
-#         [Obsolete]
-#         public static class DrillChart
-#         {
-#             private const string HoleChartText = @"U:\nxFiles\UfuncFiles\HoleChart.txt";
-
-#             private static Part __display_part_ => Session.GetSession().Parts.Display;
-
-#             public static string[] Main()
-#             {
-#                 string[] lines = File.ReadAllLines(HoleChartText)
-#                     .Where(s => !string.IsNullOrEmpty(s))
-#                     .Where(s => !string.IsNullOrWhiteSpace(s))
-#                     .Where(s => !s.StartsWith("//"))
-#                     .ToArray();
-
-#                 IList<string[]> holeChart = new List<string[]>();
-
-#                 for (int i = 1; i < lines.Length; i++)
-#                 {
-#                     string[] split = lines[i].Split('\t');
-
-#                     holeChart.Add(split);
-#                 }
-
-#                 // Get the solid body on layer 1
-#                 Body solidBody = __display_part_.__SolidBodyLayer1OrNull();
-
-#                 if (solidBody is null)
-#                     throw new ArgumentException("Display part does not have solid body on layer 1");
-
-#                 IDictionary<double, Tuple<int[], IList<Face>, string[]>> dict =
-#                     new Dictionary<double, Tuple<int[], IList<Face>, string[]>>();
-
-#                 foreach (Face face in solidBody.GetFaces())
-#                 {
-#                     if (face.SolidFaceType != Face.FaceType.Cylindrical)
-#                         continue;
-
-#                     if (!face.Name.ToUpper().Contains("HOLECHART"))
-#                         continue;
-
-#                     double[] point = new double[3];
-#                     double[] dir = new double[3];
-#                     double[] box = new double[6];
-
-#                     ufsession_.Modl.AskFaceData(face.Tag, out int _, point, dir, box, out double radius, out _, out _);
-
-#                     double diameter = radius * 2; // * 25.4;
-
-#                     string[] actualLine =
-#                     (
-#                         from line in holeChart
-#                         let tempRadius = double.Parse(line[1])
-#                         where System.Math.Abs(tempRadius - diameter) < .000000001
-#                         select line
-#                     ).FirstOrDefault();
-
-#                     if (actualLine is null)
-#                     {
-#                         print($"Couldn't find hole chart: {diameter}");
-
-#                         continue;
-#                     }
-
-#                     if (!dict.ContainsKey(diameter))
-#                         dict.Add(diameter,
-#                             new Tuple<int[], IList<Face>, string[]>(new[] { 0 }, new List<Face>(), actualLine));
-
-#                     dict[diameter].Item1[0]++;
-
-#                     dict[diameter].Item2.Add(face);
-#                 }
-
-#                 session_.__DeleteObjects(__display_part_.Layers.GetAllObjectsOnLayer(230).OfType<Note>().ToArray());
-
-#                 char letter = 'A';
-
-#                 IList<IList<string>> actualLines = new List<IList<string>>();
-
-#                 foreach (double diameter in dict.Keys)
-#                 {
-#                     Tuple<int[], IList<Face>, string[]> tuple = dict[diameter];
-#                     int count = tuple.Item1[0];
-#                     IList<string> list = new List<string>();
-#                     IList<Face> faces = tuple.Item2;
-#                     string[] message = tuple.Item3;
-#                     list.Add($"{letter} ");
-#                     string temp = message.Length == 3 ? $"{message[2]} " : $"{message[0]} ";
-#                     string[] split = Regex.Split(temp, "FOR\\s");
-#                     list.Add($"{split[0]}FOR");
-#                     list.Add(split[1]);
-#                     list.Add($"QTY {count}");
-#                     actualLines.Add(list);
-
-#                     foreach (Face face in faces)
-#                     {
-#                         double[] point = new double[3];
-#                         double[] dir = new double[3];
-#                         double[] box = new double[6];
-
-#                         ufsession_.Modl.AskFaceData(face.Tag, out int _, point, dir, box, out double _, out _, out _);
-
-#                         using (session_.__UsingDoUpdate())
-#                         {
-#                             using (LetteringPreferences letteringPreferences1 =
-#                                    __work_part_.Annotations.Preferences.GetLetteringPreferences())
-#                             using (UserSymbolPreferences userSymbolPreferences1 =
-#                                    __work_part_.Annotations.NewUserSymbolPreferences(
-#                                        UserSymbolPreferences.SizeType.ScaleAspectRatio,
-#                                        1.0,
-#                                        1.0))
-#                             {
-#                                 userSymbolPreferences1.SetLengthAndHeight(.125, .125);
-
-#                                 Note note1 = __work_part_.Annotations.CreateNote(
-#                                     new[] { $"{letter}" },
-#                                     point.__ToPoint3d(),
-#                                     AxisOrientation.Horizontal,
-#                                     letteringPreferences1,
-#                                     userSymbolPreferences1);
-
-#                                 note1.Layer = 230;
-
-#                                 note1.RedisplayObject();
-
-#                                 note1.SetName("HOLECHARTNOTE");
-#                                 ufsession_.View.ConvertToModel(__display_part_.ModelingViews.WorkView.Tag, note1.Tag);
-
-#                                 DraftingNoteBuilder draftingNoteBuilder1 =
-#                                     __work_part_.Annotations.CreateDraftingNoteBuilder(note1);
-
-#                                 using (session_.__UsingBuilderDestroyer(draftingNoteBuilder1))
-#                                 {
-#                                     draftingNoteBuilder1.Style.LetteringStyle.GeneralTextSize = .125;
-#                                     draftingNoteBuilder1.Commit();
-#                                 }
-#                             }
-#                         }
-#                     }
-
-#                     letter++;
-#                 }
-
-#                 IList<string> note = new List<string>();
-
-#                 foreach (IList<string> t in actualLines)
-#                 {
-#                     string _letter = t[0];
-#                     string drill = t[1];
-#                     string fastenr = t[2];
-#                     string quantity = t[3];
-#                     note.Add($"{_letter}{drill}");
-#                     note.Add($"{fastenr}{quantity}".ToUpper());
-#                     note.Add("");
-#                     string s = t.Aggregate("", (current, k) => current + k);
-#                     note.Add(s);
-#                 }
-
-#                 return note.ToArray();
-#             }
-#         }
-#     }
-    pass
-
-
-
-
-
-
-class UFuncAutoSizeComponent:
-#     public class AutoSizeComponent : _UFunc
-# {
-#     private const double Tolerance = .0001;
-#     private static UserDefinedClass _myUdoClass;
-
-#     public static int Startup()
-#     {
-#         const int retValue = 0;
-
-#         try
-#         {
-#             initializeUDO(false);
-#         }
-#         catch (Exception ex)
-#         {
-#             ex.__PrintException();
-#         }
-
-#         return retValue;
-#     }
-
-#     public static int initializeUDO(bool alertUser)
-#     {
-#         try
-#         {
-#             if (!(_myUdoClass is null))
-#             {
-#                 print("udo already exists");
-#                 return 0;
-#             }
-
-#             if (alertUser)
-#                 UI.GetUI()
-#                     .NXMessageBox.Show(
-#                         "UDO",
-#                         NXMessageBox.DialogType.Information,
-#                         "Registering C# UDO Class"
-#                     );
-
-#             // Define your custom UDO class
-#             _myUdoClass = session_.UserDefinedClassManager.CreateUserDefinedObjectClass(
-#                 "UdoAutoSizeComponent",
-#                 "Update Order Size"
-#             );
-#             // Setup properties on the custom UDO class
-#             _myUdoClass.AllowQueryClassFromName = UserDefinedClass.AllowQueryClass.On;
-#             // Register callbacks for the UDO class
-#             _myUdoClass.AddUpdateHandler(myUpdateCB);
-#         }
-#         catch (Exception ex)
-#         {
-#             ex.__PrintException();
-#         }
-
-#         return 0;
-#     }
-
-#     public static int myUpdateCB(UserDefinedLinkEvent updateEvent)
-#     {
-#         try
-#         {
-#             if (updateEvent.AssociatedObject is null)
-#                 return 0;
-
-#             int assocObjStatus = ufsession_.Obj.AskStatus(updateEvent.AssociatedObject.Tag);
-#             Tag solidBodyTag = updateEvent.AssociatedObject.Tag;
-#             Body udoBody = (Body)NXObjectManager.Get(solidBodyTag);
-#             Part updatePart = (Part)udoBody.OwningPart;
-
-#             if (assocObjStatus != 3)
-#                 return 0;
-
-#             int[] updateFlag = updateEvent.UserDefinedObject.GetIntegers();
-
-#             if (updateFlag[0] == 1)
-#                 SizeComponent(updatePart);
-
-#             return 0;
-#         }
-#         catch (Exception ex)
-#         {
-#             ex.__PrintException();
-#         }
-
-#         return 0;
-#     }
-
-#     public static int Main1()
-#     {
-#         const int retValue = 0;
-#         try
-#         {
-#             UserDefinedClass myUdoClass =
-#                 session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
-#                     "UdoAutoSizeComponent"
-#                 );
-
-#             if (myUdoClass is null)
-#                 return retValue;
-
-#             UserDefinedObject[] currentUdo =
-#                 __work_part_.UserDefinedObjectManager.GetUdosOfClass(myUdoClass);
-
-#             if (currentUdo.Length != 0)
-#                 SizeComponent(__work_part_);
-#         }
-#         catch (Exception ex)
-#         {
-#             ex.__PrintException();
-#         }
-
-#         return retValue;
-#     }
-
-#     public static void SizeComponent(Part updatePartSize)
-#     {
-#         try
-#         {
-#             bool isMetric = false;
-#             BasePart basePart = updatePartSize;
-
-#             if (basePart.PartUnits == BasePart.Units.Millimeters)
-#                 isMetric = true;
-
-#             foreach (Feature featDynamic in __work_part_.Features.ToArray())
-#             {
-#                 if (featDynamic.FeatureType != "BLOCK")
-#                     continue;
-
-#                 if (featDynamic.Name != "DYNAMIC BLOCK")
-#                     continue;
-
-#                 Block block1 = (Block)featDynamic;
-#                 Body[] sizeBody = block1.GetBodies();
-#                 BlockFeatureBuilder blockFeatureBuilderSize = __work_part_.Features.CreateBlockFeatureBuilder(block1);
-#                 blockFeatureBuilderSize.GetOrientation(out Vector3d xAxis, out Vector3d yAxis);
-
-#                 double[] initOrigin =
-#                 {
-#                     blockFeatureBuilderSize.Origin.X,
-#                     blockFeatureBuilderSize.Origin.Y,
-#                     blockFeatureBuilderSize.Origin.Z
-#                 };
-
-#                 double[] xVector = { xAxis.X, xAxis.Y, xAxis.Z };
-#                 double[] yVector = { yAxis.X, yAxis.Y, yAxis.Z };
-#                 double[] initMatrix = new double[9];
-#                 ufsession_.Mtx3.Initialize(xVector, yVector, initMatrix);
-#                 ufsession_.Csys.CreateMatrix(initMatrix, out Tag tempMatrix);
-#                 ufsession_.Csys.CreateTempCsys(initOrigin, tempMatrix, out Tag tempCsys);
-
-#                 if (tempCsys == Tag.Null)
-#                 {
-#                     UI.GetUI()
-#                         .NXMessageBox.Show(
-#                             "Auto Size Update Error",
-#                             NXMessageBox.DialogType.Error,
-#                             "Description update failed " + updatePartSize.FullPath
-#                         );
-#                     continue;
-#                 }
-
-#                 // get named expressions
-
-#                 bool isNamedExpression = false;
-
-#                 double xValue = 0,
-#                     yValue = 0,
-#                     zValue = 0;
-
-#                 string burnDirValue = string.Empty;
-#                 string burnoutValue = string.Empty;
-#                 string grindValue = string.Empty;
-#                 string grindTolValue = string.Empty;
-#                 string diesetValue = string.Empty;
-#                 NewMethod7(
-#                     ref isNamedExpression,
-#                     ref xValue,
-#                     ref yValue,
-#                     ref zValue,
-#                     ref burnDirValue,
-#                     ref burnoutValue,
-#                     ref grindValue,
-#                     ref grindTolValue,
-#                     ref diesetValue
-#                 );
-
-#                 burnDirValue = burnDirValue.Replace("\"", string.Empty);
-#                 burnoutValue = burnoutValue.Replace("\"", string.Empty);
-#                 grindValue = grindValue.Replace("\"", string.Empty);
-#                 grindTolValue = grindTolValue.Replace("\"", string.Empty);
-#                 diesetValue = diesetValue.Replace("\"", string.Empty);
-
-#                 if (isNamedExpression)
-#                 {
-#                     // get bounding box of solid body
-
-#                     double[] minCorner = new double[3];
-#                     double[,] directions = new double[3, 3];
-#                     double[] distances = new double[3];
-#                     double[] grindDistances = new double[3];
-
-#                     ufsession_.Modl.AskBoundingBoxExact(
-#                         sizeBody[0].Tag,
-#                         tempCsys,
-#                         minCorner,
-#                         directions,
-#                         distances
-#                     );
-#                     ufsession_.Modl.AskBoundingBoxExact(
-#                         sizeBody[0].Tag,
-#                         tempCsys,
-#                         minCorner,
-#                         directions,
-#                         grindDistances
-#                     );
-
-#                     NewMethod6(isMetric, xValue, yValue, zValue, burnoutValue, distances);
-
-#                     double xDist = distances[0];
-#                     double yDist = distances[1];
-#                     double zDist = distances[2];
-
-#                     double xGrindDist = grindDistances[0];
-#                     double yGrindDist = grindDistances[1];
-#                     double zGrindDist = grindDistances[2];
-
-#                     Array.Sort(distances);
-#                     Array.Sort(grindDistances);
-
-#                     // ReSharper disable once ConvertIfStatementToSwitchStatement
-#                     if (burnoutValue.ToLower() == "no" && grindValue.ToLower() == "no")
-#                     {
-#                         updatePartSize.SetUserAttribute(
-#                             "DESCRIPTION",
-#                             -1,
-#                             $"{distances[0]:f2} X {distances[1]:f2} X {distances[2]:f2}",
-#                             Update.Option.Now
-#                         );
-#                     }
-# 						// sql
-# 						// get this to work
-#                     else if (burnoutValue.ToLower() == "no" && grindValue.ToLower() == "yes")
-#                     {
-#                         // ReSharper disable once ConvertIfStatementToSwitchStatement
-#                         if (burnDirValue.ToLower() == "x")
-#                         {
-#                             NewMethod5(grindTolValue, distances, grindDistances, xGrindDist);
-#                         }
-
-#                         if (burnDirValue.ToLower() == "y")
-#                         {
-#                             NewMethod4(grindTolValue, distances, grindDistances, yGrindDist);
-#                         }
-
-#                         if (burnDirValue.ToLower() == "z")
-#                         {
-#                             NewMethod3(grindTolValue, distances, grindDistances, zGrindDist);
-#                         }
-#                     }
-#                     else if (grindValue.ToLower() == "yes")
-#                         NewMethod2(
-#                             burnDirValue,
-#                             grindTolValue,
-#                             xGrindDist,
-#                             yGrindDist,
-#                             zGrindDist
-#                         );
-#                     else
-#                         NewMethod1(burnDirValue, xDist, yDist, zDist);
-
-#                     if (diesetValue != "yes")
-#                         continue;
-
-#                     string description = updatePartSize.GetStringUserAttribute(
-#                         "DESCRIPTION",
-#                         -1
-#                     );
-
-#                     if (description.ToLower().Contains("dieset"))
-#                         continue;
-
-#                     description += " DIESET";
-
-#                     updatePartSize.SetUserAttribute(
-#                         "DESCRIPTION",
-#                         -1,
-#                         description,
-#                         Update.Option.Now
-#                     );
-#                 }
-#                 else
-#                 {
-#                     double[] distances = NewMethod(isMetric, sizeBody, tempCsys);
-#                     Array.Sort(distances);
-
-#                     updatePartSize.SetUserAttribute(
-#                         "DESCRIPTION",
-#                         -1,
-#                         $"{distances[0]:f2} X {distances[1]:f2} X {distances[2]:f2}",
-#                         Update.Option.Now
-#                     );
-
-#                     if (diesetValue != "yes")
-#                         continue;
-#                     string description = updatePartSize.GetStringUserAttribute(
-#                         "DESCRIPTION",
-#                         -1
-#                     );
-
-#                     if (description.ToLower().Contains("dieset"))
-#                         continue;
-#                     description += " DIESET";
-#                     updatePartSize.SetUserAttribute(
-#                         "DESCRIPTION",
-#                         -1,
-#                         description,
-#                         Update.Option.Now
-#                     );
-#                 }
-#             }
-
-#             // If the work part does not have a {"DESCRIPTION"} attribute then we want to return;.
-#             if (!updatePartSize.__HasAttribute("DESCRIPTION"))
-#                 return;
-
-#             // The string value of the {"DESCRIPTION"} attribute.
-#             string descriptionAtt = updatePartSize.__GetAttribute("DESCRIPTION");
-
-#             // Checks to see if the {_workPart} contains an expression with value {"yes"} and name of {lwrParallel} or {uprParallel}.
-#             if (
-#                 updatePartSize.Expressions.ToArray().Any(
-#                     exp =>
-#                         (
-#                             exp.Name.ToLower() == "lwrparallel"
-#                             || exp.Name.ToLower() == "uprparallel"
-#                         )
-#                         && exp.StringValue.ToLower() == "yes"
-#                 )
-#             )
-#                 // Appends {"Parallel"} to the end of the {"DESCRIPTION"}
-#                 // attribute string value and then sets the it to be the value of the {"DESCRIPTION"} attribute.
-#                 updatePartSize.SetUserAttribute(
-#                     "DESCRIPTION",
-#                     -1,
-#                     descriptionAtt + " PARALLEL",
-#                     Update.Option.Now
-#                 );
-#         }
-#         catch (Exception ex)
-#         {
-#             ex.__PrintException();
-#         }
-#     }
-
-#     private static void NewMethod7(
-#         ref bool isNamedExpression,
-#         ref double xValue,
-#         ref double yValue,
-#         ref double zValue,
-#         ref string burnDirValue,
-#         ref string burnoutValue,
-#         ref string grindValue,
-#         ref string grindTolValue,
-#         ref string diesetValue
-#     )
-#     {
-#         foreach (Expression exp in __work_part_.Expressions.ToArray())
-#         {
-#             if (exp.Name == "AddX")
-#             {
-#                 isNamedExpression = true;
-#                 xValue = exp.Value;
-#             }
-
-#             if (exp.Name == "AddY")
-#             {
-#                 isNamedExpression = true;
-#                 yValue = exp.Value;
-#             }
-
-#             if (exp.Name == "AddZ")
-#             {
-#                 isNamedExpression = true;
-#                 zValue = exp.Value;
-#             }
-
-#             if (exp.Name == "BurnDir")
-#             {
-#                 isNamedExpression = true;
-#                 burnDirValue = exp.RightHandSide;
-#             }
-
-#             if (exp.Name == "Burnout")
-#             {
-#                 isNamedExpression = true;
-#                 burnoutValue = exp.RightHandSide;
-#             }
-
-#             if (exp.Name == "Grind")
-#             {
-#                 isNamedExpression = true;
-#                 grindValue = exp.RightHandSide;
-#             }
-
-#             if (exp.Name == "GrindTolerance")
-#             {
-#                 isNamedExpression = true;
-#                 grindTolValue = exp.RightHandSide;
-#             }
-
-#             if (exp.Name == "DiesetNote")
-#                 diesetValue = exp.RightHandSide;
-#         }
-#     }
-
-#     private static void NewMethod6(
-#         bool isMetric,
-#         double xValue,
-#         double yValue,
-#         double zValue,
-#         string burnoutValue,
-#         double[] distances
-#     )
-#     {
-#         // add stock values
-
-#         distances[0] += xValue;
-#         distances[1] += yValue;
-#         distances[2] += zValue;
-
-#         if (isMetric)
-#             for (int i = 0; i < distances.Length; i++)
-#                 distances[i] /= 25.4d;
-
-#         if (burnoutValue.ToLower() == "no")
-#             distances.__RoundTo_125();
-#     }
-
-#     private static void NewMethod5(
-#         string grindTolValue,
-#         double[] distances,
-#         double[] grindDistances,
-#         double xGrindDist
-#     )
-#     {
-#         if (xGrindDist.__Sub(grindDistances[0]).__Abs() < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{grindDistances[0]:f3} {grindTolValue} X {distances[1]:f2} X {distances[2]:f2}"
-#             );
-
-#         if (xGrindDist.__Sub(grindDistances[1]).__Abs() < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{distances[0]:f2} X {grindDistances[1]:f3} {grindTolValue} X {distances[2]:f2}"
-#             );
-
-#         if (xGrindDist.__Sub(grindDistances[2]).__Abs() < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{distances[0]:f2} X {distances[1]:f2} X {grindDistances[2]:f3} {grindTolValue}"
-#             );
-#     }
-
-#     private static void NewMethod4(
-#         string grindTolValue,
-#         double[] distances,
-#         double[] grindDistances,
-#         double yGrindDist
-#     )
-#     {
-#         if (yGrindDist.__Sub(grindDistances[0]) < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{grindDistances[0]:f3}"
-#                     + " "
-#                     + grindTolValue
-#                     + " X "
-#                     + $"{distances[1]:f2}"
-#                     + " X "
-#                     + $"{distances[2]:f2}"
-#             );
-
-#         if (yGrindDist.__Sub(grindDistances[1]) < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{distances[0]:f2}"
-#                     + " X "
-#                     + $"{grindDistances[1]:f3}"
-#                     + " "
-#                     + grindTolValue
-#                     + " X "
-#                     + $"{distances[2]:f2}"
-#             );
-
-#         if (yGrindDist.__Sub(grindDistances[2]) < Tolerance)
-#             __work_part_.__SetAttribute(
-#                 "DESCRIPTION",
-#                 $"{distances[0]:f2}"
-#                     + " X "
-#                     + $"{distances[1]:f2}"
-#                     + " X "
-#                     + $"{grindDistances[2]:f3}"
-#                     + " "
-#                     + grindTolValue
-#             );
-#     }
-
-#     private static void NewMethod3(
-#         string grindTolValue,
-#         double[] distances,
-#         double[] grindDistances,
-#         double zGrindDist
-#     )
-#     {
-#         if (System.Math.Abs(zGrindDist - grindDistances[0]) < Tolerance)
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 $"{grindDistances[0]:f3}"
-#                     + " "
-#                     + grindTolValue
-#                     + " X "
-#                     + $"{distances[1]:f2}"
-#                     + " X "
-#                     + $"{distances[2]:f2}",
-#                 Update.Option.Now
-#             );
-
-#         if (System.Math.Abs(zGrindDist - grindDistances[1]) < Tolerance)
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 $"{distances[0]:f2}"
-#                     + " X "
-#                     + $"{grindDistances[1]:f3}"
-#                     + " "
-#                     + grindTolValue
-#                     + " X "
-#                     + $"{distances[2]:f2}",
-#                 Update.Option.Now
-#             );
-
-#         if (System.Math.Abs(zGrindDist - grindDistances[2]) < Tolerance)
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 $"{distances[0]:f2}"
-#                     + " X "
-#                     + $"{distances[1]:f2}"
-#                     + " X "
-#                     + $"{grindDistances[2]:f3}"
-#                     + " "
-#                     + grindTolValue,
-#                 Update.Option.Now
-#             );
-#     }
-
-#     private static void NewMethod2(
-#         string burnDirValue,
-#         string grindTolValue,
-#         double xGrindDist,
-#         double yGrindDist,
-#         double zGrindDist
-#     )
-#     {
-#         if (burnDirValue.ToLower() == "x")
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 "BURN " + $"{xGrindDist:f3}" + " " + grindTolValue,
-#                 Update.Option.Now
-#             );
-
-#         if (burnDirValue.ToLower() == "y")
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 "BURN " + $"{yGrindDist:f3}" + " " + grindTolValue,
-#                 Update.Option.Now
-#             );
-
-#         if (burnDirValue.ToLower() == "z")
-#             __work_part_.SetUserAttribute(
-#                 "DESCRIPTION",
-#                 -1,
-#                 "BURN " + $"{zGrindDist:f3}" + " " + grindTolValue,
-#                 Update.Option.Now
-#             );
-#     }
-
-#     private static void NewMethod1(
-#         string burnDirValue,
-#         double xDist,
-#         double yDist,
-#         double zDist
-#     )
-#     {
-#         double distance;
-
-#         switch (burnDirValue.ToLower())
-#         {
-#             case "x":
-#                 distance = xDist;
-#                 break;
-#             case "y":
-#                 distance = yDist;
-#                 break;
-#             case "z":
-#                 distance = zDist;
-#                 break;
-#             default:
-#                 return;
-#         }
-
-#         __work_part_.__SetAttribute(
-#             "DESCRIPTION",
-#             $"BURN {distance:f2}"
-#         );
-#     }
-
-#     private static double[] NewMethod(bool isMetric, Body[] sizeBody, Tag tempCsys)
-#     {
-#         // get bounding box of solid body
-
-#         double[] minCorner = new double[3];
-#         double[,] directions = new double[3, 3];
-#         double[] distances = new double[3];
-
-#         ufsession_.Modl.AskBoundingBoxExact(
-#             sizeBody[0].Tag,
-#             tempCsys,
-#             minCorner,
-#             directions,
-#             distances
-#         );
-
-#         if (isMetric)
-#             for (int i = 0; i < distances.Length; i++)
-#                 distances[i] /= 25.4d;
-
-#         distances.__RoundTo_125();
-#         return distances;
-#     }
-
-#     public override void execute()
-#     {
-#     }
-
-#     public static void CreateAutoSizeUdo()
-#     {
-#         UserDefinedClass myUdOclass = null;
-
-#         try
-#         {
-#             myUdOclass = session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
-#                 "UdoAutoSizeComponent"
-#             );
-#         }
-#         catch (NXException ex) when (ex.ErrorCode == 1535022)
-#         {
-#             AutoSizeComponent.initializeUDO(false);
-#             myUdOclass = session_.UserDefinedClassManager.GetUserDefinedClassFromClassName(
-#                 "UdoAutoSizeComponent"
-#             );
-#         }
-
-#         if (myUdOclass is null)
-#             return;
-
-#         UserDefinedObject[] currentUdo = __work_part_.UserDefinedObjectManager.GetUdosOfClass(
-#             myUdOclass
-#         );
-
-#         if (currentUdo.Length != 0)
-#             return;
-
-#         BasePart myBasePart = __work_part_;
-#         UserDefinedObjectManager myUdOmanager = myBasePart.UserDefinedObjectManager;
-#         UserDefinedObject myUdo = myUdOmanager.CreateUserDefinedObject(myUdOclass);
-#         UserDefinedObject.LinkDefinition[] myLinks = new UserDefinedObject.LinkDefinition[1];
-#         int numBodies = __work_part_.Bodies.Cast<Body>().Count(body => body.Layer == 1);
-
-#         if (numBodies != 1)
-#             return;
-
-#         foreach (Body body in __work_part_.Bodies)
-#         {
-#             if (body.Layer != 1)
-#                 continue;
-
-#             myLinks[0].AssociatedObject = body;
-#             myLinks[0].Status = UserDefinedObject.LinkStatus.UpToDate;
-#             myUdo.SetLinks(UserDefinedObject.LinkType.Type1, myLinks);
-#             int[] updateOff = { 1 };
-#             myUdo.SetIntegers(updateOff);
-#         }
-#     }
-# }
-    pass
-
-
 class UFuncBlankDataBuilder:
-#      public partial class BlankDataBuilder : _UFuncForm
-#  {
-# 		// sql
-#      private const string dxfCmd = "dxfdwg.cmd /c ";
-#      private const string dxfSettings = "C:\\Program Files\\Siemens\\NX 11.0\\DXFDWG\\dxfdwg.def";
-#      private static Part workPart = session_.Parts.Work;
-#      private static Part displayPart = session_.Parts.Display;
-#      private static readonly string tempDir = Environment.GetEnvironmentVariable("TMP");
-#      private static string nameBuilder = "";
-#      private static string dxfArguments = "";
-
-#      public BlankDataBuilder()
-#      {
-#          try
-#          {
-#              InitializeComponent();
-#              InitializeFormData();
-#          }
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-#      }
-
-#      private void ComboBoxOperation_SelectedIndexChanged(object sender, EventArgs e)
-#      {
-#          if (comboBoxOperation.Text == "Hot")
-#          {
-#              comboBoxVersion.Enabled = true;
-
-#              try
-#              {
-#                  List<int> names = new List<int>();
-
-#                  if (workPart.ComponentAssembly.RootComponent != null)
-#                  {
-#                      foreach (Component comp in workPart.ComponentAssembly.RootComponent.GetChildren())
-#                      {
-#                          int indexOf = comp.DisplayName.LastIndexOf("-V", StringComparison.Ordinal);
-#                          if (indexOf == -1) continue;
-#                          string fullCompName = comp.DisplayName.Substring(indexOf + 1);
-#                          string versionNumber = fullCompName.Substring(1, 2);
-#                          int.TryParse(versionNumber, out int testVersionNumber);
-#                          names.Add(testVersionNumber);
-#                      }
-
-#                      if (names.Count != 0)
-#                      {
-#                          names.Sort();
-#                          int lastVersionNumber = names[names.Count - 1];
-#                          if ((lastVersionNumber > 0) & (lastVersionNumber < 10))
-#                              comboBoxVersion.Text = "V0" + lastVersionNumber;
-#                          if ((lastVersionNumber > 9) & (lastVersionNumber < 100))
-#                              comboBoxVersion.Text = "V" + lastVersionNumber;
-#                      }
-#                      else
-#                      {
-#                          comboBoxVersion.Text = "";
-#                      }
-#                  }
-#              }
-
-#              catch (Exception ex)
-#              {
-#                  comboBoxVersion.Text = "";
-#                  ex.__PrintException();
-#              }
-#          }
-
-#          if (comboBoxOperation.Text != "Cold")
-#              return;
-
-#          comboBoxVersion.Enabled = true;
-
-#          try
-#          {
-#              List<int> names = new List<int>();
-
-#              if (workPart.ComponentAssembly.RootComponent is null)
-#                  return;
-
-#              foreach (Component comp in workPart.ComponentAssembly.RootComponent.GetChildren())
-#              {
-#                  int indexOf = comp.DisplayName.LastIndexOf("-V", StringComparison.Ordinal);
-#                  if (indexOf == -1) continue;
-#                  string fullCompName = comp.DisplayName.Substring(indexOf + 1);
-#                  string versionNumber = fullCompName.Substring(1, 2);
-
-#                  int.TryParse(versionNumber, out int testVersionNumber);
-#                  names.Add(testVersionNumber);
-#              }
-
-#              if (names.Count == 0)
-#              {
-#                  comboBoxVersion.Text = "";
-#                  return;
-#              }
-
-#              names.Sort();
-#              int lastVersionNumber = names[names.Count - 1] + 1;
-
-#              if ((lastVersionNumber > 0) & (lastVersionNumber < 10))
-#                  comboBoxVersion.Text = $"V0{lastVersionNumber}";
-
-#              if ((lastVersionNumber > 9) & (lastVersionNumber < 100))
-#                  comboBoxVersion.Text = $"V{lastVersionNumber}";
-#          }
-#          catch (Exception ex)
-#          {
-#              comboBoxVersion.Text = "";
-#              ex.__PrintException();
-#          }
-#      }
-
-
-#      private void ButtonSelect_Click(object sender, EventArgs e)
-#      {
-#          displayPart = session_.Parts.Display;
-#          workPart = session_.Parts.Work;
-
-#          const string prompt = "Select objects to export";
-#          const string title = "Export data";
-#          IntPtr clientData = IntPtr.Zero;
-
-#          ufsession_.Ui.LockUgAccess(UF_UI_FROM_CUSTOM);
-
-#          ufsession_.Ui.SelectWithClassDialog(prompt, title, UF_UI_SEL_SCOPE_ANY_IN_ASSEMBLY, null, clientData,
-#              out _, out _, out Tag[] selObjects);
-
-#          ufsession_.Ui.UnlockUgAccess(UF_UI_FROM_CUSTOM);
-
-#          foreach (Tag objs in selObjects)
-#              ufsession_.Disp.SetHighlight(objs, 0);
-
-#          // build export/dxf/component name
-#          // Add Current Date
-#          string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
-
-#          if (selObjects.Length <= 0)
-#              return;
-
-#          try
-#          {
-#              if (textBoxJobNumber.Text != string.Empty)
-#                  nameBuilder = textBoxJobNumber.Text;
-
-#              if (comboBoxVersion.Text != string.Empty)
-#                  nameBuilder += $"-{comboBoxVersion.Text}";
-
-#              if (comboBoxOperation.Text != string.Empty)
-#              {
-#                  if (comboBoxOperation.Text == "Hot")
-#                      nameBuilder += $"-Hot-Blank-{currentDate}";
-
-#                  if (comboBoxOperation.Text == "Cold")
-#                      nameBuilder += $"-Cold-Blank-{currentDate}";
-#              }
-
-#              if (textBoxCustomText.Text != string.Empty)
-#                  nameBuilder += $"-{textBoxCustomText.Text}";
-
-#              // export temp part for dxf file
-#              string tempPart = $"{tempDir}\\{nameBuilder}";
-#              bool doesExist = false;
-
-
-#              if (displayPart.ComponentAssembly.RootComponent != null)
-#                  foreach (Component simComp in displayPart.ComponentAssembly.RootComponent.GetChildren())
-#                      if (simComp.Name == nameBuilder.ToUpper())
-#                          doesExist = true;
-
-#              if (doesExist)
-#              {
-#                  DialogResult dResult = MessageBox.Show($"Replace file {nameBuilder}?", "File Exist",
-#                      MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-
-
-#                  if (dResult != DialogResult.OK) return;
-#              }
-
-#              if (!(displayPart.ComponentAssembly.RootComponent is null))
-#                  foreach (Component simComp in displayPart.ComponentAssembly.RootComponent.GetChildren())
-#                  {
-#                      if (simComp.Name != nameBuilder.ToUpper())
-#                          continue;
-
-#                      Part closeSimPart = (Part)simComp.Prototype;
-#                      closeSimPart.Close(BasePart.CloseWholeTree.False, BasePart.CloseModified.CloseModified, null);
-#                      Session.UndoMarkId markId1 = session_.SetUndoMark(Session.MarkVisibility.Invisible, "");
-#                      NXObject[] objects1 = { simComp };
-#                      session_.UpdateManager.AddObjectsToDeleteList(objects1);
-#                      session_.UpdateManager.DoUpdate(markId1);
-#                  }
-
-#              BuildFilesExportDxf(tempPart, selObjects);
-#          }
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-
-#          //Set FILENAME Part Attribute to name builder 
-#      }
-
-#      private void ButtonReset_Click(object sender, EventArgs e)
-#      {
-#          try
-#          {
-#              InitializeFormData();
-#          }
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-#      }
-
-#      private void InitializeFormData()
-#      {
-#          if (Session.GetSession().Parts.Display is null)
-#              return;
-
-#          displayPart = session_.Parts.Display;
-#          workPart = session_.Parts.Work;
-
-#          textBoxJobNumber.Text = string.Empty;
-
-#          comboBoxOperation.SelectedIndex = -1;
-#          comboBoxOperation.Items.Clear();
-
-#          comboBoxVersion.SelectedIndex = -1;
-#          comboBoxVersion.Items.Clear();
-
-#          textBoxCustomText.Clear();
-
-#          textBoxRevisionLevel.Clear();
-
-#          Match match = Regex.Match(workPart.Leaf, RegexSimulation);
-
-#          textBoxJobNumber.Text = match.Success ? match.Groups["customerNum"].Value : "JOB #";
-
-#          comboBoxOperation.Items.Add("Hot");
-#          comboBoxOperation.Items.Add("Cold");
-
-#          comboBoxVersion.Items.Add("V01");
-#          comboBoxVersion.Items.Add("V02");
-#          comboBoxVersion.Items.Add("V03");
-#          comboBoxVersion.Items.Add("V04");
-#          comboBoxVersion.Items.Add("V05");
-#          comboBoxVersion.Items.Add("V06");
-#          comboBoxVersion.Items.Add("V07");
-#          comboBoxVersion.Items.Add("V08");
-#          comboBoxVersion.Items.Add("V09");
-#          comboBoxVersion.Items.Add("V10");
-#          comboBoxVersion.Items.Add("V11");
-#          comboBoxVersion.Items.Add("V12");
-#          comboBoxVersion.Items.Add("V13");
-#          comboBoxVersion.Items.Add("V14");
-#          comboBoxVersion.Items.Add("V15");
-#          comboBoxVersion.Items.Add("V16");
-#          comboBoxVersion.Items.Add("V17");
-#          comboBoxVersion.Items.Add("V18");
-#          comboBoxVersion.Items.Add("V19");
-#          comboBoxVersion.Items.Add("V20");
-#          comboBoxVersion.Items.Add("V21");
-#          comboBoxVersion.Items.Add("V22");
-#          comboBoxVersion.Items.Add("V23");
-#          comboBoxVersion.Items.Add("V24");
-#          comboBoxVersion.Items.Add("V25");
-#      }
-
-
-#      private void BuildFilesExportDxf(string partFile, Tag[] tagObjects)
-#      {
-#          try
-#          {
-#              string versionNumber = comboBoxVersion.Text;
-
-#              if (string.IsNullOrEmpty(versionNumber))
-#                  throw new InvalidOperationException("Invalid version number.");
-
-
-#              GFolder folder = GFolder.create_or_null(displayPart)
-#                               ??
-#                               throw new InvalidOperationException(
-#                                   "The current display part does not reside within in a GFolder.");
-
-#              if (File.Exists(partFile + ".prt"))
-#                  File.Delete(partFile + ".prt");
-
-#              UFPart.ExportOptions exportOptions = new UFPart.ExportOptions
-#              {
-#                  new_part = true,
-#                  expression_mode = UFPart.ExportExpMode.CopyExpDeeply,
-#                  params_mode = UFPart.ExportParamsMode.RemoveParams
-#              };
-
-#              ufsession_.Part.ExportWithOptions(partFile, tagObjects.Length, tagObjects, ref exportOptions);
-
-#              // get path to blank location, check directory structure
-
-#              string outputDirectory = $"{folder.DirOutgoing}\\{TodaysDate}-Blank-{versionNumber}";
-
-#              if (!Directory.Exists(outputDirectory))
-#                  Directory.CreateDirectory(outputDirectory);
-
-#              string compBlanksPath = outputDirectory;
-
-#              // export part to Blanks directory
-
-#              if (Directory.Exists(compBlanksPath) == false)
-#                  Directory.CreateDirectory(compBlanksPath);
-
-#              compBlanksPath += "\\" + nameBuilder + ".prt";
-
-#              if (File.Exists(compBlanksPath))
-#                  File.Delete(compBlanksPath);
-
-#              ufsession_.Part.ExportWithOptions(compBlanksPath, tagObjects.Length, tagObjects, ref exportOptions);
-
-#              // add  component to Blanks file
-
-#              BasePart basePart1 = session_.Parts.OpenBase(compBlanksPath, out PartLoadStatus basePartLoadStatus);
-#              basePartLoadStatus.Dispose();
-
-#              Point3d sPartOrigin = new Point3d(0.0, 0.0, 0.0);
-#              Matrix3x3 sPartMatrix = _Matrix3x3Identity;
-
-#              int layer;
-
-#              switch (comboBoxOperation.Text)
-#              {
-#                  case "Cold":
-#                      layer = 101;
-#                      break;
-#                  case "Hot":
-#                      layer = 103;
-#                      break;
-#                  default:
-#                      layer = 1;
-#                      break;
-#              }
-
-#              Part surfacePart = (Part)basePart1;
-#              displayPart.ComponentAssembly.AddComponent(surfacePart, RefsetEntirePart, nameBuilder, sPartOrigin,
-#                  sPartMatrix, layer, out PartLoadStatus sPartLoadStatus);
-#              sPartLoadStatus.Dispose();
-
-#              displayPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
-
-#              // export blank dxf data
-
-#              if (comboBoxOperation.Text != "Hot" && comboBoxOperation.Text != "Cold") return;
-#              string blankDxf =
-#                  Path.ChangeExtension(compBlanksPath,
-#                      "dxf"); //   $"{folder.JobFolder}\\blankDevelopment\\Blanks\\{nameBuilder}.dxf";
-#              string dxfBatch = partFile + ".bat";
-#              dxfArguments = $"{dxfCmd}\"{partFile}.prt\" o=\"{blankDxf}\" d=\"{dxfSettings}\"";
-
-#              using (FileStream fs = File.Open(dxfBatch, FileMode.Create))
-#              {
-#                  fs.Close();
-#              }
-
-#              using (StreamWriter writer = new StreamWriter(dxfBatch))
-#              {
-#                  writer.WriteLine("c:");
-#                  writer.WriteLine("cd " + "\"" + "C:\\Program Files\\Siemens\\NX 11.0\\DXFDWG" + "\"");
-#                  writer.WriteLine(dxfArguments);
-#                  writer.WriteLine("");
-#              }
-
-#              Process.Start(dxfBatch);
-#          }
-#          //Handle this exception somehow - Duane
-#          catch (Exception ex)
-#          {
-#              ex.__PrintException();
-#          }
-#      }
-
-#      private void ButtonSetAttribute_Click(object sender, EventArgs e)
-#      {
-#          // Add Current Date
-#          string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
-
-#          if (textBoxJobNumber.Text != string.Empty)
-#              nameBuilder = textBoxJobNumber.Text;
-
-#          if (comboBoxVersion.Text != string.Empty)
-#              nameBuilder += $"-{comboBoxVersion.Text}";
-
-#          if (comboBoxOperation.Text != string.Empty)
-#          {
-#              if (comboBoxOperation.Text == "Hot")
-#                  nameBuilder += $"-Hot-Blank-{currentDate}";
-
-#              if (comboBoxOperation.Text == "Cold")
-#                  nameBuilder += $"-Cold-Blank-{currentDate}";
-#          }
-
-#          if (textBoxCustomText.Text != string.Empty)
-#              nameBuilder += $"-{textBoxCustomText.Text}";
-
-#          NXObject.AttributeInformation[] attrInfo = displayPart.GetUserAttributes();
-
-#          foreach (NXObject.AttributeInformation attr in attrInfo)
-#          {
-#              if (attr.Title != "REVISION TEXT")
-#                  continue;
-
-#              string attrValue = displayPart.GetStringUserAttribute(attr.Title, -1);
-
-#              if (attrValue == "")
-#              {
-#                  displayPart.SetUserAttribute("REVISION TEXT", -1, "", NXOpen.Update.Option.Now);
-#                  continue;
-#              }
-
-#              displayPart.SetUserAttribute("REVISION TEXT", -1, nameBuilder, NXOpen.Update.Option.Now);
-#              Layout layout1 = workPart.Layouts.FindObject("L1");
-#              layout1.ReplaceView(workPart.ModelingViews.WorkView, workPart.ModelingViews.WorkView, true);
-#          }
-
-#          textBoxRevisionLevel.Text = nameBuilder;
-#      }
-
-#      private void BlankDataBuilderForm_Load(object sender, EventArgs e)
-#      {
-#          Text = ufunc_rev_name;
-#          Location = Settings.Default.blank_data_builder_form_window_location;
-#      }
-
-#      private void BlankDataBuilderForm_FormClosed(object sender, FormClosedEventArgs e)
-#      {
-#          Settings.Default.blank_data_builder_form_window_location = Location;
-#          Settings.Default.Save();
-#      }
-#  }
+    #      public partial class BlankDataBuilder : _UFuncForm
+    #  {
+    # 		// sql
+    #      private const string dxfCmd = "dxfdwg.cmd /c ";
+    #      private const string dxfSettings = "C:\\Program Files\\Siemens\\NX 11.0\\DXFDWG\\dxfdwg.def";
+    #      private static Part workPart = session_.Parts.Work;
+    #      private static Part displayPart = session_.Parts.Display;
+    #      private static readonly string tempDir = Environment.GetEnvironmentVariable("TMP");
+    #      private static string nameBuilder = "";
+    #      private static string dxfArguments = "";
+
+    #      public BlankDataBuilder()
+    #      {
+    #          try
+    #          {
+    #              InitializeComponent();
+    #              InitializeFormData();
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+    #      }
+
+    #      private void ComboBoxOperation_SelectedIndexChanged(object sender, EventArgs e)
+    #      {
+    #          if (comboBoxOperation.Text == "Hot")
+    #          {
+    #              comboBoxVersion.Enabled = true;
+
+    #              try
+    #              {
+    #                  List<int> names = new List<int>();
+
+    #                  if (workPart.ComponentAssembly.RootComponent != null)
+    #                  {
+    #                      foreach (Component comp in workPart.ComponentAssembly.RootComponent.GetChildren())
+    #                      {
+    #                          int indexOf = comp.DisplayName.LastIndexOf("-V", StringComparison.Ordinal);
+    #                          if (indexOf == -1) continue;
+    #                          string fullCompName = comp.DisplayName.Substring(indexOf + 1);
+    #                          string versionNumber = fullCompName.Substring(1, 2);
+    #                          int.TryParse(versionNumber, out int testVersionNumber);
+    #                          names.Add(testVersionNumber);
+    #                      }
+
+    #                      if (names.Count != 0)
+    #                      {
+    #                          names.Sort();
+    #                          int lastVersionNumber = names[names.Count - 1];
+    #                          if ((lastVersionNumber > 0) & (lastVersionNumber < 10))
+    #                              comboBoxVersion.Text = "V0" + lastVersionNumber;
+    #                          if ((lastVersionNumber > 9) & (lastVersionNumber < 100))
+    #                              comboBoxVersion.Text = "V" + lastVersionNumber;
+    #                      }
+    #                      else
+    #                      {
+    #                          comboBoxVersion.Text = "";
+    #                      }
+    #                  }
+    #              }
+
+    #              catch (Exception ex)
+    #              {
+    #                  comboBoxVersion.Text = "";
+    #                  ex.__PrintException();
+    #              }
+    #          }
+
+    #          if (comboBoxOperation.Text != "Cold")
+    #              return;
+
+    #          comboBoxVersion.Enabled = true;
+
+    #          try
+    #          {
+    #              List<int> names = new List<int>();
+
+    #              if (workPart.ComponentAssembly.RootComponent is null)
+    #                  return;
+
+    #              foreach (Component comp in workPart.ComponentAssembly.RootComponent.GetChildren())
+    #              {
+    #                  int indexOf = comp.DisplayName.LastIndexOf("-V", StringComparison.Ordinal);
+    #                  if (indexOf == -1) continue;
+    #                  string fullCompName = comp.DisplayName.Substring(indexOf + 1);
+    #                  string versionNumber = fullCompName.Substring(1, 2);
+
+    #                  int.TryParse(versionNumber, out int testVersionNumber);
+    #                  names.Add(testVersionNumber);
+    #              }
+
+    #              if (names.Count == 0)
+    #              {
+    #                  comboBoxVersion.Text = "";
+    #                  return;
+    #              }
+
+    #              names.Sort();
+    #              int lastVersionNumber = names[names.Count - 1] + 1;
+
+    #              if ((lastVersionNumber > 0) & (lastVersionNumber < 10))
+    #                  comboBoxVersion.Text = $"V0{lastVersionNumber}";
+
+    #              if ((lastVersionNumber > 9) & (lastVersionNumber < 100))
+    #                  comboBoxVersion.Text = $"V{lastVersionNumber}";
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              comboBoxVersion.Text = "";
+    #              ex.__PrintException();
+    #          }
+    #      }
+
+    #      private void ButtonSelect_Click(object sender, EventArgs e)
+    #      {
+    #          displayPart = session_.Parts.Display;
+    #          workPart = session_.Parts.Work;
+
+    #          const string prompt = "Select objects to export";
+    #          const string title = "Export data";
+    #          IntPtr clientData = IntPtr.Zero;
+
+    #          ufsession_.Ui.LockUgAccess(UF_UI_FROM_CUSTOM);
+
+    #          ufsession_.Ui.SelectWithClassDialog(prompt, title, UF_UI_SEL_SCOPE_ANY_IN_ASSEMBLY, null, clientData,
+    #              out _, out _, out Tag[] selObjects);
+
+    #          ufsession_.Ui.UnlockUgAccess(UF_UI_FROM_CUSTOM);
+
+    #          foreach (Tag objs in selObjects)
+    #              ufsession_.Disp.SetHighlight(objs, 0);
+
+    #          // build export/dxf/component name
+    #          // Add Current Date
+    #          string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+    #          if (selObjects.Length <= 0)
+    #              return;
+
+    #          try
+    #          {
+    #              if (textBoxJobNumber.Text != string.Empty)
+    #                  nameBuilder = textBoxJobNumber.Text;
+
+    #              if (comboBoxVersion.Text != string.Empty)
+    #                  nameBuilder += $"-{comboBoxVersion.Text}";
+
+    #              if (comboBoxOperation.Text != string.Empty)
+    #              {
+    #                  if (comboBoxOperation.Text == "Hot")
+    #                      nameBuilder += $"-Hot-Blank-{currentDate}";
+
+    #                  if (comboBoxOperation.Text == "Cold")
+    #                      nameBuilder += $"-Cold-Blank-{currentDate}";
+    #              }
+
+    #              if (textBoxCustomText.Text != string.Empty)
+    #                  nameBuilder += $"-{textBoxCustomText.Text}";
+
+    #              // export temp part for dxf file
+    #              string tempPart = $"{tempDir}\\{nameBuilder}";
+    #              bool doesExist = false;
+
+    #              if (displayPart.ComponentAssembly.RootComponent != null)
+    #                  foreach (Component simComp in displayPart.ComponentAssembly.RootComponent.GetChildren())
+    #                      if (simComp.Name == nameBuilder.ToUpper())
+    #                          doesExist = true;
+
+    #              if (doesExist)
+    #              {
+    #                  DialogResult dResult = MessageBox.Show($"Replace file {nameBuilder}?", "File Exist",
+    #                      MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+
+    #                  if (dResult != DialogResult.OK) return;
+    #              }
+
+    #              if (!(displayPart.ComponentAssembly.RootComponent is null))
+    #                  foreach (Component simComp in displayPart.ComponentAssembly.RootComponent.GetChildren())
+    #                  {
+    #                      if (simComp.Name != nameBuilder.ToUpper())
+    #                          continue;
+
+    #                      Part closeSimPart = (Part)simComp.Prototype;
+    #                      closeSimPart.Close(BasePart.CloseWholeTree.False, BasePart.CloseModified.CloseModified, null);
+    #                      Session.UndoMarkId markId1 = session_.SetUndoMark(Session.MarkVisibility.Invisible, "");
+    #                      NXObject[] objects1 = { simComp };
+    #                      session_.UpdateManager.AddObjectsToDeleteList(objects1);
+    #                      session_.UpdateManager.DoUpdate(markId1);
+    #                  }
+
+    #              BuildFilesExportDxf(tempPart, selObjects);
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+
+    #          //Set FILENAME Part Attribute to name builder
+    #      }
+
+    #      private void ButtonReset_Click(object sender, EventArgs e)
+    #      {
+    #          try
+    #          {
+    #              InitializeFormData();
+    #          }
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+    #      }
+
+    #      private void InitializeFormData()
+    #      {
+    #          if (Session.GetSession().Parts.Display is null)
+    #              return;
+
+    #          displayPart = session_.Parts.Display;
+    #          workPart = session_.Parts.Work;
+
+    #          textBoxJobNumber.Text = string.Empty;
+
+    #          comboBoxOperation.SelectedIndex = -1;
+    #          comboBoxOperation.Items.Clear();
+
+    #          comboBoxVersion.SelectedIndex = -1;
+    #          comboBoxVersion.Items.Clear();
+
+    #          textBoxCustomText.Clear();
+
+    #          textBoxRevisionLevel.Clear();
+
+    #          Match match = Regex.Match(workPart.Leaf, RegexSimulation);
+
+    #          textBoxJobNumber.Text = match.Success ? match.Groups["customerNum"].Value : "JOB #";
+
+    #          comboBoxOperation.Items.Add("Hot");
+    #          comboBoxOperation.Items.Add("Cold");
+
+    #          comboBoxVersion.Items.Add("V01");
+    #          comboBoxVersion.Items.Add("V02");
+    #          comboBoxVersion.Items.Add("V03");
+    #          comboBoxVersion.Items.Add("V04");
+    #          comboBoxVersion.Items.Add("V05");
+    #          comboBoxVersion.Items.Add("V06");
+    #          comboBoxVersion.Items.Add("V07");
+    #          comboBoxVersion.Items.Add("V08");
+    #          comboBoxVersion.Items.Add("V09");
+    #          comboBoxVersion.Items.Add("V10");
+    #          comboBoxVersion.Items.Add("V11");
+    #          comboBoxVersion.Items.Add("V12");
+    #          comboBoxVersion.Items.Add("V13");
+    #          comboBoxVersion.Items.Add("V14");
+    #          comboBoxVersion.Items.Add("V15");
+    #          comboBoxVersion.Items.Add("V16");
+    #          comboBoxVersion.Items.Add("V17");
+    #          comboBoxVersion.Items.Add("V18");
+    #          comboBoxVersion.Items.Add("V19");
+    #          comboBoxVersion.Items.Add("V20");
+    #          comboBoxVersion.Items.Add("V21");
+    #          comboBoxVersion.Items.Add("V22");
+    #          comboBoxVersion.Items.Add("V23");
+    #          comboBoxVersion.Items.Add("V24");
+    #          comboBoxVersion.Items.Add("V25");
+    #      }
+
+    #      private void BuildFilesExportDxf(string partFile, Tag[] tagObjects)
+    #      {
+    #          try
+    #          {
+    #              string versionNumber = comboBoxVersion.Text;
+
+    #              if (string.IsNullOrEmpty(versionNumber))
+    #                  throw new InvalidOperationException("Invalid version number.");
+
+    #              GFolder folder = GFolder.create_or_null(displayPart)
+    #                               ??
+    #                               throw new InvalidOperationException(
+    #                                   "The current display part does not reside within in a GFolder.");
+
+    #              if (File.Exists(partFile + ".prt"))
+    #                  File.Delete(partFile + ".prt");
+
+    #              UFPart.ExportOptions exportOptions = new UFPart.ExportOptions
+    #              {
+    #                  new_part = true,
+    #                  expression_mode = UFPart.ExportExpMode.CopyExpDeeply,
+    #                  params_mode = UFPart.ExportParamsMode.RemoveParams
+    #              };
+
+    #              ufsession_.Part.ExportWithOptions(partFile, tagObjects.Length, tagObjects, ref exportOptions);
+
+    #              // get path to blank location, check directory structure
+
+    #              string outputDirectory = $"{folder.DirOutgoing}\\{TodaysDate}-Blank-{versionNumber}";
+
+    #              if (!Directory.Exists(outputDirectory))
+    #                  Directory.CreateDirectory(outputDirectory);
+
+    #              string compBlanksPath = outputDirectory;
+
+    #              // export part to Blanks directory
+
+    #              if (Directory.Exists(compBlanksPath) == false)
+    #                  Directory.CreateDirectory(compBlanksPath);
+
+    #              compBlanksPath += "\\" + nameBuilder + ".prt";
+
+    #              if (File.Exists(compBlanksPath))
+    #                  File.Delete(compBlanksPath);
+
+    #              ufsession_.Part.ExportWithOptions(compBlanksPath, tagObjects.Length, tagObjects, ref exportOptions);
+
+    #              // add  component to Blanks file
+
+    #              BasePart basePart1 = session_.Parts.OpenBase(compBlanksPath, out PartLoadStatus basePartLoadStatus);
+    #              basePartLoadStatus.Dispose();
+
+    #              Point3d sPartOrigin = new Point3d(0.0, 0.0, 0.0);
+    #              Matrix3x3 sPartMatrix = _Matrix3x3Identity;
+
+    #              int layer;
+
+    #              switch (comboBoxOperation.Text)
+    #              {
+    #                  case "Cold":
+    #                      layer = 101;
+    #                      break;
+    #                  case "Hot":
+    #                      layer = 103;
+    #                      break;
+    #                  default:
+    #                      layer = 1;
+    #                      break;
+    #              }
+
+    #              Part surfacePart = (Part)basePart1;
+    #              displayPart.ComponentAssembly.AddComponent(surfacePart, RefsetEntirePart, nameBuilder, sPartOrigin,
+    #                  sPartMatrix, layer, out PartLoadStatus sPartLoadStatus);
+    #              sPartLoadStatus.Dispose();
+
+    #              displayPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
+
+    #              // export blank dxf data
+
+    #              if (comboBoxOperation.Text != "Hot" && comboBoxOperation.Text != "Cold") return;
+    #              string blankDxf =
+    #                  Path.ChangeExtension(compBlanksPath,
+    #                      "dxf"); //   $"{folder.JobFolder}\\blankDevelopment\\Blanks\\{nameBuilder}.dxf";
+    #              string dxfBatch = partFile + ".bat";
+    #              dxfArguments = $"{dxfCmd}\"{partFile}.prt\" o=\"{blankDxf}\" d=\"{dxfSettings}\"";
+
+    #              using (FileStream fs = File.Open(dxfBatch, FileMode.Create))
+    #              {
+    #                  fs.Close();
+    #              }
+
+    #              using (StreamWriter writer = new StreamWriter(dxfBatch))
+    #              {
+    #                  writer.WriteLine("c:");
+    #                  writer.WriteLine("cd " + "\"" + "C:\\Program Files\\Siemens\\NX 11.0\\DXFDWG" + "\"");
+    #                  writer.WriteLine(dxfArguments);
+    #                  writer.WriteLine("");
+    #              }
+
+    #              Process.Start(dxfBatch);
+    #          }
+    #          //Handle this exception somehow - Duane
+    #          catch (Exception ex)
+    #          {
+    #              ex.__PrintException();
+    #          }
+    #      }
+
+    #      private void ButtonSetAttribute_Click(object sender, EventArgs e)
+    #      {
+    #          // Add Current Date
+    #          string currentDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+    #          if (textBoxJobNumber.Text != string.Empty)
+    #              nameBuilder = textBoxJobNumber.Text;
+
+    #          if (comboBoxVersion.Text != string.Empty)
+    #              nameBuilder += $"-{comboBoxVersion.Text}";
+
+    #          if (comboBoxOperation.Text != string.Empty)
+    #          {
+    #              if (comboBoxOperation.Text == "Hot")
+    #                  nameBuilder += $"-Hot-Blank-{currentDate}";
+
+    #              if (comboBoxOperation.Text == "Cold")
+    #                  nameBuilder += $"-Cold-Blank-{currentDate}";
+    #          }
+
+    #          if (textBoxCustomText.Text != string.Empty)
+    #              nameBuilder += $"-{textBoxCustomText.Text}";
+
+    #          NXObject.AttributeInformation[] attrInfo = displayPart.GetUserAttributes();
+
+    #          foreach (NXObject.AttributeInformation attr in attrInfo)
+    #          {
+    #              if (attr.Title != "REVISION TEXT")
+    #                  continue;
+
+    #              string attrValue = displayPart.GetStringUserAttribute(attr.Title, -1);
+
+    #              if (attrValue == "")
+    #              {
+    #                  displayPart.SetUserAttribute("REVISION TEXT", -1, "", NXOpen.Update.Option.Now);
+    #                  continue;
+    #              }
+
+    #              displayPart.SetUserAttribute("REVISION TEXT", -1, nameBuilder, NXOpen.Update.Option.Now);
+    #              Layout layout1 = workPart.Layouts.FindObject("L1");
+    #              layout1.ReplaceView(workPart.ModelingViews.WorkView, workPart.ModelingViews.WorkView, true);
+    #          }
+
+    #          textBoxRevisionLevel.Text = nameBuilder;
+    #      }
+
+    #      private void BlankDataBuilderForm_Load(object sender, EventArgs e)
+    #      {
+    #          Text = ufunc_rev_name;
+    #          Location = Settings.Default.blank_data_builder_form_window_location;
+    #      }
+
+    #      private void BlankDataBuilderForm_FormClosed(object sender, FormClosedEventArgs e)
+    #      {
+    #          Settings.Default.blank_data_builder_form_window_location = Location;
+    #          Settings.Default.Save();
+    #      }
+    #  }
     pass
+
 
 class UFuncBlankDevelopment:
-#     public class BlankDevelopment : _UFunc
-# {
-#     public override void execute()
-#     {
-#         string message = $"{AssemblyFileVersion} - Blank Development";
+    #     public class BlankDevelopment : _UFunc
+    # {
+    #     public override void execute()
+    #     {
+    #         string message = $"{AssemblyFileVersion} - Blank Development";
 
-#         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
-#         Curve[] lengthObjs = Selection.SelectCurves(message, message);
+    #         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
+    #         Curve[] lengthObjs = Selection.SelectCurves(message, message);
 
-#         if (lengthObjs.Length == 0)
-#             return;
+    #         if (lengthObjs.Length == 0)
+    #             return;
 
-#         // get total length of selected lines
-#         double addLength = lengthObjs.Select(selTag => (Curve)session_.__GetTaggedObject(selTag.Tag))
-#             .Select(selCurve => selCurve.GetLength())
-#             .Sum();
+    #         // get total length of selected lines
+    #         double addLength = lengthObjs.Select(selTag => (Curve)session_.__GetTaggedObject(selTag.Tag))
+    #             .Select(selCurve => selCurve.GetLength())
+    #             .Sum();
 
-#         // get user input for the line to develop
-#         Point3d cursorLocation = new Point3d();
-#         Line developObj = Selection.SelectSingleLine();
+    #         // get user input for the line to develop
+    #         Point3d cursorLocation = new Point3d();
+    #         Line developObj = Selection.SelectSingleLine();
 
-#         if (developObj is null)
-#             return;
+    #         if (developObj is null)
+    #             return;
 
-#         // get user selection for which end of the line to extend
-#         double[] cursor = { cursorLocation.X, cursorLocation.Y, cursorLocation.Z };
-#         AskPositionOnObject(developObj.Tag, cursor);
-#         AskCloserToStartOrEnd(developObj.Tag, cursor);
-#         // move closest point distance and direction
-#         Line devLine = (Line)session_.__GetTaggedObject(developObj.Tag);
-#         EditCurveLength(devLine, addLength, cursor);
-#     }
+    #         // get user selection for which end of the line to extend
+    #         double[] cursor = { cursorLocation.X, cursorLocation.Y, cursorLocation.Z };
+    #         AskPositionOnObject(developObj.Tag, cursor);
+    #         AskCloserToStartOrEnd(developObj.Tag, cursor);
+    #         // move closest point distance and direction
+    #         Line devLine = (Line)session_.__GetTaggedObject(developObj.Tag);
+    #         EditCurveLength(devLine, addLength, cursor);
+    #     }
 
-#     private static void EditCurveLength(Line editLine, double editLength, double[] cursor)
-#     {
-#         Section section1 = __work_part_.Sections.CreateSection(0.0095, 0.01, 0.5);
-#         CurveLengthBuilder builder = __work_part_.Features.CreateCurvelengthBuilder(null);
+    #     private static void EditCurveLength(Line editLine, double editLength, double[] cursor)
+    #     {
+    #         Section section1 = __work_part_.Sections.CreateSection(0.0095, 0.01, 0.5);
+    #         CurveLengthBuilder builder = __work_part_.Features.CreateCurvelengthBuilder(null);
 
-#         using (session_.__UsingDoUpdate("Edit Curve Length"))
-#         using (session_.__UsingBuilderDestroyer(builder))
-#         {
-#             builder.Section = section1;
-#             builder.DistanceTolerance = 0.01;
-#             builder.CurveOptions.Associative = false;
-#             builder.CurveOptions.InputCurveOption = CurveOptions.InputCurve.Replace;
-#             builder.CurvelengthData.ExtensionMethod = ExtensionMethod.Incremental;
-#             builder.CurvelengthData.ExtensionSide = ExtensionSide.Symmetric;
-#             builder.CurvelengthData.ExtensionDirection = ExtensionDirection.Natural;
-#             section1.DistanceTolerance = 0.01;
-#             section1.ChainingTolerance = 0.0095;
-#             section1.SetAllowedEntityTypes(Section.AllowTypes.OnlyCurves);
-#             builder.CurvelengthData.ExtensionSide = ExtensionSide.StartEnd;
-#             Curve[] curves1 = new Curve[1];
-#             curves1[0] = editLine;
-#             CurveDumbRule curveDumbRule1 = __work_part_.ScRuleFactory.CreateRuleCurveDumb(curves1);
-#             section1.AllowSelfIntersection(true);
-#             SelectionIntentRule[] rules1 = new SelectionIntentRule[1];
-#             rules1[0] = curveDumbRule1;
-#             Point3d helpPoint1 = new Point3d(cursor[0], cursor[1], cursor[2]);
-#             section1.AddToSection(rules1, editLine, null, null, helpPoint1, Section.Mode.Create, false);
-#             builder.CurvelengthData.SetStartDistance(editLength.ToString());
-#             builder.CurvelengthData.SetEndDistance("0");
-#             builder.CurveOptions.InputCurveOption = CurveOptions.InputCurve.Retain;
-#             builder.Commit();
-#         }
-#     }
+    #         using (session_.__UsingDoUpdate("Edit Curve Length"))
+    #         using (session_.__UsingBuilderDestroyer(builder))
+    #         {
+    #             builder.Section = section1;
+    #             builder.DistanceTolerance = 0.01;
+    #             builder.CurveOptions.Associative = false;
+    #             builder.CurveOptions.InputCurveOption = CurveOptions.InputCurve.Replace;
+    #             builder.CurvelengthData.ExtensionMethod = ExtensionMethod.Incremental;
+    #             builder.CurvelengthData.ExtensionSide = ExtensionSide.Symmetric;
+    #             builder.CurvelengthData.ExtensionDirection = ExtensionDirection.Natural;
+    #             section1.DistanceTolerance = 0.01;
+    #             section1.ChainingTolerance = 0.0095;
+    #             section1.SetAllowedEntityTypes(Section.AllowTypes.OnlyCurves);
+    #             builder.CurvelengthData.ExtensionSide = ExtensionSide.StartEnd;
+    #             Curve[] curves1 = new Curve[1];
+    #             curves1[0] = editLine;
+    #             CurveDumbRule curveDumbRule1 = __work_part_.ScRuleFactory.CreateRuleCurveDumb(curves1);
+    #             section1.AllowSelfIntersection(true);
+    #             SelectionIntentRule[] rules1 = new SelectionIntentRule[1];
+    #             rules1[0] = curveDumbRule1;
+    #             Point3d helpPoint1 = new Point3d(cursor[0], cursor[1], cursor[2]);
+    #             section1.AddToSection(rules1, editLine, null, null, helpPoint1, Section.Mode.Create, false);
+    #             builder.CurvelengthData.SetStartDistance(editLength.ToString());
+    #             builder.CurvelengthData.SetEndDistance("0");
+    #             builder.CurveOptions.InputCurveOption = CurveOptions.InputCurve.Retain;
+    #             builder.Commit();
+    #         }
+    #     }
 
-#     private static void AskCloserToStartOrEnd(Tag curve, double[] cursorLocation)
-#     {
-#         double[] limits = new double[2];
-#         double[] startPoint = new double[3];
-#         double[] endPoint = new double[3];
-#         double[] derivatives = new double[3];
-#         double[] closestPoint = new double[3];
-#         ufsession_.Eval.Initialize(curve, out IntPtr evaluator);
-#         ufsession_.Eval.AskLimits(evaluator, limits);
-#         ufsession_.Eval.Evaluate(evaluator, 0, limits[0], startPoint, derivatives);
-#         ufsession_.Eval.Evaluate(evaluator, 0, limits[1], endPoint, derivatives);
-#         ufsession_.Eval.EvaluateClosestPoint(evaluator, cursorLocation, out _, closestPoint);
-#         ufsession_.Eval.Free(evaluator);
-#         ufsession_.Vec3.Distance(closestPoint, startPoint, out _);
-#         ufsession_.Vec3.Distance(closestPoint, endPoint, out _);
-#     }
+    #     private static void AskCloserToStartOrEnd(Tag curve, double[] cursorLocation)
+    #     {
+    #         double[] limits = new double[2];
+    #         double[] startPoint = new double[3];
+    #         double[] endPoint = new double[3];
+    #         double[] derivatives = new double[3];
+    #         double[] closestPoint = new double[3];
+    #         ufsession_.Eval.Initialize(curve, out IntPtr evaluator);
+    #         ufsession_.Eval.AskLimits(evaluator, limits);
+    #         ufsession_.Eval.Evaluate(evaluator, 0, limits[0], startPoint, derivatives);
+    #         ufsession_.Eval.Evaluate(evaluator, 0, limits[1], endPoint, derivatives);
+    #         ufsession_.Eval.EvaluateClosestPoint(evaluator, cursorLocation, out _, closestPoint);
+    #         ufsession_.Eval.Free(evaluator);
+    #         ufsession_.Vec3.Distance(closestPoint, startPoint, out _);
+    #         ufsession_.Vec3.Distance(closestPoint, endPoint, out _);
+    #     }
 
-#     private static void MapViewToAbsolute(ref double[] cursorLocation)
-#     {
-#         double[] destinationCsys = { 0, 0, 0, 1, 0, 0, 0, 1, 0 };
-#         double[] refViewCsys = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-#         double[] outputMatrix = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-#         ufsession_.Ui.AskLastPickedView(out string viewName);
-#         View lastViewPicked = __work_part_.ModelingViews.FindObject(viewName);
-#         refViewCsys[3] = lastViewPicked.Matrix.Xx;
-#         refViewCsys[4] = lastViewPicked.Matrix.Xy;
-#         refViewCsys[5] = lastViewPicked.Matrix.Xz;
-#         refViewCsys[6] = lastViewPicked.Matrix.Yx;
-#         refViewCsys[7] = lastViewPicked.Matrix.Yy;
-#         refViewCsys[8] = lastViewPicked.Matrix.Yz;
-#         refViewCsys[9] = lastViewPicked.Matrix.Zx;
-#         refViewCsys[10] = lastViewPicked.Matrix.Zy;
-#         refViewCsys[11] = lastViewPicked.Matrix.Zz;
-#         ufsession_.Trns.CreateCsysMappingMatrix(refViewCsys, destinationCsys, outputMatrix, out _);
-#         ufsession_.Trns.MapPosition(cursorLocation, outputMatrix);
-#     }
+    #     private static void MapViewToAbsolute(ref double[] cursorLocation)
+    #     {
+    #         double[] destinationCsys = { 0, 0, 0, 1, 0, 0, 0, 1, 0 };
+    #         double[] refViewCsys = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    #         double[] outputMatrix = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    #         ufsession_.Ui.AskLastPickedView(out string viewName);
+    #         View lastViewPicked = __work_part_.ModelingViews.FindObject(viewName);
+    #         refViewCsys[3] = lastViewPicked.Matrix.Xx;
+    #         refViewCsys[4] = lastViewPicked.Matrix.Xy;
+    #         refViewCsys[5] = lastViewPicked.Matrix.Xz;
+    #         refViewCsys[6] = lastViewPicked.Matrix.Yx;
+    #         refViewCsys[7] = lastViewPicked.Matrix.Yy;
+    #         refViewCsys[8] = lastViewPicked.Matrix.Yz;
+    #         refViewCsys[9] = lastViewPicked.Matrix.Zx;
+    #         refViewCsys[10] = lastViewPicked.Matrix.Zy;
+    #         refViewCsys[11] = lastViewPicked.Matrix.Zz;
+    #         ufsession_.Trns.CreateCsysMappingMatrix(refViewCsys, destinationCsys, outputMatrix, out _);
+    #         ufsession_.Trns.MapPosition(cursorLocation, outputMatrix);
+    #     }
 
-#     private static void MapAbsoluteToView(ref double[] cursorLocation)
-#     {
-#         double[] destinationCsys = { 0, 0, 0, 1, 0, 0, 0, 1, 0 };
-#         double[] refViewCsys = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-#         double[] outputMatrix = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-#         ufsession_.Ui.AskLastPickedView(out string viewName);
-#         View lastViewPicked = __work_part_.ModelingViews.FindObject(viewName);
-#         refViewCsys[3] = lastViewPicked.Matrix.Xx;
-#         refViewCsys[4] = lastViewPicked.Matrix.Xy;
-#         refViewCsys[5] = lastViewPicked.Matrix.Xz;
-#         refViewCsys[6] = lastViewPicked.Matrix.Yx;
-#         refViewCsys[7] = lastViewPicked.Matrix.Yy;
-#         refViewCsys[8] = lastViewPicked.Matrix.Yz;
-#         refViewCsys[9] = lastViewPicked.Matrix.Zx;
-#         refViewCsys[10] = lastViewPicked.Matrix.Zy;
-#         refViewCsys[11] = lastViewPicked.Matrix.Zz;
-#         ufsession_.Trns.CreateCsysMappingMatrix(destinationCsys, refViewCsys, outputMatrix, out _);
-#         ufsession_.Trns.MapPosition(cursorLocation, outputMatrix);
-#     }
+    #     private static void MapAbsoluteToView(ref double[] cursorLocation)
+    #     {
+    #         double[] destinationCsys = { 0, 0, 0, 1, 0, 0, 0, 1, 0 };
+    #         double[] refViewCsys = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    #         double[] outputMatrix = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    #         ufsession_.Ui.AskLastPickedView(out string viewName);
+    #         View lastViewPicked = __work_part_.ModelingViews.FindObject(viewName);
+    #         refViewCsys[3] = lastViewPicked.Matrix.Xx;
+    #         refViewCsys[4] = lastViewPicked.Matrix.Xy;
+    #         refViewCsys[5] = lastViewPicked.Matrix.Xz;
+    #         refViewCsys[6] = lastViewPicked.Matrix.Yx;
+    #         refViewCsys[7] = lastViewPicked.Matrix.Yy;
+    #         refViewCsys[8] = lastViewPicked.Matrix.Yz;
+    #         refViewCsys[9] = lastViewPicked.Matrix.Zx;
+    #         refViewCsys[10] = lastViewPicked.Matrix.Zy;
+    #         refViewCsys[11] = lastViewPicked.Matrix.Zz;
+    #         ufsession_.Trns.CreateCsysMappingMatrix(destinationCsys, refViewCsys, outputMatrix, out _);
+    #         ufsession_.Trns.MapPosition(cursorLocation, outputMatrix);
+    #     }
 
-#     private static void AskPositionOnObject(Tag obj, double[] cursorLocation)
-#     {
-#         double[] cp = { 0, 0, 0 };
-#         UFCurve.Line lp;
-#         double[] startPoint = new double[3];
-#         double[] endPoint = new double[3];
-#         lp.start_point = startPoint;
-#         lp.end_point = endPoint;
-#         MapAbsoluteToView(ref cursorLocation);
-#         lp.start_point[0] = cursorLocation[0];
-#         lp.start_point[1] = cursorLocation[1];
-#         lp.start_point[2] = cursorLocation[2] + 10000;
-#         lp.end_point[0] = cursorLocation[0];
-#         lp.end_point[1] = cursorLocation[1];
-#         lp.end_point[2] = cursorLocation[2] - 10000;
-#         MapViewToAbsolute(ref lp.start_point);
-#         MapViewToAbsolute(ref lp.end_point);
-#         ufsession_.Curve.CreateLine(ref lp, out Tag aLine);
-#         ufsession_.Modl.AskMinimumDist(obj, aLine, 0, cp, 0, cp, out _, cursorLocation, cp);
-#         ufsession_.Obj.DeleteObject(aLine);
-#     }
-# }
+    #     private static void AskPositionOnObject(Tag obj, double[] cursorLocation)
+    #     {
+    #         double[] cp = { 0, 0, 0 };
+    #         UFCurve.Line lp;
+    #         double[] startPoint = new double[3];
+    #         double[] endPoint = new double[3];
+    #         lp.start_point = startPoint;
+    #         lp.end_point = endPoint;
+    #         MapAbsoluteToView(ref cursorLocation);
+    #         lp.start_point[0] = cursorLocation[0];
+    #         lp.start_point[1] = cursorLocation[1];
+    #         lp.start_point[2] = cursorLocation[2] + 10000;
+    #         lp.end_point[0] = cursorLocation[0];
+    #         lp.end_point[1] = cursorLocation[1];
+    #         lp.end_point[2] = cursorLocation[2] - 10000;
+    #         MapViewToAbsolute(ref lp.start_point);
+    #         MapViewToAbsolute(ref lp.end_point);
+    #         ufsession_.Curve.CreateLine(ref lp, out Tag aLine);
+    #         ufsession_.Modl.AskMinimumDist(obj, aLine, 0, cp, 0, cp, out _, cursorLocation, cp);
+    #         ufsession_.Obj.DeleteObject(aLine);
+    #     }
+    # }
     pass
 
 
 class UFuncLayoutRefSets:
-#     internal class LayoutRefSets : _UFunc
-# {
-#     public override void execute()
-#     {
-#         print($"{ufunc_rev_name} - {__display_part_.Leaf}");
-#         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
+    #     internal class LayoutRefSets : _UFunc
+    # {
+    #     public override void execute()
+    #     {
+    #         print($"{ufunc_rev_name} - {__display_part_.Leaf}");
+    #         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
 
-#         if (__display_part_ is null)
-#         {
-#             print("There is no displayed part loaded");
-#             return;
-#         }
+    #         if (__display_part_ is null)
+    #         {
+    #             print("There is no displayed part loaded");
+    #             return;
+    #         }
 
-#         if (!__display_part_.Leaf.ToLower().EndsWith("-layout"))
-#         {
-#             print("Layout Refset can only be used on layouts.");
-#             return;
-#         }
+    #         if (!__display_part_.Leaf.ToLower().EndsWith("-layout"))
+    #         {
+    #             print("Layout Refset can only be used on layouts.");
+    #             return;
+    #         }
 
-#         // BODY
-#         // BODY_NO_SLUG
-#         // INCOMING_SLUG
-#         // MATE
-#         string[] excluded_ref_sets = session_.__SqlReadMany(
-#             "tbl_properties",
-#             "LayoutRefSets_excluded_refsets"
-#         ).ToArray();
+    #         // BODY
+    #         // BODY_NO_SLUG
+    #         // INCOMING_SLUG
+    #         // MATE
+    #         string[] excluded_ref_sets = session_.__SqlReadMany(
+    #             "tbl_properties",
+    #             "LayoutRefSets_excluded_refsets"
+    #         ).ToArray();
 
-#         ReferenceSet[] refsets = __display_part_.GetAllReferenceSets()
-#             .Where(r => r.Name != "BODY"
-#                         && r.Name != "BODY_NO_SLUG"
-#                         && r.Name != "INCOMING_BODY"
-#                         && r.Name != "MATE")
-#             .ToArray();
+    #         ReferenceSet[] refsets = __display_part_.GetAllReferenceSets()
+    #             .Where(r => r.Name != "BODY"
+    #                         && r.Name != "BODY_NO_SLUG"
+    #                         && r.Name != "INCOMING_BODY"
+    #                         && r.Name != "MATE")
+    #             .ToArray();
 
-#         foreach(var refset in refsets)
-#         {
-#             string refset_name = refset.Name;
-#             __display_part_.DeleteReferenceSet(refset);
-#             print($"Deleted ref set {refset_name}");
-#         }
+    #         foreach(var refset in refsets)
+    #         {
+    #             string refset_name = refset.Name;
+    #             __display_part_.DeleteReferenceSet(refset);
+    #             print($"Deleted ref set {refset_name}");
+    #         }
 
-#         Body[] solid_bodies_layer_10 = __display_part_.Bodies
-#             .ToArray()
-#             .Where(b => b.IsSolidBody)
-#             .Where(b => b.Layer == 10)
-#             .ToArray();
+    #         Body[] solid_bodies_layer_10 = __display_part_.Bodies
+    #             .ToArray()
+    #             .Where(b => b.IsSolidBody)
+    #             .Where(b => b.Layer == 10)
+    #             .ToArray();
 
-#         if (!__display_part_.__TryGetRefset("BODY", out ReferenceSet body_ref_set))
-#         {
-#             body_ref_set = __display_part_.CreateReferenceSet();
-#             body_ref_set.SetName("BODY");
-#             print("Created BODY refset");
-#         }
+    #         if (!__display_part_.__TryGetRefset("BODY", out ReferenceSet body_ref_set))
+    #         {
+    #             body_ref_set = __display_part_.CreateReferenceSet();
+    #             body_ref_set.SetName("BODY");
+    #             print("Created BODY refset");
+    #         }
 
-#         body_ref_set.AddObjectsToReferenceSet(solid_bodies_layer_10);
-#         print($"Added {solid_bodies_layer_10.Length} body(s) to BODY refset.");
+    #         body_ref_set.AddObjectsToReferenceSet(solid_bodies_layer_10);
+    #         print($"Added {solid_bodies_layer_10.Length} body(s) to BODY refset.");
 
-#         // sql
-#         Body[] solid_bodies_layer_10_161 = solid_bodies_layer_10
-#             .Where(b => b.Color == 13)
-#             .ToArray();
+    #         // sql
+    #         Body[] solid_bodies_layer_10_161 = solid_bodies_layer_10
+    #             .Where(b => b.Color == 13)
+    #             .ToArray();
 
-#         if (solid_bodies_layer_10_161.Length > 0)
-#         {
-#             if (!__display_part_.__TryGetRefset("BODY_NO_SLUG", out ReferenceSet body_no_slug_ref_set))
-#             {
-#                 body_no_slug_ref_set = __display_part_.CreateReferenceSet();
-#                 body_no_slug_ref_set.SetName("BODY_NO_SLUG");
-#                 print("Created BODY_NO_SLUG refset");
-#             }
+    #         if (solid_bodies_layer_10_161.Length > 0)
+    #         {
+    #             if (!__display_part_.__TryGetRefset("BODY_NO_SLUG", out ReferenceSet body_no_slug_ref_set))
+    #             {
+    #                 body_no_slug_ref_set = __display_part_.CreateReferenceSet();
+    #                 body_no_slug_ref_set.SetName("BODY_NO_SLUG");
+    #                 print("Created BODY_NO_SLUG refset");
+    #             }
 
-#             body_no_slug_ref_set.AddObjectsToReferenceSet(solid_bodies_layer_10_161);
-#             print($"Added {solid_bodies_layer_10_161.Length} body(s) to BODY_NO_SLUG refset.");
-#         }
+    #             body_no_slug_ref_set.AddObjectsToReferenceSet(solid_bodies_layer_10_161);
+    #             print($"Added {solid_bodies_layer_10_161.Length} body(s) to BODY_NO_SLUG refset.");
+    #         }
 
-#         NXOpen.Layer.Category[] cats = __display_part_.LayerCategories.ToArray();
+    #         NXOpen.Layer.Category[] cats = __display_part_.LayerCategories.ToArray();
 
-#         for (int layer = 12; layer < 20; layer++)
-#             try
-#             {
-#                 Body[] solid_bodies = __display_part_.Bodies
-#                     .ToArray()
-#                     .Where(b => b.IsSolidBody)
-#                     .Where(b => b.Layer == layer)
-#                     .ToArray();
+    #         for (int layer = 12; layer < 20; layer++)
+    #             try
+    #             {
+    #                 Body[] solid_bodies = __display_part_.Bodies
+    #                     .ToArray()
+    #                     .Where(b => b.IsSolidBody)
+    #                     .Where(b => b.Layer == layer)
+    #                     .ToArray();
 
-#                 if (solid_bodies.Length == 0)
-#                     continue;
+    #                 if (solid_bodies.Length == 0)
+    #                     continue;
 
-#                 NXOpen.Layer.Category cat = cats.Where(c => c.Name != "ALL").FirstOrDefault(c => c.GetMemberLayers().ToHashSet().Contains(layer));
+    #                 NXOpen.Layer.Category cat = cats.Where(c => c.Name != "ALL").FirstOrDefault(c => c.GetMemberLayers().ToHashSet().Contains(layer));
 
-#                 if (cat is null && solid_bodies.Length > 0)
-#                 {
-#                     print($"Layer {layer} has {solid_bodies.Length} but not layer category name");
-#                     continue;
-#                 }
+    #                 if (cat is null && solid_bodies.Length > 0)
+    #                 {
+    #                     print($"Layer {layer} has {solid_bodies.Length} but not layer category name");
+    #                     continue;
+    #                 }
 
-#                 string name = cat.Name;
+    #                 string name = cat.Name;
 
-#                 ReferenceSet refset = null;
+    #                 ReferenceSet refset = null;
 
-#                 if (!__display_part_.__HasReferenceSet(name))
-#                 {
-#                     refset = __display_part_.CreateReferenceSet();
-#                     refset.SetName(name);
-#                     print($"Created Reference Set: {name}");
-#                 }
-#                 else
-#                     refset = __display_part_.__ReferenceSets(name);
+    #                 if (!__display_part_.__HasReferenceSet(name))
+    #                 {
+    #                     refset = __display_part_.CreateReferenceSet();
+    #                     refset.SetName(name);
+    #                     print($"Created Reference Set: {name}");
+    #                 }
+    #                 else
+    #                     refset = __display_part_.__ReferenceSets(name);
 
-#                 refset.AddObjectsToReferenceSet(solid_bodies);
-#                 print($"Added {solid_bodies.Length} body(s) to ref set {name}");
-#             }
-#             catch (Exception ex)
-#             {
-#                 ex.__PrintException();
-#             }
-#     }
-# }
+    #                 refset.AddObjectsToReferenceSet(solid_bodies);
+    #                 print($"Added {solid_bodies.Length} body(s) to ref set {name}");
+    #             }
+    #             catch (Exception ex)
+    #             {
+    #                 ex.__PrintException();
+    #             }
+    #     }
+    # }
     pass
-
 
 
 class UFuncStripRefSetter:
-#      public class StripRefSetter : _UFunc
-#  {
-#      public override void execute()
-#      {
-#          print(ufunc_rev_name);
+    #      public class StripRefSetter : _UFunc
+    #  {
+    #      public override void execute()
+    #      {
+    #          print(ufunc_rev_name);
 
-#          if (__display_part_ is null)
-#          {
-#              print("There is no displayed part loaded");
-#              return;
-#          }
+    #          if (__display_part_ is null)
+    #          {
+    #              print("There is no displayed part loaded");
+    #              return;
+    #          }
 
-#          // Need to remove the objects from the reference sets first.
-#          __SetUndoMark(MarkVisibility.Visible, ufunc_rev_name);
+    #          // Need to remove the objects from the reference sets first.
+    #          __SetUndoMark(MarkVisibility.Visible, ufunc_rev_name);
 
-#          if (!__display_part_.Leaf.ToLower().EndsWith("-strip"))
-#          {
-#              print("Strip Refsetter can only be used on a strip.");
-#              return;
-#          }
+    #          if (!__display_part_.Leaf.ToLower().EndsWith("-strip"))
+    #          {
+    #              print("Strip Refsetter can only be used on a strip.");
+    #              return;
+    #          }
 
-#          NXObject[] layer100Components = __display_part_.ComponentAssembly.RootComponent
-#              .GetChildren()
-#              .Where(child => child.Layer == 100)
-#              .Cast<NXObject>()
-#              .ToArray();
+    #          NXObject[] layer100Components = __display_part_.ComponentAssembly.RootComponent
+    #              .GetChildren()
+    #              .Where(child => child.Layer == 100)
+    #              .Cast<NXObject>()
+    #              .ToArray();
 
-#          NXObject[] layer100Objects = __display_part_.Layers
-#              .GetAllObjectsOnLayer(100)
-#              .Where(obj => obj is Curve || obj is Body)
-#              .Where(obj => !obj.IsOccurrence)
-#              .Concat(layer100Components)
-#              .ToArray();
+    #          NXObject[] layer100Objects = __display_part_.Layers
+    #              .GetAllObjectsOnLayer(100)
+    #              .Where(obj => obj is Curve || obj is Body)
+    #              .Where(obj => !obj.IsOccurrence)
+    #              .Concat(layer100Components)
+    #              .ToArray();
 
-#          NXObject[] layer101Components = __display_part_.ComponentAssembly.RootComponent
-#              .GetChildren()
-#              .Where(child => child.Layer == 101)
-#              .Cast<NXObject>()
-#              .ToArray();
+    #          NXObject[] layer101Components = __display_part_.ComponentAssembly.RootComponent
+    #              .GetChildren()
+    #              .Where(child => child.Layer == 101)
+    #              .Cast<NXObject>()
+    #              .ToArray();
 
-#          NXObject[] layer101Objects = __display_part_
-#              .Layers.GetAllObjectsOnLayer(101)
-#              .Where(obj => obj is Curve || obj is Body)
-#              .Where(obj => !obj.IsOccurrence)
-#              .Concat(layer101Components)
-#              .ToArray();
+    #          NXObject[] layer101Objects = __display_part_
+    #              .Layers.GetAllObjectsOnLayer(101)
+    #              .Where(obj => obj is Curve || obj is Body)
+    #              .Where(obj => !obj.IsOccurrence)
+    #              .Concat(layer101Components)
+    #              .ToArray();
 
-#          NXObject[] layer102Components = __display_part_.ComponentAssembly.RootComponent
-#              .GetChildren()
-#              .Where(child => child.Layer == 102)
-#              .Cast<NXObject>()
-#              .ToArray();
+    #          NXObject[] layer102Components = __display_part_.ComponentAssembly.RootComponent
+    #              .GetChildren()
+    #              .Where(child => child.Layer == 102)
+    #              .Cast<NXObject>()
+    #              .ToArray();
 
-#          NXObject[] layer102Objects = __display_part_.Layers
-#              .GetAllObjectsOnLayer(102)
-#              .Where(obj => obj is Curve || obj is Body)
-#              .Where(obj => !obj.IsOccurrence)
-#              .Concat(layer102Components)
-#              .ToArray();
+    #          NXObject[] layer102Objects = __display_part_.Layers
+    #              .GetAllObjectsOnLayer(102)
+    #              .Where(obj => obj is Curve || obj is Body)
+    #              .Where(obj => !obj.IsOccurrence)
+    #              .Concat(layer102Components)
+    #              .ToArray();
 
-#          NXObject[] presses = __display_part_.ComponentAssembly.RootComponent
-#              .GetChildren()
-#              .Where(child => child.Name.ToUpper().Contains("PRESS"))
-#              .Cast<NXObject>()
-#              .ToArray();
+    #          NXObject[] presses = __display_part_.ComponentAssembly.RootComponent
+    #              .GetChildren()
+    #              .Where(child => child.Name.ToUpper().Contains("PRESS"))
+    #              .Cast<NXObject>()
+    #              .ToArray();
 
-#          __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners(
-#              "BODY_NO_SLUG",
-#              layer101Components
-#                  .Concat(layer102Components)
-#                  .Cast<Component>()
-#                  .ToArray()
-#          );
+    #          __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners(
+    #              "BODY_NO_SLUG",
+    #              layer101Components
+    #                  .Concat(layer102Components)
+    #                  .Cast<Component>()
+    #                  .ToArray()
+    #          );
 
-#          __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners(
-#              "BODY",
-#              layer100Components
-#                  .Concat(presses)
-#                  .Cast<Component>()
-#                  .ToArray()
-#          );
+    #          __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners(
+    #              "BODY",
+    #              layer100Components
+    #                  .Concat(presses)
+    #                  .Cast<Component>()
+    #                  .ToArray()
+    #          );
 
-#          if (layer100Objects.Length > 0)
-#          {
-#              // WORK_PARTS
-#              const string WORK_PARTS = nameof(WORK_PARTS);
-#              ReferenceSet work_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == WORK_PARTS);
+    #          if (layer100Objects.Length > 0)
+    #          {
+    #              // WORK_PARTS
+    #              const string WORK_PARTS = nameof(WORK_PARTS);
+    #              ReferenceSet work_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == WORK_PARTS);
 
-#              if (work_parts_refset is null)
-#              {
-#                  work_parts_refset = __display_part_.CreateReferenceSet();
-#                  work_parts_refset.SetName(WORK_PARTS);
-#              }
+    #              if (work_parts_refset is null)
+    #              {
+    #                  work_parts_refset = __display_part_.CreateReferenceSet();
+    #                  work_parts_refset.SetName(WORK_PARTS);
+    #              }
 
-#              work_parts_refset.AddObjectsToReferenceSet(layer100Objects);
-#          }
+    #              work_parts_refset.AddObjectsToReferenceSet(layer100Objects);
+    #          }
 
-#          if (layer101Objects.Length > 0)
-#          {
-#              // LIFTED_PARTS
-#              const string LIFTED_PARTS = nameof(LIFTED_PARTS);
-#              ReferenceSet lifted_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == LIFTED_PARTS);
+    #          if (layer101Objects.Length > 0)
+    #          {
+    #              // LIFTED_PARTS
+    #              const string LIFTED_PARTS = nameof(LIFTED_PARTS);
+    #              ReferenceSet lifted_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == LIFTED_PARTS);
 
-#              if (lifted_parts_refset is null)
-#              {
-#                  lifted_parts_refset = __display_part_.CreateReferenceSet();
-#                  lifted_parts_refset.SetName(LIFTED_PARTS);
-#              }
+    #              if (lifted_parts_refset is null)
+    #              {
+    #                  lifted_parts_refset = __display_part_.CreateReferenceSet();
+    #                  lifted_parts_refset.SetName(LIFTED_PARTS);
+    #              }
 
-#              // set children to body-with-no-slugs reference set before adding
-#              lifted_parts_refset.AddObjectsToReferenceSet(layer101Objects);
-#          }
+    #              // set children to body-with-no-slugs reference set before adding
+    #              lifted_parts_refset.AddObjectsToReferenceSet(layer101Objects);
+    #          }
 
-#          if (layer100Objects.Length > 0
-#              || layer100Objects.Length > 0
-#              || layer102Objects.Length > 0
-#              || presses.Length > 0)
-#          {
-#              // ALL_WITH_PRESSES
-#              const string ALL_WITH_PRESSES = nameof(ALL_WITH_PRESSES);
-#              ReferenceSet all_with_presses_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == ALL_WITH_PRESSES);
+    #          if (layer100Objects.Length > 0
+    #              || layer100Objects.Length > 0
+    #              || layer102Objects.Length > 0
+    #              || presses.Length > 0)
+    #          {
+    #              // ALL_WITH_PRESSES
+    #              const string ALL_WITH_PRESSES = nameof(ALL_WITH_PRESSES);
+    #              ReferenceSet all_with_presses_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == ALL_WITH_PRESSES);
 
-#              if (all_with_presses_refset is null)
-#              {
-#                  all_with_presses_refset = __display_part_.CreateReferenceSet();
-#                  all_with_presses_refset.SetName(ALL_WITH_PRESSES);
-#              }
+    #              if (all_with_presses_refset is null)
+    #              {
+    #                  all_with_presses_refset = __display_part_.CreateReferenceSet();
+    #                  all_with_presses_refset.SetName(ALL_WITH_PRESSES);
+    #              }
 
-#              // set children to body reference set before adding
-#              all_with_presses_refset.AddObjectsToReferenceSet(layer100Objects);
-#              // set children to body-no-slugs reference set before adding
-#              all_with_presses_refset.AddObjectsToReferenceSet(layer101Objects);
-#              // set children to body-no-slugs reference set before adding
-#              all_with_presses_refset.AddObjectsToReferenceSet(layer102Objects);
-#              // set children to body reference set before adding
-#              all_with_presses_refset.AddObjectsToReferenceSet(presses);
+    #              // set children to body reference set before adding
+    #              all_with_presses_refset.AddObjectsToReferenceSet(layer100Objects);
+    #              // set children to body-no-slugs reference set before adding
+    #              all_with_presses_refset.AddObjectsToReferenceSet(layer101Objects);
+    #              // set children to body-no-slugs reference set before adding
+    #              all_with_presses_refset.AddObjectsToReferenceSet(layer102Objects);
+    #              // set children to body reference set before adding
+    #              all_with_presses_refset.AddObjectsToReferenceSet(presses);
 
-#              Component[] grippers = __display_part_.ComponentAssembly.RootComponent
-#                  .GetChildren()
-#                  .Where(child => child.Layer == 235)
-#                  .ToArray();
+    #              Component[] grippers = __display_part_.ComponentAssembly.RootComponent
+    #                  .GetChildren()
+    #                  .Where(child => child.Layer == 235)
+    #                  .ToArray();
 
-#              __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners("BODY", grippers);
-#              all_with_presses_refset.AddObjectsToReferenceSet(grippers);
-#          }
+    #              __display_part_.ComponentAssembly.ReplaceReferenceSetInOwners("BODY", grippers);
+    #              all_with_presses_refset.AddObjectsToReferenceSet(grippers);
+    #          }
 
-#          if (layer100Objects.Length > 0 || layer100Objects.Length > 0 || layer102Objects.Length > 0)
-#          {
-#              // ALL_PARTS
-#              const string ALL_PARTS = nameof(ALL_PARTS);
-#              ReferenceSet all_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == ALL_PARTS);
+    #          if (layer100Objects.Length > 0 || layer100Objects.Length > 0 || layer102Objects.Length > 0)
+    #          {
+    #              // ALL_PARTS
+    #              const string ALL_PARTS = nameof(ALL_PARTS);
+    #              ReferenceSet all_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == ALL_PARTS);
 
-#              if (all_parts_refset is null)
-#              {
-#                  all_parts_refset = __display_part_.CreateReferenceSet();
-#                  all_parts_refset.SetName(ALL_PARTS);
-#              }
+    #              if (all_parts_refset is null)
+    #              {
+    #                  all_parts_refset = __display_part_.CreateReferenceSet();
+    #                  all_parts_refset.SetName(ALL_PARTS);
+    #              }
 
-#              // set children to body reference set before adding
-#              all_parts_refset.AddObjectsToReferenceSet(layer100Objects);
-#              // set children to body-no-slugs reference set before adding
-#              all_parts_refset.AddObjectsToReferenceSet(layer101Objects);
-#              // set children to body-no-slugs reference set before adding
-#              all_parts_refset.AddObjectsToReferenceSet(layer102Objects);
-#          }
+    #              // set children to body reference set before adding
+    #              all_parts_refset.AddObjectsToReferenceSet(layer100Objects);
+    #              // set children to body-no-slugs reference set before adding
+    #              all_parts_refset.AddObjectsToReferenceSet(layer101Objects);
+    #              // set children to body-no-slugs reference set before adding
+    #              all_parts_refset.AddObjectsToReferenceSet(layer102Objects);
+    #          }
 
-#          // TRANSFER_PARTS
-#          if (layer102Components.Length > 0 && __display_part_.Leaf.ToLower().EndsWith("-900-strip"))
-#          {
-#              const string TRANSFER_PARTS = nameof(TRANSFER_PARTS);
-#              ReferenceSet transfer_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == TRANSFER_PARTS);
+    #          // TRANSFER_PARTS
+    #          if (layer102Components.Length > 0 && __display_part_.Leaf.ToLower().EndsWith("-900-strip"))
+    #          {
+    #              const string TRANSFER_PARTS = nameof(TRANSFER_PARTS);
+    #              ReferenceSet transfer_parts_refset = __display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == TRANSFER_PARTS);
 
-#              if (transfer_parts_refset is null)
-#              {
-#                  transfer_parts_refset = __display_part_.CreateReferenceSet();
-#                  transfer_parts_refset.SetName(TRANSFER_PARTS);
-#              }
+    #              if (transfer_parts_refset is null)
+    #              {
+    #                  transfer_parts_refset = __display_part_.CreateReferenceSet();
+    #                  transfer_parts_refset.SetName(TRANSFER_PARTS);
+    #              }
 
-#              // set children to body-no-slugs reference set before adding
-#              transfer_parts_refset.AddObjectsToReferenceSet(layer102Components);
-#          }
+    #              // set children to body-no-slugs reference set before adding
+    #              transfer_parts_refset.AddObjectsToReferenceSet(layer102Components);
+    #          }
 
-#          if (!__display_part_.Leaf.ToLower().EndsWith("-010-strip")
-#              && (layer100Objects.Length > 0
-#              || layer100Objects.Length > 0
-#              || layer102Objects.Length > 0))
-#          {
-#              // PROG_ONLY_WORK
-#              const string PROG_ONLY_WORK = nameof(PROG_ONLY_WORK);
-#              ReferenceSet prog_only_work_refset =__display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == PROG_ONLY_WORK);
+    #          if (!__display_part_.Leaf.ToLower().EndsWith("-010-strip")
+    #              && (layer100Objects.Length > 0
+    #              || layer100Objects.Length > 0
+    #              || layer102Objects.Length > 0))
+    #          {
+    #              // PROG_ONLY_WORK
+    #              const string PROG_ONLY_WORK = nameof(PROG_ONLY_WORK);
+    #              ReferenceSet prog_only_work_refset =__display_part_.GetAllReferenceSets().SingleOrDefault(set => set.Name == PROG_ONLY_WORK);
 
-#              if (prog_only_work_refset is null)
-#              {
-#                  prog_only_work_refset = __display_part_.CreateReferenceSet();
-#                  prog_only_work_refset.SetName(PROG_ONLY_WORK);
-#              }
+    #              if (prog_only_work_refset is null)
+    #              {
+    #                  prog_only_work_refset = __display_part_.CreateReferenceSet();
+    #                  prog_only_work_refset.SetName(PROG_ONLY_WORK);
+    #              }
 
-#              // set children to body reference set before adding
-#              prog_only_work_refset.AddObjectsToReferenceSet(layer100Objects
-#                  .Where(obj => !obj.Name.StartsWith("T"))
-#                  .ToArray());
+    #              // set children to body reference set before adding
+    #              prog_only_work_refset.AddObjectsToReferenceSet(layer100Objects
+    #                  .Where(obj => !obj.Name.StartsWith("T"))
+    #                  .ToArray());
 
-#              // set children to body-no-slugs reference set before adding
-#              prog_only_work_refset.AddObjectsToReferenceSet(layer101Objects
-#                  .Where(obj => !obj.Name.StartsWith("T"))
-#                  .ToArray());
+    #              // set children to body-no-slugs reference set before adding
+    #              prog_only_work_refset.AddObjectsToReferenceSet(layer101Objects
+    #                  .Where(obj => !obj.Name.StartsWith("T"))
+    #                  .ToArray());
 
-#              // set children to body-no-slugs reference set before adding
-#              prog_only_work_refset.AddObjectsToReferenceSet(layer102Objects
-#                  .Where(obj => !obj.Name.StartsWith("T"))
-#                  .ToArray()); 
-#          }
+    #              // set children to body-no-slugs reference set before adding
+    #              prog_only_work_refset.AddObjectsToReferenceSet(layer102Objects
+    #                  .Where(obj => !obj.Name.StartsWith("T"))
+    #                  .ToArray());
+    #          }
 
-#          prompt("Complete");
-#      }
-#  }
+    #          prompt("Complete");
+    #      }
+    #  }
     pass
+
 
 class UFuncExportStrip:
-#     public partial class ExportStrip : _UFuncForm
-# {
-# 	// sql
-#     public const string Regex_Strip = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-strip$";
-#     public const string DummyPath = "G:\\0Library\\SeedFiles\\Components\\Dummy.prt";
-#     public const string Regex_PressAssembly = "^(?<customerNum>\\d+)-Press-(?<opNum>\\d+)-Assembly$";
-#     public const string Regex_Layout = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-layout$";
-#     public const string Regex_Blank = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-blank$";
-
-#     public ExportStrip()
-#     {
-#         InitializeComponent();
-
-#         bool Is010()
-#         {
-# 			// sql
-#             Regex opRegex = new Regex("^[0-9]{4,}-([0-9]{3,})");
-#             Match match = opRegex.Match(__display_part_.Leaf);
-
-#             if (!match.Success)
-#                 return false;
-
-#             return match.Groups[1].Value == "010";
-#         }
-
-
-#         bool Is900()
-#         {
-# 			// sql
-#             Regex opRegex = new Regex("^[0-9]{4,}-([0-9]{3,})");
-#             Match match = opRegex.Match(__display_part_.Leaf);
-
-#             if (!match.Success)
-#                 return false;
-
-#             return match.Groups[1].Value == "900";
-#         }
-
-#         if (Session.GetSession().Parts.Display is null)
-#             txtInput.Text = $@"{TodaysDate}-";
-#         else if (Is010())
-#             txtInput.Text = $@"{TodaysDate}-Strip";
-#         else if (Is900())
-#             txtInput.Text = $@"{TodaysDate}-FlowChart";
-
-#         txtInput.Focus();
-#         chkPart.Checked = true;
-#         chkSTP.Checked = true;
-#         chkPDF.Checked = true;
-#         btnAccept.Enabled = true;
-#     }
-
-#     private void BtnAccept_Click(object sender, EventArgs e)
-#     {
-#         using (session_.__UsingFormShowHide(this))
-#             try
-#             {
-#                 Export(
-#                     chkSTP.Checked,
-#                     (int)numUpDownCopies.Value,
-#                     chkPart.Checked,
-#                     chkPDF.Checked,
-#                     txtInput.Text,
-#                     chkCopy.Checked);
-#             }
-#             catch (Exception ex)
-#             {
-#                 ex.__PrintException();
-#             }
-#             finally
-#             {
-#                 print("Complete");
-#             }
-#     }
-
-#     public static void CheckAssemblyDummyFiles()
-#     {
-#         if (__display_part_.ComponentAssembly.RootComponent is null)
-#             return;
-
-#         foreach (Component childOfStrip in __display_part_.ComponentAssembly.RootComponent.GetChildren())
-#         {
-#             if (childOfStrip.IsSuppressed)
-#                 continue;
-
-#             if (!(childOfStrip.Prototype is Part))
-#                 continue;
-
-#             if (!Regex.IsMatch(childOfStrip.DisplayName, Regex_PressAssembly, RegexOptions.IgnoreCase))
-#                 continue;
-
-#             if (childOfStrip.GetChildren().Length == 0)
-#                 throw new Exception($"A press exists in your assembly without any children. {childOfStrip.__AssemblyPathString()}");
-
-
-#             if (childOfStrip.GetChildren().Length == 1)
-#                 throw new Exception($"A press exists in your assembly with only one child. Expecting a ram and a bolster. {childOfStrip.__AssemblyPathString()}");
-
-#             if (childOfStrip.GetChildren().Length != 2)
-#                 continue;
-
-#             foreach (Component childOfPress in childOfStrip.GetChildren())
-#             {
-#                 if (!(childOfPress.Prototype is Part))
-#                     throw new Exception($"The child of a press must be loaded. {childOfPress.__AssemblyPathString()}");
+    #     public partial class ExportStrip : _UFuncForm
+    # {
+    # 	// sql
+    #     public const string Regex_Strip = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-strip$";
+    #     public const string DummyPath = "G:\\0Library\\SeedFiles\\Components\\Dummy.prt";
+    #     public const string Regex_PressAssembly = "^(?<customerNum>\\d+)-Press-(?<opNum>\\d+)-Assembly$";
+    #     public const string Regex_Layout = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-layout$";
+    #     public const string Regex_Blank = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-blank$";
+
+    #     public ExportStrip()
+    #     {
+    #         InitializeComponent();
+
+    #         bool Is010()
+    #         {
+    # 			// sql
+    #             Regex opRegex = new Regex("^[0-9]{4,}-([0-9]{3,})");
+    #             Match match = opRegex.Match(__display_part_.Leaf);
+
+    #             if (!match.Success)
+    #                 return false;
+
+    #             return match.Groups[1].Value == "010";
+    #         }
+
+    #         bool Is900()
+    #         {
+    # 			// sql
+    #             Regex opRegex = new Regex("^[0-9]{4,}-([0-9]{3,})");
+    #             Match match = opRegex.Match(__display_part_.Leaf);
+
+    #             if (!match.Success)
+    #                 return false;
+
+    #             return match.Groups[1].Value == "900";
+    #         }
+
+    #         if (Session.GetSession().Parts.Display is null)
+    #             txtInput.Text = $@"{TodaysDate}-";
+    #         else if (Is010())
+    #             txtInput.Text = $@"{TodaysDate}-Strip";
+    #         else if (Is900())
+    #             txtInput.Text = $@"{TodaysDate}-FlowChart";
+
+    #         txtInput.Focus();
+    #         chkPart.Checked = true;
+    #         chkSTP.Checked = true;
+    #         chkPDF.Checked = true;
+    #         btnAccept.Enabled = true;
+    #     }
+
+    #     private void BtnAccept_Click(object sender, EventArgs e)
+    #     {
+    #         using (session_.__UsingFormShowHide(this))
+    #             try
+    #             {
+    #                 Export(
+    #                     chkSTP.Checked,
+    #                     (int)numUpDownCopies.Value,
+    #                     chkPart.Checked,
+    #                     chkPDF.Checked,
+    #                     txtInput.Text,
+    #                     chkCopy.Checked);
+    #             }
+    #             catch (Exception ex)
+    #             {
+    #                 ex.__PrintException();
+    #             }
+    #             finally
+    #             {
+    #                 print("Complete");
+    #             }
+    #     }
+
+    #     public static void CheckAssemblyDummyFiles()
+    #     {
+    #         if (__display_part_.ComponentAssembly.RootComponent is null)
+    #             return;
+
+    #         foreach (Component childOfStrip in __display_part_.ComponentAssembly.RootComponent.GetChildren())
+    #         {
+    #             if (childOfStrip.IsSuppressed)
+    #                 continue;
+
+    #             if (!(childOfStrip.Prototype is Part))
+    #                 continue;
+
+    #             if (!Regex.IsMatch(childOfStrip.DisplayName, Regex_PressAssembly, RegexOptions.IgnoreCase))
+    #                 continue;
+
+    #             if (childOfStrip.GetChildren().Length == 0)
+    #                 throw new Exception($"A press exists in your assembly without any children. {childOfStrip.__AssemblyPathString()}");
+
+    #             if (childOfStrip.GetChildren().Length == 1)
+    #                 throw new Exception($"A press exists in your assembly with only one child. Expecting a ram and a bolster. {childOfStrip.__AssemblyPathString()}");
+
+    #             if (childOfStrip.GetChildren().Length != 2)
+    #                 continue;
+
+    #             foreach (Component childOfPress in childOfStrip.GetChildren())
+    #             {
+    #                 if (!(childOfPress.Prototype is Part))
+    #                     throw new Exception($"The child of a press must be loaded. {childOfPress.__AssemblyPathString()}");
 
-#                 if (childOfPress.IsSuppressed)
-#                     throw new Exception($"The child of a press cannot be suppressed. {childOfPress.__AssemblyPathString()}");
+    #                 if (childOfPress.IsSuppressed)
+    #                     throw new Exception($"The child of a press cannot be suppressed. {childOfPress.__AssemblyPathString()}");
 
-#                 if (childOfPress.GetChildren().Length != 0
-#                     && childOfPress.GetChildren().Any(component => !component.IsSuppressed && component.Prototype is Part))
-#                     continue;
+    #                 if (childOfPress.GetChildren().Length != 0
+    #                     && childOfPress.GetChildren().Any(component => !component.IsSuppressed && component.Prototype is Part))
+    #                     continue;
 
-#                 throw new Exception($"The child of a bolster or ram under a press must be the Dummy file: {DummyPath}{childOfPress.__AssemblyPathString()}");
-#             }
+    #                 throw new Exception($"The child of a bolster or ram under a press must be the Dummy file: {DummyPath}{childOfPress.__AssemblyPathString()}");
+    #             }
 
-#             break;
-#         }
-#     }
+    #             break;
+    #         }
+    #     }
 
+    #     public static void UpdateForStp()
+    #     {
+    #         HashSet<Part> partsToSave = new HashSet<Part>();
+    #         Part currentD = __display_part_;
+    #         Part currentW = session_.Parts.Work;
 
-#     public static void UpdateForStp()
-#     {
-#         HashSet<Part> partsToSave = new HashSet<Part>();
-#         Part currentD = __display_part_;
-#         Part currentW = session_.Parts.Work;
+    #         try
+    #         {
+    #             foreach (Component child in session_.Parts.Work.ComponentAssembly.RootComponent.GetChildren())
+    #             {
+    #                 if (child.IsSuppressed)
+    #                     continue;
 
+    #                 if (!(child.Prototype is Part))
+    #                     continue;
 
-#         try
-#         {
-#             foreach (Component child in session_.Parts.Work.ComponentAssembly.RootComponent.GetChildren())
-#             {
-#                 if (child.IsSuppressed)
-#                     continue;
+    #                 __display_part_ = child.__Prototype();
 
-#                 if (!(child.Prototype is Part))
-#                     continue;
+    #                 switch (child.ReferenceSet)
+    #                 {
+    #                     case "Empty":
+    #                         continue;
 
-#                 __display_part_ = child.__Prototype();
+    #                     default:
+    #                         {
+    #                             Part proto = (Part)child.Prototype;
 
-#                 switch (child.ReferenceSet)
-#                 {
-#                     case "Empty":
-#                         continue;
+    #                             ReferenceSet referenceSet = proto.GetAllReferenceSets().FirstOrDefault(refset => refset.Name == child.ReferenceSet);
+
+    #                             if (referenceSet is null)
+    #                                 continue;
+
+    #                             NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet();
+
+    #                             foreach (NXObject obj in objectsInReferenceSet)
+    #                             {
+    #                                 if (!(obj is DisplayableObject disp))
+    #                                     continue;
+
+    #                                 if (disp.Layer <= 1 || disp.Layer >= 256)
+    #                                     continue;
+
+    #                                 if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
+    #                                     continue;
+
+    #                                 proto.Layers.SetState(disp.Layer, State.Selectable);
+    #                             }
+
+    #                             session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray());
 
-#                     default:
-#                         {
-#                             Part proto = (Part)child.Prototype;
+    #                             partsToSave.Add(proto);
+    #                         }
+
+    #                         continue;
+    #                 }
+    #             }
+    #         }
+    #         finally
+    #         {
+    #             session_.Parts.SetDisplay(currentD, false, false, out _);
+    #             session_.Parts.SetWork(currentW);
+    #         }
 
-#                             ReferenceSet referenceSet = proto.GetAllReferenceSets().FirstOrDefault(refset => refset.Name == child.ReferenceSet);
+    #         foreach (Part part in partsToSave)
+    #             part.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
+    #     }
 
-#                             if (referenceSet is null)
-#                                 continue;
+    #     private static void NewMethod(HashSet<Part> partsToSave, Component child)
+    #     {
+    #         Part proto = (Part)child.Prototype;
+    #         ReferenceSet referenceSet = proto.GetAllReferenceSets().First(refset => refset.Name == child.ReferenceSet);
 
-#                             NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet();
+    #         NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet();
 
-#                             foreach (NXObject obj in objectsInReferenceSet)
-#                             {
-#                                 if (!(obj is DisplayableObject disp))
-#                                     continue;
+    #         foreach (NXObject obj in objectsInReferenceSet)
+    #         {
+    #             if (!(obj is DisplayableObject disp))
+    #                 continue;
 
-#                                 if (disp.Layer <= 1 || disp.Layer >= 256)
-#                                     continue;
+    #             if (disp.Layer <= 1 || disp.Layer >= 256)
+    #                 continue;
 
-#                                 if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
-#                                     continue;
+    #             if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
+    #                 continue;
 
-#                                 proto.Layers.SetState(disp.Layer, State.Selectable);
-#                             }
+    #             proto.Layers.SetState(disp.Layer, State.Selectable);
+    #         }
 
-#                             session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray());
+    #         session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray());
 
-#                             partsToSave.Add(proto);
-#                         }
+    #         partsToSave.Add(proto);
+    #     }
 
-#                         continue;
-#                 }
-#             }
-#         }
-#         finally
-#         {
-#             session_.Parts.SetDisplay(currentD, false, false, out _);
-#             session_.Parts.SetWork(currentW);
-#         }
+    # 	// sql , not sql, remove all getcomponentofmany methods
+    # 	// convert to descendants
+    #     private static void Export(bool chkSTP, int numUpDownCopies, bool chkPart, bool chkPDF, string txtInput,
+    #         bool chkCopy)
+    #     {
+    #         GFolder folder = GFolder.Create(__display_part_.FullPath);
 
-#         foreach (Part part in partsToSave)
-#             part.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
-#     }
+    #         __display_part_.SetUserAttribute("DATE", -1, TodaysDate, NXOpen.Update.Option.Now);
 
-#     private static void NewMethod(HashSet<Part> partsToSave, Component child)
-#     {
-#         Part proto = (Part)child.Prototype;
-#         ReferenceSet referenceSet = proto.GetAllReferenceSets().First(refset => refset.Name == child.ReferenceSet);
+    #         if (folder is null)
+    #             throw new Exception("The current displayed part is not in a GFolder.");
 
-#         NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet();
+    #         if (chkSTP)
+    #         {
+    #             Part currentD = __display_part_;
+    #             Part currentW = session_.Parts.Work;
 
-#         foreach (NXObject obj in objectsInReferenceSet)
-#         {
-#             if (!(obj is DisplayableObject disp))
-#                 continue;
+    #             try
+    #             {
+    #                 CheckAssemblyDummyFiles();
 
-#             if (disp.Layer <= 1 || disp.Layer >= 256)
-#                 continue;
+    #                 Part _currentD = __display_part_;
+    #                 Part _currentW = session_.Parts.Work;
 
-#             if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
-#                 continue;
+    #                 try
+    #                 {
+    #                     SetLayersInBlanksAndLayoutsAndAddDummies(__display_part_);
+    #                 }
+    #                 finally
+    #                 {
+    #                     session_.Parts.SetDisplay(_currentD, false, false, out _);
+    #                     session_.Parts.SetWork(_currentW);
+    #                 }
+    #             }
+    #             finally
+    #             {
+    #                 session_.Parts.SetDisplay(currentD, false, false, out _);
+    #                 session_.Parts.SetWork(currentW);
+    #             }
+    #         }
 
-#             proto.Layers.SetState(disp.Layer, State.Selectable);
-#         }
+    #         if (numUpDownCopies > 0)
+    #             ExportStripPrintDrawing(numUpDownCopies);
 
-#         session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray());
+    #         if (!chkPart && !chkPDF && !chkSTP)
+    #             return;
 
-#         partsToSave.Add(proto);
-#     }
+    #         if (chkPDF)
+    #             UpdateForPdf();
 
-# 	// sql , not sql, remove all getcomponentofmany methods
-# 	// convert to descendants
-#     private static void Export(bool chkSTP, int numUpDownCopies, bool chkPart, bool chkPDF, string txtInput,
-#         bool chkCopy)
-#     {
-#         GFolder folder = GFolder.Create(__display_part_.FullPath);
+    #         //if (chkSTP)
 
-#         __display_part_.SetUserAttribute("DATE", -1, TodaysDate, NXOpen.Update.Option.Now);
+    #         string outgoingFolderName = folder.CustomerNumber.Length == 6
+    #             ? $"{folder.DirLayout}\\{txtInput}"
+    #             : $"{folder.DirOutgoing}\\{txtInput}";
 
-#         if (folder is null)
-#             throw new Exception("The current displayed part is not in a GFolder.");
+    #         if (Directory.Exists(outgoingFolderName))
+    #         {
+    #             if (MessageBox.Show(
+    #                     $@"Folder {outgoingFolderName} already exists, is it okay to overwrite the files in the folder?",
+    #                     @"Warning",
+    #                     MessageBoxButtons.YesNo) != DialogResult.Yes)
+    #                 return;
 
-#         if (chkSTP)
-#         {
-#             Part currentD = __display_part_;
-#             Part currentW = session_.Parts.Work;
+    #             Directory.Delete(outgoingFolderName, true);
+    #         }
 
+    #         Directory.CreateDirectory(outgoingFolderName);
 
-#             try
-#             {
-#                 CheckAssemblyDummyFiles();
+    #         uf_.Ui.SetPrompt($"Export Strip: Setting layers in {__display_part_.Leaf}.");
 
-#                 Part _currentD = __display_part_;
-#                 Part _currentW = session_.Parts.Work;
+    #         __work_part_.Layers.SetState(1, State.WorkLayer);
 
-#                 try
-#                 {
-#                     SetLayersInBlanksAndLayoutsAndAddDummies(__display_part_);
-#                 }
-#                 finally
-#                 {
-#                     session_.Parts.SetDisplay(_currentD, false, false, out _);
-#                     session_.Parts.SetWork(_currentW);
-#                 }
-#             }
-#             finally
-#             {
-#                 session_.Parts.SetDisplay(currentD, false, false, out _);
-#                 session_.Parts.SetWork(currentW);
-#             }
-#         }
+    # 		// sql
+    #         for (int i = 2; i <= 256; i++)
+    #             __work_part_.Layers.SetState(i, State.Hidden);
 
+    #         new[] { 6, 10, 200, 201, 202, 254 }.ToList()
+    #             .ForEach(i => __work_part_.Layers.SetState(i, State.Selectable));
 
-#         if (numUpDownCopies > 0)
-#             ExportStripPrintDrawing(numUpDownCopies);
+    #         const string regex = "^\\d+-(?<op>\\d+)-.+$";
 
-#         if (!chkPart && !chkPDF && !chkSTP)
-#             return;
+    #         string op = Regex.Match(session_.Parts.Work.Leaf, regex, RegexOptions.IgnoreCase).Groups["op"].Value;
+    #         string commonString = $"{folder.CustomerNumber}-{op}-strip {TodaysDate}";
 
-#         if (chkPDF)
-#             UpdateForPdf();
+    #         uf_.Ui.SetPrompt(chkPart
+    #             ? "Exporting \".prt\" file."
+    #             : "Finding objects to export.");
 
-#         //if (chkSTP)
+    #         if (chkPDF)
+    #         {
+    #             uf_.Ui.SetPrompt("Exporting PDF......");
 
+    #             string outputPath = ExportPDF(outgoingFolderName, commonString);
 
-#         string outgoingFolderName = folder.CustomerNumber.Length == 6
-#             ? $"{folder.DirLayout}\\{txtInput}"
-#             : $"{folder.DirOutgoing}\\{txtInput}";
+    #             print(File.Exists(outputPath)
+    #                 ? $"Successfully created \"{outputPath}\"."
+    #                 : $"Did not successfully create \"{outputPath}\".");
+    #         }
 
-#         if (Directory.Exists(outgoingFolderName))
-#         {
-#             if (MessageBox.Show(
-#                     $@"Folder {outgoingFolderName} already exists, is it okay to overwrite the files in the folder?",
-#                     @"Warning",
-#                     MessageBoxButtons.YesNo) != DialogResult.Yes)
-#                 return;
+    #         if (chkPart)
+    #         {
+    #             string outputPath = ExportStripPart(outgoingFolderName);
 
-#             Directory.Delete(outgoingFolderName, true);
-#         }
+    #             print(File.Exists(outputPath)
+    #                 ? $"Successfully created \"{outputPath}\"."
+    #                 : $"Did not successfully create \"{outputPath}\".");
+    #         }
 
-#         Directory.CreateDirectory(outgoingFolderName);
+    #         if (chkSTP)
+    #         {
+    #             UpdateForStp();
 
-#         uf_.Ui.SetPrompt($"Export Strip: Setting layers in {__display_part_.Leaf}.");
+    #             ExportStripStp(outgoingFolderName);
+    #             //string outputPath = $"{outgoingFolderName}\\{session_.Parts.Work.Leaf}-{TodaysDate}.stp";
+    #             ////session_.Execute(@"C:\Repos\NXJournals\JOURNALS\export_strip.py", "ExportStrip", "export_stp", new object[] { outputPath });
+    #             ////NXOpen.UF.UFSession.GetUFSession().Ui.SetPrompt("Exporting Step File.......");
 
-#         __work_part_.Layers.SetState(1, State.WorkLayer);
+    #             //NXOpen.StepCreator step = session_.DexManager.CreateStepCreator();
 
-# 		// sql
-#         for (int i = 2; i <= 256; i++)
-#             __work_part_.Layers.SetState(i, State.Hidden);
+    #             //try
+    #             //{
+    #             //    //step.ExportDestination = NXOpen.BaseCreator.ExportDestinationOption.NativeFileSystem;
 
-#         new[] { 6, 10, 200, 201, 202, 254 }.ToList()
-#             .ForEach(i => __work_part_.Layers.SetState(i, State.Selectable));
+    #             //    //step.SettingsFile = "U:\\nxFiles\\Step Translator\\ExternalStep_AllLayers.def";
 
-#         const string regex = "^\\d+-(?<op>\\d+)-.+$";
+    #             //    //step.
 
-#         string op = Regex.Match(session_.Parts.Work.Leaf, regex, RegexOptions.IgnoreCase).Groups["op"].Value;
-#         string commonString = $"{folder.CustomerNumber}-{op}-strip {TodaysDate}";
+    #             //    //step.ExportAs = NXOpen.StepCreator.ExportAsOption.Ap214;
 
-#         uf_.Ui.SetPrompt(chkPart
-#             ? "Exporting \".prt\" file."
-#             : "Finding objects to export.");
+    #             //    //step.InputFile = session_.Parts.Work.FullPath;
 
-#         if (chkPDF)
-#         {
-#             uf_.Ui.SetPrompt("Exporting PDF......");
+    #             //    //step.OutputFile = outputPath;
 
-#             string outputPath = ExportPDF(outgoingFolderName, commonString);
+    #             //    //step.ProcessHoldFlag = true;
 
-#             print(File.Exists(outputPath)
-#                 ? $"Successfully created \"{outputPath}\"."
-#                 : $"Did not successfully create \"{outputPath}\".");
-#         }
+    #             //    step.Commit();
+    #             //}
+    #             //finally
+    #             //{
+    #             //    step.Destroy();
+    #             //}
 
-#         if (chkPart)
-#         {
-#             string outputPath = ExportStripPart(outgoingFolderName);
+    #             //print_(File.Exists(outputPath)
+    #             //    ? $"Successfully created \"{outputPath}\"."
+    #             //: $"Did not successfully create \"{outputPath}\".");
+    #         }
 
-#             print(File.Exists(outputPath)
-#                 ? $"Successfully created \"{outputPath}\"."
-#                 : $"Did not successfully create \"{outputPath}\".");
-#         }
+    #         uf_.Ui.SetPrompt($"Zipping up {outgoingFolderName}.");
 
+    #         string[] filesToZip = Directory.GetFiles($"{outgoingFolderName}");
 
-#         if (chkSTP)
-#         {
-#             UpdateForStp();
+    #         string zipFileName = $"{folder.CustomerNumber}-{txtInput}.7z";
 
-#             ExportStripStp(outgoingFolderName);
-#             //string outputPath = $"{outgoingFolderName}\\{session_.Parts.Work.Leaf}-{TodaysDate}.stp";
-#             ////session_.Execute(@"C:\Repos\NXJournals\JOURNALS\export_strip.py", "ExportStrip", "export_stp", new object[] { outputPath });
-#             ////NXOpen.UF.UFSession.GetUFSession().Ui.SetPrompt("Exporting Step File.......");
+    #         string zipFile = $"{outgoingFolderName}\\{zipFileName}";
 
+    #         if (filesToZip.Length != 0)
+    #         {
+    #             Zip7 zip = new Zip7(zipFile, filesToZip);
 
-#             //NXOpen.StepCreator step = session_.DexManager.CreateStepCreator();
+    #             zip.Start();
 
-#             //try
-#             //{
-#             //    //step.ExportDestination = NXOpen.BaseCreator.ExportDestinationOption.NativeFileSystem;
+    #             zip.WaitForExit();
+    #         }
 
-#             //    //step.SettingsFile = "U:\\nxFiles\\Step Translator\\ExternalStep_AllLayers.def";
+    #         if (chkCopy)
+    #         {
+    #             if (!Directory.Exists(folder.DirProcessSimDataDesign))
+    #                 Directory.CreateDirectory(folder.DirProcessSimDataDesign);
 
-#             //    //step.
+    #             string[] zipFiles = Directory.GetFiles(folder.DirProcessSimDataDesign, "*.7z",
+    #                 SearchOption.TopDirectoryOnly);
 
-#             //    //step.ExportAs = NXOpen.StepCreator.ExportAsOption.Ap214;
+    #             foreach (string zipFile1 in zipFiles)
+    #                 // ReSharper disable once SwitchStatementMissingSomeCases
+    #                 switch (MessageBox.Show($@"Delete file ""{zipFile1}""", @"Warning", MessageBoxButtons.YesNo))
+    #                 {
+    #                     case DialogResult.Yes:
+    #                         File.Delete(zipFile1);
+    #                         break;
+    #                     case DialogResult.No:
+    #                         break;
+    #                     default:
+    #                         throw new ArgumentException();
+    #                 }
 
-#             //    //step.InputFile = session_.Parts.Work.FullPath;
+    #             File.Copy(zipFile, $"{folder.DirProcessSimDataDesign}\\{zipFileName}", true);
+    #         }
 
-#             //    //step.OutputFile = outputPath;
+    #         session_.ApplicationSwitchImmediate("UG_APP_MODELING");
 
-#             //    //step.ProcessHoldFlag = true;
+    #         session_.Parts.Work.Drafting.ExitDraftingApplication();
+    #     }
 
-#             //    step.Commit();
-#             //}
-#             //finally
-#             //{
-#             //    step.Destroy();
-#             //}
+    #     public static void UpdateForPdf()
+    #     {
+    #         DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray();
 
-#             //print_(File.Exists(outputPath)
-#             //    ? $"Successfully created \"{outputPath}\"."
-#             //: $"Did not successfully create \"{outputPath}\".");
-#         }
+    #         switch (sheets.Length)
+    #         {
+    #             case 0:
+    #                 throw new InvalidOperationException("Current work part doesn't not have a sheet to print.");
+    #             case 1:
+    #                 session_.ApplicationSwitchImmediate("UG_APP_DRAFTING");
+    #                 sheets[0].Open();
+    #                 uf_.Draw.IsObjectOutOfDate(sheets[0].Tag, out bool outOfDate);
+    #                 if (outOfDate)
+    #                     uf_.Draw.UpdOutOfDateViews(sheets[0].Tag);
+    #                 sheets[0].OwningPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
+    #                 break;
+    #             default:
+    #                 throw new InvalidOperationException("Current work part contains more than 1 sheet.");
+    #         }
+    #     }
 
-#         uf_.Ui.SetPrompt($"Zipping up {outgoingFolderName}.");
+    #     public static string ExportPDF(string outPutPath, string fileName)
+    #     {
+    #         DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray();
 
-#         string[] filesToZip = Directory.GetFiles($"{outgoingFolderName}");
+    #         ExportStripPdf(session_.Parts.Work.FullPath, sheets[0].Name, $"{outPutPath}\\{fileName}.pdf");
 
-#         string zipFileName = $"{folder.CustomerNumber}-{txtInput}.7z";
+    #         return $"{outPutPath}\\{fileName}.pdf";
+    #     }
 
+    #     private static void AddDummy(Part part, IEnumerable<int> layers)
+    #     {
+    #         Prompt($"Setting layers in {__display_part_.Leaf}.");
 
-#         string zipFile = $"{outgoingFolderName}\\{zipFileName}";
+    #         int[] layerArray = layers.ToArray();
 
-#         if (filesToZip.Length != 0)
-#         {
-#             Zip7 zip = new Zip7(zipFile, filesToZip);
+    #         __display_part_.Layers.WorkLayer = 1;
 
-#             zip.Start();
+    #         for (int i = 2; i < +256; i++)
+    #             if (layerArray.Contains(i))
+    #                 __display_part_.Layers.SetState(i, State.Selectable);
+    #             else
+    #                 __display_part_.Layers.SetState(i, State.Hidden);
 
-#             zip.WaitForExit();
-#         }
+    #         __display_part_.Layers.SetState(layerArray.Min(), State.WorkLayer);
 
-#         if (chkCopy)
-#         {
-#             if (!Directory.Exists(folder.DirProcessSimDataDesign))
-#                 Directory.CreateDirectory(folder.DirProcessSimDataDesign);
+    #         __display_part_.Layers.SetState(1, State.Hidden);
 
-#             string[] zipFiles = Directory.GetFiles(folder.DirProcessSimDataDesign, "*.7z",
-#                 SearchOption.TopDirectoryOnly);
+    #         if (part.ComponentAssembly.RootComponent != null)
+    #         {
+    #             Component validChild = part.ComponentAssembly.RootComponent
+    #                 .GetChildren()
+    #                 .Where(component => component.Prototype is Part)
+    #                 .FirstOrDefault(component => !component.IsSuppressed);
 
-#             foreach (string zipFile1 in zipFiles)
-#                 // ReSharper disable once SwitchStatementMissingSomeCases
-#                 switch (MessageBox.Show($@"Delete file ""{zipFile1}""", @"Warning", MessageBoxButtons.YesNo))
-#                 {
-#                     case DialogResult.Yes:
-#                         File.Delete(zipFile1);
-#                         break;
-#                     case DialogResult.No:
-#                         break;
-#                     default:
-#                         throw new ArgumentException();
-#                 }
+    #             if (validChild != null)
+    #                 return;
+    #         }
 
-#             File.Copy(zipFile, $"{folder.DirProcessSimDataDesign}\\{zipFileName}", true);
-#         }
+    #         Part dummyPart = session_.__FindOrOpen(DummyPath);
 
-#         session_.ApplicationSwitchImmediate("UG_APP_MODELING");
+    #         Prompt($"Adding dummy file to {part.Leaf}.");
 
-#         session_.Parts.Work.Drafting.ExitDraftingApplication();
-#     }
+    #         session_.Parts.Work.ComponentAssembly.AddComponent(dummyPart, "Entire Part", "DUMMY", _Point3dOrigin,
+    #             _Matrix3x3Identity, 1, out PartLoadStatus status);
 
-#     public static void UpdateForPdf()
-#     {
-#         DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray();
+    #         status.Dispose();
+    #     }
 
-#         switch (sheets.Length)
-#         {
-#             case 0:
-#                 throw new InvalidOperationException("Current work part doesn't not have a sheet to print.");
-#             case 1:
-#                 session_.ApplicationSwitchImmediate("UG_APP_DRAFTING");
-#                 sheets[0].Open();
-#                 uf_.Draw.IsObjectOutOfDate(sheets[0].Tag, out bool outOfDate);
-#                 if (outOfDate)
-#                     uf_.Draw.UpdOutOfDateViews(sheets[0].Tag);
-#                 sheets[0].OwningPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
-#                 break;
-#             default:
-#                 throw new InvalidOperationException("Current work part contains more than 1 sheet.");
-#         }
-#     }
+    #     public static void Prompt(string message)
+    #     {
+    #         UFSession.GetUFSession().Ui.SetPrompt(message);
+    #     }
 
-#     public static string ExportPDF(string outPutPath, string fileName)
-#     {
-#         DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray();
+    #     private void SetAcceptButtonEnabled()
+    #     {
+    #         btnAccept.Enabled = chkPart.Checked || chkPDF.Checked || chkSTP.Checked || numUpDownCopies.Value > 0;
+    #     }
 
-#         ExportStripPdf(session_.Parts.Work.FullPath, sheets[0].Name, $"{outPutPath}\\{fileName}.pdf");
+    #     private void ChkBoxes_CheckedChanged(object sender, EventArgs e)
+    #     {
+    #         SetAcceptButtonEnabled();
+    #     }
 
-#         return $"{outPutPath}\\{fileName}.pdf";
-#     }
+    #     private void NumUpDownCopies_ValueChanged(object sender, EventArgs e)
+    #     {
+    #         SetAcceptButtonEnabled();
+    #     }
 
-#     private static void AddDummy(Part part, IEnumerable<int> layers)
-#     {
-#         Prompt($"Setting layers in {__display_part_.Leaf}.");
+    #     public static List<Component> Descendants(Component parent)
+    #     {
+    #         List<Component> _list = new List<Component>
+    #         {
+    #             parent
+    #         };
 
-#         int[] layerArray = layers.ToArray();
+    #         foreach (Component _child in parent.GetChildren())
+    #             _list.AddRange(Descendants(_child));
 
-#         __display_part_.Layers.WorkLayer = 1;
+    #         return _list;
+    #     }
 
-#         for (int i = 2; i < +256; i++)
-#             if (layerArray.Contains(i))
-#                 __display_part_.Layers.SetState(i, State.Selectable);
-#             else
-#                 __display_part_.Layers.SetState(i, State.Hidden);
+    #     public static void SetLayersInBlanksAndLayoutsAndAddDummies(Part snapStrip010)
+    #     {
+    #         if (!Regex.IsMatch(snapStrip010.Leaf, Regex_Strip, RegexOptions.IgnoreCase))
+    #             throw new ArgumentException(@"Must be an op 010 strip.", nameof(snapStrip010));
 
-#         __display_part_.Layers.SetState(layerArray.Min(), State.WorkLayer);
+    #         Part currentD = __display_part_;
+    #         Part currentW = session_.Parts.Work;
 
-#         __display_part_.Layers.SetState(1, State.Hidden);
+    #         try
+    #         {
+    #             Regex blankNameRegex = new Regex("^BLANK-([0-9]{1,})$");
 
-#         if (part.ComponentAssembly.RootComponent != null)
-#         {
-#             Component validChild = part.ComponentAssembly.RootComponent
-#                 .GetChildren()
-#                 .Where(component => component.Prototype is Part)
-#                 .FirstOrDefault(component => !component.IsSuppressed);
+    #             Regex layoutNameRegex = new Regex("^LAYOUT-([0-9]{1,})$");
 
-#             if (validChild != null)
-#                 return;
-#         }
+    #             Part layoutPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
+    #                 .Select(component => component.Prototype)
+    #                 .OfType<Part>()
+    #                 .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Layout, RegexOptions.IgnoreCase));
 
-#         Part dummyPart = session_.__FindOrOpen(DummyPath);
+    #             //var blankPart = TSG_Library.Extensions.DisplayPart.RootComponent.Children
+    #             Part blankPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
+    #                 .Select(component => component.Prototype)
+    #                 .OfType<Part>()
+    #                 .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Blank, RegexOptions.IgnoreCase));
 
-#         Prompt($"Adding dummy file to {part.Leaf}.");
+    #             HashSet<int> layoutLayers = new HashSet<int>();
 
-#         session_.Parts.Work.ComponentAssembly.AddComponent(dummyPart, "Entire Part", "DUMMY", _Point3dOrigin,
-#             _Matrix3x3Identity, 1, out PartLoadStatus status);
+    #             HashSet<int> blankLayers = new HashSet<int>();
 
-#         status.Dispose();
-#     }
+    #             foreach (Component child in Descendants(__display_part_.ComponentAssembly.RootComponent))
+    #             {
+    #                 if (!(child.Prototype is Part))
+    #                     continue;
 
-#     public static void Prompt(string message)
-#     {
-#         UFSession.GetUFSession().Ui.SetPrompt(message);
-#     }
+    #                 if (child.IsSuppressed)
+    #                     continue;
 
-#     private void SetAcceptButtonEnabled()
-#     {
-#         btnAccept.Enabled = chkPart.Checked || chkPDF.Checked || chkSTP.Checked || numUpDownCopies.Value > 0;
-#     }
+    #                 Match blankMatch = blankNameRegex.Match(child.Name);
 
-#     private void ChkBoxes_CheckedChanged(object sender, EventArgs e)
-#     {
-#         SetAcceptButtonEnabled();
-#     }
+    #                 Match layoutMatch = layoutNameRegex.Match(child.Name);
 
-#     private void NumUpDownCopies_ValueChanged(object sender, EventArgs e)
-#     {
-#         SetAcceptButtonEnabled();
-#     }
+    #                 if (blankMatch.Success)
+    #                     blankLayers.Add(int.Parse(blankMatch.Groups[1].Value) + 10);
 
-#     public static List<Component> Descendants(Component parent)
-#     {
-#         List<Component> _list = new List<Component>
-#         {
-#             parent
-#         };
+    #                 if (!layoutMatch.Success)
+    #                     continue;
 
-#         foreach (Component _child in parent.GetChildren())
-#             _list.AddRange(Descendants(_child));
+    #                 int layer = int.Parse(layoutMatch.Groups[1].Value) * 10;
 
-#         return _list;
-#     }
+    #                 layoutLayers.Add(layer);
 
-#     public static void SetLayersInBlanksAndLayoutsAndAddDummies(Part snapStrip010)
-#     {
-#         if (!Regex.IsMatch(snapStrip010.Leaf, Regex_Strip, RegexOptions.IgnoreCase))
-#             throw new ArgumentException(@"Must be an op 010 strip.", nameof(snapStrip010));
+    #                 layoutLayers.Add(layer + 1);
+    #             }
 
-#         Part currentD = __display_part_;
-#         Part currentW = session_.Parts.Work;
+    #             if (blankLayers.Count != 0 && blankPart != null)
+    #             {
+    #                 session_.Parts.SetDisplay(blankPart, false, false, out _);
 
-#         try
-#         {
-#             Regex blankNameRegex = new Regex("^BLANK-([0-9]{1,})$");
+    #                 session_.Parts.SetWork(__display_part_);
 
-#             Regex layoutNameRegex = new Regex("^LAYOUT-([0-9]{1,})$");
+    #                 AddDummy(blankPart, blankLayers);
 
-#             Part layoutPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
-#                 .Select(component => component.Prototype)
-#                 .OfType<Part>()
-#                 .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Layout, RegexOptions.IgnoreCase));
+    #                 Prompt($"Saving: {blankPart.Leaf}.");
 
-#             //var blankPart = TSG_Library.Extensions.DisplayPart.RootComponent.Children
-#             Part blankPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
-#                 .Select(component => component.Prototype)
-#                 .OfType<Part>()
-#                 .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Blank, RegexOptions.IgnoreCase));
+    #                 __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
+    #             }
 
-#             HashSet<int> layoutLayers = new HashSet<int>();
+    #             if (layoutLayers.Count != 0 && layoutPart != null)
+    #             {
+    #                 session_.Parts.SetDisplay(layoutPart, false, false, out _);
 
-#             HashSet<int> blankLayers = new HashSet<int>();
+    #                 session_.Parts.SetWork(__display_part_);
 
-#             foreach (Component child in Descendants(__display_part_.ComponentAssembly.RootComponent))
-#             {
-#                 if (!(child.Prototype is Part))
-#                     continue;
+    #                 AddDummy(layoutPart, layoutLayers);
 
-#                 if (child.IsSuppressed)
-#                     continue;
+    #                 Prompt($"Saving: {layoutPart.Leaf}.");
 
-#                 Match blankMatch = blankNameRegex.Match(child.Name);
+    #                 __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
+    #             }
+    #         }
+    #         finally
+    #         {
+    #             session_.Parts.SetDisplay(currentD, false, false, out _);
+    #             session_.Parts.SetWork(currentW);
+    #         }
 
-#                 Match layoutMatch = layoutNameRegex.Match(child.Name);
+    #         snapStrip010.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
+    #     }
 
-#                 if (blankMatch.Success)
-#                     blankLayers.Add(int.Parse(blankMatch.Groups[1].Value) + 10);
+    #     public static void ExportStripStp(string outgoingFolderName)
+    #     {
+    #         string outputPath = $"{outgoingFolderName}\\{session_.Parts.Work.Leaf}-{TodaysDate}.stp";
 
-#                 if (!layoutMatch.Success)
-#                     continue;
+    #         StepCreator step = session_.DexManager.CreateStepCreator();
 
-#                 int layer = int.Parse(layoutMatch.Groups[1].Value) * 10;
+    #         using (session_.__UsingBuilderDestroyer(step))
+    #         {
+    #             step.ExportDestination = BaseCreator.ExportDestinationOption.NativeFileSystem;
 
-#                 layoutLayers.Add(layer);
+    # 			// sql convert
+    # 			// in theory you should just be able to load the settingfile
+    # 			// and not set any other step.properties
+    #             step.SettingsFile = "U:\\nxFiles\\Step Translator\\ExternalStep_AllLayers.def";
 
-#                 layoutLayers.Add(layer + 1);
-#             }
+    #             step.ExportAs = StepCreator.ExportAsOption.Ap214;
 
-#             if (blankLayers.Count != 0 && blankPart != null)
-#             {
-#                 session_.Parts.SetDisplay(blankPart, false, false, out _);
+    #             step.InputFile = session_.Parts.Work.FullPath;
 
+    #             step.OutputFile = outputPath;
 
-#                 session_.Parts.SetWork(__display_part_);
+    #             step.ProcessHoldFlag = true;
 
-#                 AddDummy(blankPart, blankLayers);
+    #             step.Commit();
+    #         }
 
-#                 Prompt($"Saving: {blankPart.Leaf}.");
+    #         print(File.Exists(outputPath)
+    #             ? $"Successfully created \"{outputPath}\"."
+    #             : $"Did not successfully create \"{outputPath}\".");
+    #     }
 
-#                 __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-#             }
+    #     public static void ExportStripPdf(string partPath, string drawingSheetName, string filePath)
+    #     {
+    #         string directory = Path.GetDirectoryName(filePath);
 
-#             if (layoutLayers.Count != 0 && layoutPart != null)
-#             {
-#                 session_.Parts.SetDisplay(layoutPart, false, false, out _);
+    #         if (!filePath.EndsWith(".pdf"))
+    #             throw new Exception("File path for PDF must end with \".pdf\".");
 
+    #         if (File.Exists(filePath))
+    #             throw new Exception($"PDF '{filePath}' already exists.");
 
-#                 session_.Parts.SetWork(__display_part_);
+    #         Part part = session_.__FindOrOpen(partPath);
 
-#                 AddDummy(layoutPart, layoutLayers);
-
-#                 Prompt($"Saving: {layoutPart.Leaf}.");
-
-#                 __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False);
-#             }
-#         }
-#         finally
-#         {
-#             session_.Parts.SetDisplay(currentD, false, false, out _);
-#             session_.Parts.SetWork(currentW);
-#         }
-
-#         snapStrip010.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
-#     }
-
-#     public static void ExportStripStp(string outgoingFolderName)
-#     {
-#         string outputPath = $"{outgoingFolderName}\\{session_.Parts.Work.Leaf}-{TodaysDate}.stp";
-
-#         StepCreator step = session_.DexManager.CreateStepCreator();
-
-#         using (session_.__UsingBuilderDestroyer(step))
-#         {
-#             step.ExportDestination = BaseCreator.ExportDestinationOption.NativeFileSystem;
-
-# 			// sql convert
-# 			// in theory you should just be able to load the settingfile
-# 			// and not set any other step.properties
-#             step.SettingsFile = "U:\\nxFiles\\Step Translator\\ExternalStep_AllLayers.def";
-
-#             step.ExportAs = StepCreator.ExportAsOption.Ap214;
-
-#             step.InputFile = session_.Parts.Work.FullPath;
-
-#             step.OutputFile = outputPath;
-
-#             step.ProcessHoldFlag = true;
-
-#             step.Commit();
-#         }
-
-#         print(File.Exists(outputPath)
-#             ? $"Successfully created \"{outputPath}\"."
-#             : $"Did not successfully create \"{outputPath}\".");
-#     }
-
-#     public static void ExportStripPdf(string partPath, string drawingSheetName, string filePath)
-#     {
-#         string directory = Path.GetDirectoryName(filePath);
-
-
-#         if (!filePath.EndsWith(".pdf"))
-#             throw new Exception("File path for PDF must end with \".pdf\".");
-
-#         if (File.Exists(filePath))
-#             throw new Exception($"PDF '{filePath}' already exists.");
-
-#         Part part = session_.__FindOrOpen(partPath);
-
-#         //We can use SingleOrDefault here because NX will prevent the naming of two drawing sheets the exact same string.
-#         DrawingSheet sheet = part.DrawingSheets
-#                                  .ToArray()
-#                                  .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
-#                              ??
-#                              throw new Exception(
-#                                  $@"Part '{partPath}' does not have a sheet named '{drawingSheetName}'.");
-
-#         __display_part_ = part;
-#         __work_part_ = __display_part_;
-
-#         PrintPDFBuilder pdfBuilder = part.PlotManager.CreatePrintPdfbuilder();
-
-#         using (session_.__UsingBuilderDestroyer(pdfBuilder))
-#         {
-# 			// sql
-#             pdfBuilder.Scale = 1.0;
-#             pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor;
-#             pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines;
-#             pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English;
-#             pdfBuilder.XDimension = 8.5;
-#             pdfBuilder.YDimension = 11.0;
-#             pdfBuilder.RasterImages = true;
-#             pdfBuilder.Colors = PrintPDFBuilder.Color.AsDisplayed;
-#             pdfBuilder.Watermark = "";
-#             UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
-#             if (flag)
-#             {
-#                 UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
-#                 part.__Save();
-#             }
-
-#             sheet.Open();
-#             pdfBuilder.SourceBuilder.SetSheets(new NXObject[] { sheet });
-#             pdfBuilder.Filename = filePath;
-#             pdfBuilder.Commit();
-#         }
-#     }
-
-#     public static string ExportStripPart(string outgoingFolderPath)
-#     {
-#         string[] assemblyPartPaths = __display_part_.ComponentAssembly.RootComponent.__Descendants()
-#             .Where(component => !component.IsSuppressed)
-#             .Select(component => component.Prototype)
-#             .OfType<Part>()
-#             .Distinct()
-#             .Select(part => part.FullPath)
-#             .ToArray();
-
-#         Zip7 zip = new Zip7($"{outgoingFolderPath}\\NX StripAssembly.7z", assemblyPartPaths);
-#         zip.Start();
-#         zip.WaitForExit();
-#         return $"{outgoingFolderPath}\\NX StripAssembly.7z";
-#     }
-
-#     public static void ExportStripPrintDrawing(int copies)
-#     {
-#         if (copies == 0)
-#             return;
-
-#         Part _WorkPart = Session.GetSession().Parts.Work;
-
-#         UFSession TheUFSession = UFSession.GetUFSession();
-
-#         //session_.Execute(@"C:\Repos\NXJournals\JOURNALS\export_strip.py", "ExportStrip", "print_drawing_sheet", new object[] { copies });
-#         PrintBuilder printBuilder1 = _WorkPart.PlotManager.CreatePrintBuilder();
-
-#         try
-#         {
-# 			// sql
-#             printBuilder1.ThinWidth = 1.0;
-#             printBuilder1.NormalWidth = 2.0;
-#             printBuilder1.ThickWidth = 3.0;
-#             printBuilder1.Copies = copies;
-#             printBuilder1.RasterImages = true;
-#             printBuilder1.Output = PrintBuilder.OutputOption.WireframeBlackWhite;
-#             DrawingSheet[] sheets = _WorkPart.DrawingSheets.ToArray();
-#             switch (sheets.Length)
-#             {
-#                 case 0:
-#                     print("Current work part doesn't not have a sheet to print.");
-#                     return;
-#                 case 1:
-#                     session_.ApplicationSwitchImmediate("UG_APP_DRAFTING");
-#                     sheets[0].Open();
-#                     TheUFSession.Draw.IsObjectOutOfDate(sheets[0].Tag, out bool outOfDate);
-#                     if (outOfDate)
-#                         try
-#                         {
-#                             TheUFSession.Draw.UpdOutOfDateViews(sheets[0].Tag);
-#                             sheets[0].OwningPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
-#                         }
-#                         catch (Exception ex)
-#                         {
-#                             ex.__PrintException();
-#                         }
-
-#                     printBuilder1.SourceBuilder.SetSheets(new NXObject[] { sheets[0] });
-#                     break;
-#                 default:
-#                     print("Current work part contains more than 1 sheet.");
-#                     return;
-#             }
-
-#             printBuilder1.PrinterText = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
-#             printBuilder1.Orientation = PrintBuilder.OrientationOption.Landscape;
-#             printBuilder1.Paper = PrintBuilder.PaperSize.Inch11x17;
-#             printBuilder1.Commit();
-#         }
-#         finally
-#         {
-#             printBuilder1.Destroy();
-#         }
-#     }
-
-#     private void ExportStripForm_Load(object sender, EventArgs e)
-#     {
-#         Text = AssemblyFileVersion;
-#         Location = Properties.Settings.Default.export_strip_form_window_location;
-#     }
-
-#     private void ExportStripForm_FormClosed(object sender, FormClosedEventArgs e)
-#     {
-#         Properties.Settings.Default.export_strip_form_window_location = Location;
-#         Properties.Settings.Default.Save();
-#     }
-
-#     public class Zip7
-#     {
-#         private readonly string[] _filesToZip;
-
-#         private readonly string _zipArchive;
-
-#         private Process _process;
-
-#         private bool _started;
-
-#         public Zip7(string zipArchive, params string[] filesToZip)
-#         {
-#             _zipArchive = zipArchive;
-
-#             _filesToZip = filesToZip;
-#         }
-
-#         public void WaitForExit()
-#         {
-#             if (_process is null)
-#                 throw new ArgumentNullException(nameof(_process));
-
-#             if (!_started)
-#                 throw new InvalidOperationException("Zip process hasn't been started yet.");
-
-#             _process.WaitForExit();
-#         }
-
-#         public void Start()
-#         {
-#             string tempFile = $"{Path.GetTempPath()}zipData{_filesToZip.GetHashCode()}.txt";
-
-#             using (FileStream fs = File.Open(tempFile, FileMode.Create))
-#             {
-#                 fs.Close();
-#             }
-
-#             using (StreamWriter writer = new StreamWriter(tempFile))
-#             {
-#                 _filesToZip.ToList().ForEach(writer.WriteLine);
-#             }
-
-# 			// select
-#             _process = new Process
-#             {
-#                 StartInfo =
-#             {
-#                 CreateNoWindow = false,
-#                 FileName = "C:\\Program Files\\7-Zip\\7z",
-#                 WindowStyle = ProcessWindowStyle.Normal,
-#                 UseShellExecute = true,
-#                 Arguments = $"a -t7z \"{_zipArchive}\" \"@{tempFile}\" -mx9"
-#             }
-#             };
-
-#             _started = _process.Start();
-#         }
-#     }
-# }
+    #         //We can use SingleOrDefault here because NX will prevent the naming of two drawing sheets the exact same string.
+    #         DrawingSheet sheet = part.DrawingSheets
+    #                                  .ToArray()
+    #                                  .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
+    #                              ??
+    #                              throw new Exception(
+    #                                  $@"Part '{partPath}' does not have a sheet named '{drawingSheetName}'.");
+
+    #         __display_part_ = part;
+    #         __work_part_ = __display_part_;
+
+    #         PrintPDFBuilder pdfBuilder = part.PlotManager.CreatePrintPdfbuilder();
+
+    #         using (session_.__UsingBuilderDestroyer(pdfBuilder))
+    #         {
+    # 			// sql
+    #             pdfBuilder.Scale = 1.0;
+    #             pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor;
+    #             pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines;
+    #             pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English;
+    #             pdfBuilder.XDimension = 8.5;
+    #             pdfBuilder.YDimension = 11.0;
+    #             pdfBuilder.RasterImages = true;
+    #             pdfBuilder.Colors = PrintPDFBuilder.Color.AsDisplayed;
+    #             pdfBuilder.Watermark = "";
+    #             UFSession.GetUFSession().Draw.IsObjectOutOfDate(sheet.Tag, out bool flag);
+    #             if (flag)
+    #             {
+    #                 UFSession.GetUFSession().Draw.UpdOutOfDateViews(sheet.Tag);
+    #                 part.__Save();
+    #             }
+
+    #             sheet.Open();
+    #             pdfBuilder.SourceBuilder.SetSheets(new NXObject[] { sheet });
+    #             pdfBuilder.Filename = filePath;
+    #             pdfBuilder.Commit();
+    #         }
+    #     }
+
+    #     public static string ExportStripPart(string outgoingFolderPath)
+    #     {
+    #         string[] assemblyPartPaths = __display_part_.ComponentAssembly.RootComponent.__Descendants()
+    #             .Where(component => !component.IsSuppressed)
+    #             .Select(component => component.Prototype)
+    #             .OfType<Part>()
+    #             .Distinct()
+    #             .Select(part => part.FullPath)
+    #             .ToArray();
+
+    #         Zip7 zip = new Zip7($"{outgoingFolderPath}\\NX StripAssembly.7z", assemblyPartPaths);
+    #         zip.Start();
+    #         zip.WaitForExit();
+    #         return $"{outgoingFolderPath}\\NX StripAssembly.7z";
+    #     }
+
+    #     public static void ExportStripPrintDrawing(int copies)
+    #     {
+    #         if (copies == 0)
+    #             return;
+
+    #         Part _WorkPart = Session.GetSession().Parts.Work;
+
+    #         UFSession TheUFSession = UFSession.GetUFSession();
+
+    #         //session_.Execute(@"C:\Repos\NXJournals\JOURNALS\export_strip.py", "ExportStrip", "print_drawing_sheet", new object[] { copies });
+    #         PrintBuilder printBuilder1 = _WorkPart.PlotManager.CreatePrintBuilder();
+
+    #         try
+    #         {
+    # 			// sql
+    #             printBuilder1.ThinWidth = 1.0;
+    #             printBuilder1.NormalWidth = 2.0;
+    #             printBuilder1.ThickWidth = 3.0;
+    #             printBuilder1.Copies = copies;
+    #             printBuilder1.RasterImages = true;
+    #             printBuilder1.Output = PrintBuilder.OutputOption.WireframeBlackWhite;
+    #             DrawingSheet[] sheets = _WorkPart.DrawingSheets.ToArray();
+    #             switch (sheets.Length)
+    #             {
+    #                 case 0:
+    #                     print("Current work part doesn't not have a sheet to print.");
+    #                     return;
+    #                 case 1:
+    #                     session_.ApplicationSwitchImmediate("UG_APP_DRAFTING");
+    #                     sheets[0].Open();
+    #                     TheUFSession.Draw.IsObjectOutOfDate(sheets[0].Tag, out bool outOfDate);
+    #                     if (outOfDate)
+    #                         try
+    #                         {
+    #                             TheUFSession.Draw.UpdOutOfDateViews(sheets[0].Tag);
+    #                             sheets[0].OwningPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False);
+    #                         }
+    #                         catch (Exception ex)
+    #                         {
+    #                             ex.__PrintException();
+    #                         }
+
+    #                     printBuilder1.SourceBuilder.SetSheets(new NXObject[] { sheets[0] });
+    #                     break;
+    #                 default:
+    #                     print("Current work part contains more than 1 sheet.");
+    #                     return;
+    #             }
+
+    #             printBuilder1.PrinterText = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC";
+    #             printBuilder1.Orientation = PrintBuilder.OrientationOption.Landscape;
+    #             printBuilder1.Paper = PrintBuilder.PaperSize.Inch11x17;
+    #             printBuilder1.Commit();
+    #         }
+    #         finally
+    #         {
+    #             printBuilder1.Destroy();
+    #         }
+    #     }
+
+    #     private void ExportStripForm_Load(object sender, EventArgs e)
+    #     {
+    #         Text = AssemblyFileVersion;
+    #         Location = Properties.Settings.Default.export_strip_form_window_location;
+    #     }
+
+    #     private void ExportStripForm_FormClosed(object sender, FormClosedEventArgs e)
+    #     {
+    #         Properties.Settings.Default.export_strip_form_window_location = Location;
+    #         Properties.Settings.Default.Save();
+    #     }
+
+    #     public class Zip7
+    #     {
+    #         private readonly string[] _filesToZip;
+
+    #         private readonly string _zipArchive;
+
+    #         private Process _process;
+
+    #         private bool _started;
+
+    #         public Zip7(string zipArchive, params string[] filesToZip)
+    #         {
+    #             _zipArchive = zipArchive;
+
+    #             _filesToZip = filesToZip;
+    #         }
+
+    #         public void WaitForExit()
+    #         {
+    #             if (_process is null)
+    #                 throw new ArgumentNullException(nameof(_process));
+
+    #             if (!_started)
+    #                 throw new InvalidOperationException("Zip process hasn't been started yet.");
+
+    #             _process.WaitForExit();
+    #         }
+
+    #         public void Start()
+    #         {
+    #             string tempFile = $"{Path.GetTempPath()}zipData{_filesToZip.GetHashCode()}.txt";
+
+    #             using (FileStream fs = File.Open(tempFile, FileMode.Create))
+    #             {
+    #                 fs.Close();
+    #             }
+
+    #             using (StreamWriter writer = new StreamWriter(tempFile))
+    #             {
+    #                 _filesToZip.ToList().ForEach(writer.WriteLine);
+    #             }
+
+    # 			// select
+    #             _process = new Process
+    #             {
+    #                 StartInfo =
+    #             {
+    #                 CreateNoWindow = false,
+    #                 FileName = "C:\\Program Files\\7-Zip\\7z",
+    #                 WindowStyle = ProcessWindowStyle.Normal,
+    #                 UseShellExecute = true,
+    #                 Arguments = $"a -t7z \"{_zipArchive}\" \"@{tempFile}\" -mx9"
+    #             }
+    #             };
+
+    #             _started = _process.Start();
+    #         }
+    #     }
+    # }
     pass
+
 
 class UFuncDeleteUnusedCurves:
-#     public class DeleteUnusedCurves : _UFunc
-# {
-#     public override void execute()
-#     {
-#         Curve[] curves = Selection.SelectCurves(
-#             ufunc_rev_name,
-#             ufunc_rev_name,
-#             NXOpen.Selection.SelectionScope.WorkPart
-#         );
+    #     public class DeleteUnusedCurves : _UFunc
+    # {
+    #     public override void execute()
+    #     {
+    #         Curve[] curves = Selection.SelectCurves(
+    #             ufunc_rev_name,
+    #             ufunc_rev_name,
+    #             NXOpen.Selection.SelectionScope.WorkPart
+    #         );
 
-#         if (curves is null || curves.Length == 0)
-#             return;
+    #         if (curves is null || curves.Length == 0)
+    #             return;
 
-#         foreach (Curve delete in curves)
-#         {
+    #         foreach (Curve delete in curves)
+    #         {
 
-#             ufsession_.Modl.AskObjectFeat(delete.Tag, out Tag featTag);
+    #             ufsession_.Modl.AskObjectFeat(delete.Tag, out Tag featTag);
 
-#             if (featTag == Tag.Null)
-#                 delete.__Delete();
-#         }
-#     }
-# }
+    #             if (featTag == Tag.Null)
+    #                 delete.__Delete();
+    #         }
+    #     }
+    # }
     pass
+
+
 class CopyToLayer50:
-# public class CopyToLayer50 : _UFunc
-# {
-#     private const int LAYER = 50;
+    # public class CopyToLayer50 : _UFunc
+    # {
+    #     private const int LAYER = 50;
 
-#     public override void execute()
-#     {
-#         string message = $"{AssemblyFileVersion} - Copy To Layer 50";
+    #     public override void execute()
+    #     {
+    #         string message = $"{AssemblyFileVersion} - Copy To Layer 50";
 
-#         Component[] compList = Selection.SelectManyComponents(message);
+    #         Component[] compList = Selection.SelectManyComponents(message);
 
-#         if (compList.Length == 0)
-#             return;
+    #         if (compList.Length == 0)
+    #             return;
 
-#         using (session_.__UsingDisplayPartReset())
-#             foreach (Component comp in compList)
-#             {
-#                 print("/////////////////");
-#                 __work_component_ = comp;
+    #         using (session_.__UsingDisplayPartReset())
+    #             foreach (Component comp in compList)
+    #             {
+    #                 print("/////////////////");
+    #                 __work_component_ = comp;
 
-#                 // if body exists on layer 50, delete body
-#                 Body[] bodies_on_layer_50 = comp.__Prototype().Bodies
-#                     .ToArray()
-#                     .Where(__b => __b.IsSolidBody)
-#                     .Where(__b => __b.Layer == LAYER)
-#                     .ToArray();
+    #                 // if body exists on layer 50, delete body
+    #                 Body[] bodies_on_layer_50 = comp.__Prototype().Bodies
+    #                     .ToArray()
+    #                     .Where(__b => __b.IsSolidBody)
+    #                     .Where(__b => __b.Layer == LAYER)
+    #                     .ToArray();
 
-#                 Body[] solid_bodies_layer_1 = comp.__Prototype().Bodies
-#                     .ToArray()
-#                     .Where(__b => __b.IsSolidBody)
-#                     .Where(__b => __b.Layer == 1)
-#                     .ToArray();
+    #                 Body[] solid_bodies_layer_1 = comp.__Prototype().Bodies
+    #                     .ToArray()
+    #                     .Where(__b => __b.IsSolidBody)
+    #                     .Where(__b => __b.Layer == 1)
+    #                     .ToArray();
 
-#                 switch (solid_bodies_layer_1.Length)
-#                 {
-#                     case 0:
-#                         print($"Did not a solid body on layer 1 in part {comp.DisplayName}");
-#                         return;
-#                     case 1:
-#                         break;
-#                     default:
-#                         print($"There is more than one solid body on layer 1 in part {comp.DisplayName}");
-#                         return;
-#                 }
+    #                 switch (solid_bodies_layer_1.Length)
+    #                 {
+    #                     case 0:
+    #                         print($"Did not a solid body on layer 1 in part {comp.DisplayName}");
+    #                         return;
+    #                     case 1:
+    #                         break;
+    #                     default:
+    #                         print($"There is more than one solid body on layer 1 in part {comp.DisplayName}");
+    #                         return;
+    #                 }
 
-#                 string date = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}";
+    #                 string date = $"{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}";
 
-#                 Body[] layer_50_bodies = comp.__Prototype()
-#                     .Layers
-#                     .GetAllObjectsOnLayer(LAYER).OfType<Body>().ToArray();
+    #                 Body[] layer_50_bodies = comp.__Prototype()
+    #                     .Layers
+    #                     .GetAllObjectsOnLayer(LAYER).OfType<Body>().ToArray();
 
-#                 comp.__Prototype()
-#                     .Layers
-#                     .CopyObjects(LAYER, solid_bodies_layer_1);
+    #                 comp.__Prototype()
+    #                     .Layers
+    #                     .CopyObjects(LAYER, solid_bodies_layer_1);
 
-#                 List<Body> new_layer_50_bodies = comp.__Prototype()
-#                     .Layers
-#                     .GetAllObjectsOnLayer(LAYER)
-#                     .Except(layer_50_bodies)
-#                     .OfType<Body>()
-#                     .ToList();
+    #                 List<Body> new_layer_50_bodies = comp.__Prototype()
+    #                     .Layers
+    #                     .GetAllObjectsOnLayer(LAYER)
+    #                     .Except(layer_50_bodies)
+    #                     .OfType<Body>()
+    #                     .ToList();
 
-#                 foreach (Body body in new_layer_50_bodies)
-#                 {
-#                     body.OwningPart.Features.GetParentFeatureOfBody(body).SetName(date);
-#                     body.Color = 7;
-#                     body.LineFont = DisplayableObject.ObjectFont.Phantom;
-#                     body.RedisplayObject();
-#                 }
+    #                 foreach (Body body in new_layer_50_bodies)
+    #                 {
+    #                     body.OwningPart.Features.GetParentFeatureOfBody(body).SetName(date);
+    #                     body.Color = 7;
+    #                     body.LineFont = DisplayableObject.ObjectFont.Phantom;
+    #                     body.RedisplayObject();
+    #                 }
 
-#                 try
-#                 {
-#                     comp.__Prototype().__ReferenceSets("BODY")
-#                         .RemoveObjectsFromReferenceSet(new_layer_50_bodies.ToArray<NXObject>());
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
+    #                 try
+    #                 {
+    #                     comp.__Prototype().__ReferenceSets("BODY")
+    #                         .RemoveObjectsFromReferenceSet(new_layer_50_bodies.ToArray<NXObject>());
+    #                 }
+    #                 catch (Exception ex)
+    #                 {
+    #                     ex.__PrintException();
+    #                 }
 
-#                 comp.__Prototype().Layers.MoveDisplayableObjects(LAYER + 1, layer_50_bodies);
+    #                 comp.__Prototype().Layers.MoveDisplayableObjects(LAYER + 1, layer_50_bodies);
 
-#                 foreach (Body body in bodies_on_layer_50)
-#                 {
-#                     body.Color = 7;
-#                     body.LineFont = DisplayableObject.ObjectFont.Phantom;
-#                     body.RedisplayObject();
+    #                 foreach (Body body in bodies_on_layer_50)
+    #                 {
+    #                     body.Color = 7;
+    #                     body.LineFont = DisplayableObject.ObjectFont.Phantom;
+    #                     body.RedisplayObject();
 
-#                     print($"Copied solid body to " +
-#                         $"{comp.__Prototype().Features.GetAssociatedFeature(body).GetFeatureName()} " +
-#                         $"in part {comp.DisplayName}");
-#                 }
+    #                     print($"Copied solid body to " +
+    #                         $"{comp.__Prototype().Features.GetAssociatedFeature(body).GetFeatureName()} " +
+    #                         $"in part {comp.DisplayName}");
+    #                 }
 
-#                 try
-#                 {
-#                     comp.__Prototype().__ReferenceSets("BODY").RemoveObjectsFromReferenceSet(bodies_on_layer_50);
-#                 }
-#                 catch (Exception ex)
-#                 {
-#                     ex.__PrintException();
-#                 }
-#             }
-#     }
-# }
+    #                 try
+    #                 {
+    #                     comp.__Prototype().__ReferenceSets("BODY").RemoveObjectsFromReferenceSet(bodies_on_layer_50);
+    #                 }
+    #                 catch (Exception ex)
+    #                 {
+    #                     ex.__PrintException();
+    #                 }
+    #             }
+    #     }
+    # }
 
     pass
 
 
 class UFuncExtractFreeEdges:
-#     internal class ExtractFreeEdgeCurves : _UFunc
-# {
-#     public override void execute()
-#     {
-#         print(ufunc_rev_name);
+    #     internal class ExtractFreeEdgeCurves : _UFunc
+    # {
+    #     public override void execute()
+    #     {
+    #         print(ufunc_rev_name);
 
-#         if (__display_part_ is null)
-#         {
-#             print("There is no displayed part loaded");
-#             return;
-#         }
+    #         if (__display_part_ is null)
+    #         {
+    #             print("There is no displayed part loaded");
+    #             return;
+    #         }
 
-# 		// sql 
-# 		// make this is easier to read
-#         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
-#         // Allows the user to select sheet bodies.
-#         Body[] selectedSheetBodies = Selection.SelectManySheetBodies(ufunc_rev_name);
-#         // Gets the edges from the selected sheet bodies.
-#         Edge[] edges = selectedSheetBodies.SelectMany(body => body.GetEdges()).ToArray();
-#         // Gets the free edges, (the edges that are attached to one face).
-#         Edge[] freeEdges = edges.Where(edge => edge.GetFaces().Length == 1).ToArray();
-#         // Gets the curve representation of the {freeEdges}.
-#         Curve[] freeEdgeCurves = freeEdges.Select(edge => edge.__ToCurve()).ToArray();
+    # 		// sql
+    # 		// make this is easier to read
+    #         session_.SetUndoMark(Session.MarkVisibility.Visible, ufunc_rev_name);
+    #         // Allows the user to select sheet bodies.
+    #         Body[] selectedSheetBodies = Selection.SelectManySheetBodies(ufunc_rev_name);
+    #         // Gets the edges from the selected sheet bodies.
+    #         Edge[] edges = selectedSheetBodies.SelectMany(body => body.GetEdges()).ToArray();
+    #         // Gets the free edges, (the edges that are attached to one face).
+    #         Edge[] freeEdges = edges.Where(edge => edge.GetFaces().Length == 1).ToArray();
+    #         // Gets the curve representation of the {freeEdges}.
+    #         Curve[] freeEdgeCurves = freeEdges.Select(edge => edge.__ToCurve()).ToArray();
 
-#         // Sets all the free edge curves to the current work layer.
-#         foreach (Curve curve in freeEdgeCurves)
-#             curve.__Layer(WorkLayer);
+    #         // Sets all the free edge curves to the current work layer.
+    #         foreach (Curve curve in freeEdgeCurves)
+    #             curve.__Layer(WorkLayer);
 
-#         print($"Created {freeEdgeCurves.Length} curves off of free edges.");
-#     }
-# }
+    #         print($"Created {freeEdgeCurves.Length} curves off of free edges.");
+    #     }
+    # }
     pass
