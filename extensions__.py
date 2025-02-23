@@ -9,19 +9,35 @@ from NXOpen.UF import *
 
 
 class WithLockUpdates:
-    # def __enter__(self):
-    #     session().UpdateManager.SetUpdateLock(True)
+    def __enter__(self):  # type: ignore
+        session().UpdateManager.SetUpdateLock(True)  # type: ignore
 
-    # def __exit__(self):
-    #     session().UpdateManager.SetUpdateLock(False)
-    #     ufsession().GetUFSession().Modl.Update()
-    def __enter__(self):
-        # self.file = open(self.filename, self.mode)
-        # return self.file
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
+        session().UpdateManager.SetUpdateLock(False)  # type: ignore
+        ufsession().GetUFSession().Modl.Update()  # type: ignore
+
+
+class WithResetDisplayPart:
+    def __enter__(self):  # type: ignore
+        self.original_display_part = display_part()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
+        session().Parts.SetDisplay(self.original_display_part, False, False)
+
+
+class WithSuppressDisplay:
+    def __enter__(self):  # type: ignore
         raise NotImplementedError()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        # self.file.close()
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
+        raise NotImplementedError()
+
+
+class WithReferenceSetReset:
+    def __enter__(self):  # type: ignore
+        raise NotImplementedError()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         raise NotImplementedError()
 
 
@@ -78,7 +94,7 @@ def cast_part(obj: Union[TaggedObject, int]) -> Part:
     if isinstance(obj, int):
         tagged_object = cast_tagged_object(obj)
         return cast_part(tagged_object)
-    assert isinstance(obj, "NXOpen.Part"), f"Could not cast type {obj} to Part"
+    assert isinstance(obj, Part), f"Could not cast type {obj} to Part"
     return obj
 
 
@@ -196,11 +212,17 @@ def set_display_part(part: Part) -> None:
     session().Parts.SetDisplay(part, False, False)
 
 
-def part_get_modeling_view(part: Part, name: str):
+def part_get_modeling_view_or_none(part: Part, name: str) -> Optional[ModelingView]:
     for view in list(part.ModelingViews):
         if view.Name == name:
             return view
     return None
+
+
+def part_get_modeling_view(part: Part, name: str) -> ModelingView:
+    rev = part_get_modeling_view_or_none(part, name)
+    assert rev is not None
+    return rev
 
 
 def to_matrix3x3(xvec: Vector3d, yvec: Vector3d) -> Matrix3x3:
@@ -219,7 +241,7 @@ def axisz(matrix: Matrix3x3) -> Vector3d:
     return Vector3d(matrix.Zx, matrix.Zy, matrix.Yz)
 
 
-def AddFastenersGetLinkedBody(owning_part: Part, child: Component):
+def AddFastenersGetLinkedBody(owning_part: Part, child: Component):  # type: ignore
     for feature in list(owning_part.Features):
         if feature.FeatureType != "LINKED_BODY":
             continue
@@ -229,7 +251,7 @@ def AddFastenersGetLinkedBody(owning_part: Part, child: Component):
 
         fromPartOcc = ufsession().So.AskAssyCtxtPartOcc(  # type: ignore
             xform, owning_part.ComponentAssembly.RootComponent.Tag
-        )  # type: ignore
+        )
         if fromPartOcc == child.Tag:
             return feature
     return None
@@ -315,15 +337,29 @@ def hash_components_to_parts(components: List[Component]) -> List[Part]:
         if comp.DisplayName in dict_:
             continue
         # print(comp.DisplayName)
-        dict_[comp.DisplayName] = comp.Prototype
-    return dict_.values()
+        dict_[comp.DisplayName] = comp.Prototype  # type: ignore
+    return dict_.items()  # type: ignore
 
 
 def session_get_or_open_part(leaf_or_path: str) -> Part:
     raise Exception()
 
 
-def MakePlanView(csys) -> None:
+def component_descendants(component: Component) -> List[Component]:
+    descendants = []
+    if component is None:
+        return descendants
+    # Get children of the current component
+    children = component.GetChildren()
+    # Iterate through children and collect them recursively
+    for child in children:
+        descendants.append(child)
+        # Recursively get descendants of the child component
+        descendants.extend(component_descendants(child))
+    return descendants
+
+
+def MakePlanView(csys: CartesianCoordinateSystem) -> None:
     l1 = "L1"
     top = "Top"
     plan = "PLAN"
@@ -375,7 +411,7 @@ def DescendantParts(part: Part) -> List[Part]:
 
 def delete_objects(objects: Sequence[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")  # type: ignore
+    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
@@ -640,12 +676,8 @@ def part_is_work_part(part: Part) -> bool:
     return part.Tag == work_part().Tag
 
 
-def part_crt_boolean_feature(
-    part: Part,
-    target: Body,
-    tools: Sequence[Body],
-    boolean_type,  #:  Feature.BooleanType
-):  # -> BooleanFeature:
+def part_crt_boolean_feature(part: Part, target: Body, tools: Sequence[Body], boolean_type):  # type: ignore
+    # -> BooleanFeature:
     #         /// <summary>
     #         ///     Creates a <see cref="BooleanFeature" />
     #         /// </summary>
@@ -714,7 +746,7 @@ def part_is_modified(part: Part) -> bool:
 #         {
 #             return basePart.Features.OfType<DatumCsys>().First();
 #         }
-def part_create_text_feature(
+def part_create_text_feature(  # type: ignore
     part: Part,
     note: str,
     origin: Point3d,
@@ -2544,12 +2576,8 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #         }
 
 
-def part_cre_constraint_distance_occ_pro(
-    part: Part,
-    occ_plane,  #:DatumPlane,
-    pro_plane,  #:DatumPlane,
-    distance_or_expression: str,
-):  # ->ComponentConstraint:
+def part_cre_constraint_distance_occ_pro(part: Part, occ_plane, pro_plane, distance_or_expression: str):  # type: ignore
+    # ->ComponentConstraint:
     #         public static ComponentConstraint __ConstrainOccProtoDistance(
     #             this BasePart part,
     #             DatumPlane occPlane,
@@ -2975,11 +3003,11 @@ def part_fit(part: Part) -> None:
 #         }
 
 
-def part_get_units_in(part: Part):  # ->Unit:
+def part_get_units_in(part: Part):  # type: ignore  # ->Unit:
     return part.UnitCollection.FindObject("Inch")  # type: ignore
 
 
-def part_get_units_mm(part: Part):  # ->Unit:
+def part_get_units_mm(part: Part):  # type: ignore  # ->Unit:
     return part.UnitCollection.FindObject("MilliMeter")  # type: ignore
 
 
@@ -4725,7 +4753,7 @@ def vector3d_dot_product(vec0: Vector3d, vec1: Vector3d) -> float:
 
 
 #    [Obsolete]
-def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
+def mirror_vector3d(original: Vector3d, plane) -> Vector3d:  # type: ignore
     raise NotImplementedError()
 
 
@@ -6580,7 +6608,7 @@ def curve_is_closed(curve: Curve) -> bool:
 #         #region Line
 
 
-def line_mirror(line: Line, plane) -> Line:
+def line_mirror(line: Line, plane: int) -> Line:
     #  [Obsolete(nameof(NotImplementedException))]
     #  public static Line __Mirror(
     #      this Line line,
@@ -11054,16 +11082,10 @@ def point_move(point: Point, vec: Vector3d, distance: float) -> None:
 #   #region NXObject
 
 
-def nxobject_delete_user_attribute():
-    #   public static void __DeleteUserAttribute(
-    #       this NXObject nxobject,
-    #       string title,
-    #       Update.Option update_option = Update.Option.Now
-    #   )
-    #   {
-    #       nxobject.DeleteUserAttribute(NXObject.AttributeType.String, title, true, update_option);
-    #   }
-    raise NotImplementedError()
+def nxobject_delete_user_attribute(
+    nxobject: NXObject, title: str, option: UpdateOption = UpdateOption.Now
+) -> None:
+    nxobject.DeleteUserAttribute(title, NXObjectAttributeType.String, True, option)
 
 
 def nxobject_remove_parameters(nxobject: NXObject) -> None:

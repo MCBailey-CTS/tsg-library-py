@@ -42,12 +42,12 @@ class ComponentAssembly:
     def ReplaceReferenceSet(self, cmp: Component, name: str) -> None: ...
     def AddComponent(
         self,
-        part_to_add,
-        reference_set_name,
-        component_name,
-        base_point,
-        orientation,
-        layer,
+        part_to_add: Part,
+        reference_set_name: str,
+        component_name: str,
+        base_point: Point3d,
+        orientation: Matrix3x3,
+        layer: int,
     ) -> Component:
         """
         part_to_add	(string) The part that defines the new component

@@ -316,7 +316,8 @@ class Body(DisplayableObject):
     def GetFeatures(self) -> Sequence[Feature]: ...
     def GetFaces(self) -> Sequence[Face]: ...
     def GetEdges(self) -> Sequence[Edge]: ...
-
+    def IsSolidBody(self) -> bool: ...
+    def IsSheetBody(self) -> bool: ...
     # ('GetFaces', <method 'GetFaces' of 'NXOpen.Body' objects>)
     # ('GetEdges', <method 'GetEdges' of 'NXOpen.Body' objects>)
     # ('RemoveMergedRibImprintedEdges', <method 'RemoveMergedRibImprintedEdges' of 'NXOpen.Body' objects>)
@@ -324,7 +325,7 @@ class Body(DisplayableObject):
     # ('Density', <attribute 'Density' of 'NXOpen.Body' objects>)
     # ('IsConvergentBody', <attribute 'IsConvergentBody' of 'NXOpen.Body' objects>)
     # ('IsSheetBody', <attribute 'IsSheetBody' of 'NXOpen.Body' objects>)
-    # ('IsSolidBody', <attribute 'IsSolidBody' of 'NXOpen.Body' objects>)
+    # ('', <attribute 'IsSolidBody' of 'NXOpen.Body' objects>)
     # ('__doc__', '\nRepresents a Body\n\n\n\n\n.. versionadded:: NX3.0.0\n\n\n\n\n\n\n')
     # ('Null', <NXOpen.Body object at 0x00000208B3CD04B0>)
     pass
@@ -871,33 +872,33 @@ class WCS:
         Getter for property: (NXOpen::CartesianCoordinateSystem ) CoordinateSystem. More...
         """
         pass
-    def Origin(self):
+    def Origin(self) -> None:
         """Getter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
-    def Orientation(self, origin):
+    def Orientation(self, origin):  # type: ignore
         """Setter for property: (NXOpen::Point3d ) Origin. More..."""
         pass
-    def Rotate(self, rotation_axis, angle):
+    def Rotate(self, rotation_axis: WCSAxis, angle: float) -> None:
         """Rotates the WCS about the specified axis. More..."""
         pass
-    def Save(self):
+    def Save(self) -> None:
         """Saves the WCS. More..."""
         pass
-    def SetCoordinateSystem(self, new_cs):
+    def SetCoordinateSystem(self, new_cs) -> None:  # type: ignore
         """Changes the coordinate system of the WCS to a new coordinate system. More..."""
         pass
-    def SetCoordinateSystemCartesianAtCsys(self, new_cs):
+    def SetCoordinateSystemCartesianAtCsys(self, new_cs) -> None:  # type: ignore
         """Creates a WCS at a new coordinate system. More..."""
         pass
-    def SetOriginAndMatrix(self, origin, matrix):
+    def SetOriginAndMatrix(self, origin, matrix) -> None:  # type: ignore
         """Sets the origin and orientation matrix of the WCS. More..."""
         pass
     @property
-    def Visibility(self):
+    def Visibility(self):  # type: ignore
         """Getter for property: (bool) Visibility. More..."""
         pass
     @Visibility.setter
-    def Visibility(self, is_visible):
+    def Visibility(self, is_visible):  # type: ignore
         """Setter for property: (bool) Visibility. More..."""
         pass
 

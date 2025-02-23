@@ -1,4 +1,7 @@
 import enum
+from typing import Sequence
+
+from NXOpen import DisplayableObject
 
 class State(enum.Enum):
     Hidden: int
@@ -16,7 +19,9 @@ class LayerManager:
     def WorkLayer(self) -> int: ...
     @WorkLayer.setter
     def WorkLayer(self, layer: int) -> None: ...
-    def MoveDisplayableObjects(self, new_layer, object_array) -> None: ...
+    def MoveDisplayableObjects(
+        self, new_layer: int, object_array: Sequence[DisplayableObject]
+    ) -> None: ...
 
 # StateCollection
 # StateInfo

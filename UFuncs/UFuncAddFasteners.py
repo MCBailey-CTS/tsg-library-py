@@ -7,34 +7,36 @@ import NXOpen.Features
 from NXOpen.Layer import State
 from extensions__ import *
 import NXOpen.UF
+from typing import Sequence
 
 
-def strip_wave_out():
+def strip_wave_out() -> None:
     try:
-        for feat in work_part().Features.ToArray():
+        for feat in list(work_part().Features):
             try:
                 if not isinstance(feat, ExtractFace):
                     continue
                 if not extract_face_is_linked_body(feat):
                     continue
-                is_broken = ufsession().Wave.IsLinkBroken(feat.Tag)
+                is_broken = ufsession().Wave.IsLinkBroken(feat.Tag)  # type: ignore
                 if is_broken:
                     continue
-                xform = ufsession().Wave.AskLinkXform(feat.Tag)
-                from_part_occ = ufsession().So.AskAssyCtxtPartOcc(
+                xform = ufsession().Wave.AskLinkXform(feat.Tag)  # type: ignore
+                from_part_occ = ufsession().So.AskAssyCtxtPartOcc(  # type: ignore
                     xform, work_part().ComponentAssembly.RootComponent.Tag
                 )
-                if from_part_occ == NXOpen.Tag.Null:
+                if from_part_occ == 0:
                     continue
                 point = [0.0, 0.0, 0.0]
-                ufsession().So.AskPointOfXform(xform, point)
-                from_comp = NXOpen.TaggedObjectManager.GetTaggedObject(from_part_occ)
-
+                ufsession().So.AskPointOfXform(xform, point)  # type: ignore
+                from_comp = NXOpen.TaggedObjectManager.GetTaggedObject(  # type: ignore
+                    from_part_occ
+                )  # type: Component
                 origin = Point3d()
                 corigin = component_origin(from_comp)
                 if not point3d_equals_point3d(origin, corigin):
                     continue
-                delete_objects(feat)
+                delete_objects([feat])
             except Exception as ex:
                 print_(ex)
                 traceback.print_exc()
@@ -42,10 +44,16 @@ def strip_wave_out():
         traceback.print_exc()
 
 
-def WaveIn():
+def WaveIn() -> None:
     try:
         if not part_has_dynamic_block(work_part()):
-            solid_body_layer_1 = work_part().__SingleSolidBodyOnLayer1()
+            k = [
+                body
+                for body in list(work_part().Bodies)
+                if body.IsSolidBody() and body.Layer == 1
+            ]
+            assert len(k) == 1
+            solid_body_layer_1 = k[0]
         else:
             work_part().Layers.SetState(96, State.Visible)
             solid_body_layer_1 = part_get_dynamic_block(work_part()).GetBodies()[0]
@@ -64,7 +72,7 @@ def WaveIn():
         traceback.print_exc()
 
 
-def WaveIn1(__child: Component, solid_body_layer_1: Body):
+def WaveIn1(__child: Component, solid_body_layer_1: Body) -> None:
     if not component_is_loaded(__child):
         return
     if __child.IsSuppressed:
@@ -142,7 +150,7 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
 
 
 def InsertWireTaps() -> None:
-    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP")  # type: ignore
+    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP")
     if display_part().Tag == work_part().Tag:
         for i in [99, 98, 97]:
             display_part().Layers.SetState(i, State.Selectable)
@@ -151,7 +159,7 @@ def InsertWireTaps() -> None:
     )
 
     display_part().WCS.Rotate(WCSAxis.XAxis, 90.0)
-    savedCsys = display_part().WCS.Save()
+    savedCsys = display_part().WCS.Save()  # type: ignore
     rotateOrientation = savedCsys.Orientation.Element
     x = 1 if display_part().PartUnits == NXOpen.BasePartUnits.Inches else 25.4
     offset2 = [3.00 * x, 0.875 * x, 0.00]
@@ -232,14 +240,14 @@ def SubstituteFasteners(nxPart: Part) -> None:
         print(f"Substituted fasteners {original_display_name} -> {nxPart.Leaf}")
 
 
-def WaveOut1(child: Component):
+def WaveOut1(child: Component) -> None:
     if child.Parent.Tag != child.OwningPart.ComponentAssembly.RootComponent.Tag:
         raise Exception("Can only wave out immediate children.")
     linkedBody = AddFastenersGetLinkedBody(child.OwningPart, child)
     delete_objects([linkedBody])
 
 
-def WaveOut():
+def WaveOut() -> None:
     if work_part().Tag == display_part().Tag:
         for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
             try:

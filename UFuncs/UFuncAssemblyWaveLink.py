@@ -1,25 +1,8 @@
 import traceback
+import NXOpen
 from NXOpen import Session
 from extensions__ import *
-
-
-class WithDisplayPartReset:
-    def __enter__(self):
-        # self.file = open(self.filename, self.mode)
-        # return self.file
-        raise NotImplementedError()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        # self.file.close()
-        raise NotImplementedError()
-
-
-class WithSuppressDisplay:
-    ...
-
-
-class WithReferenceSetReset:
-    ...
+from typing import Sequence
 
 
 def select_many_component1() -> Sequence[Component]:
@@ -44,7 +27,7 @@ def select_single_solid_body() -> Body:
     raise NotImplementedError()
 
 
-def WavelinkSubtool():
+def WavelinkSubtool() -> None:
     # session().SetUndoMark(Session.MarkVisibility.Visible, f"{ufunc_rev_name} - {nameof(WavelinkSubtool)}");
     target = select_single_solid_body()
     if target is None:
@@ -52,7 +35,7 @@ def WavelinkSubtool():
     tools = select_many_component1()
     if len(tools) == 0:
         return
-    with WithDisplayPartReset():
+    with WithResetDisplayPart():
         with WithSuppressDisplay():
             try:
                 current = display_part().Layers.WorkLayer

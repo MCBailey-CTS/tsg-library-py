@@ -66,7 +66,7 @@ def delete_objects(objects: Sequence[TaggedObject]) -> None:
 print_("in here")
 
 
-session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "GMCleanAssembly")  # type: ignore
+session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "GMCleanAssembly")
 
 original_display = session().Parts.Display
 # print_('helllo world')

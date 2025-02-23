@@ -41,56 +41,29 @@ def color_layer_solid_body_1(part: Part, layer: int, color: int) -> None:
     features[len(features) - 1].MakeCurrentFeature()
 
 
-def component_descendants(component: Component) -> List[Component]:
-    descendants = []
-    if component is None:
-        return descendants
-    # Get children of the current component
-    children = component.GetChildren()
-    # Iterate through children and collect them recursively
-    for child in children:
-        descendants.append(child)
-        # Recursively get descendants of the child component
-        descendants.extend(component_descendants(child))
-    return descendants
-
-
 def __main__(layer: int, color: int) -> None:
     components = select_components()
     if len(components) == 0:
         return
-
-    # for x in components:
-    #     print_(x.Prototype)
-
-    # return
-    # parts =[]
-
     parts = hash_components_to_parts(components)
-    original = display_part()
-    try:
+    with WithResetDisplayPart():
         for part in parts:
             try:
                 color_layer_solid_body_1(part, layer, color)
             except Exception as ex:
                 print_(ex)
-    finally:
-        session().Parts.SetDisplay(original, False, False)
-
-    try:
+    with WithResetDisplayPart():
         ancestors: Dict[str, Part] = {}
         for part in parts:
-            part_occs: Tuple[Sequence[int], int] = ufsession().Assem.AskOccsOfPart(
-                display_part().Tag, part.Tag
-            )
+            part_occs = ufsession().Assem.AskOccsOfPart(display_part().Tag, part.Tag)
             for t in part_occs[0]:
                 j = cast_component(t)
-                for ancest in component_ancestors(j):
-                    if ancest.DisplayName not in ancestors:
-                        ancestors[ancest.DisplayName] = ancest.Prototype  # type: ignore
-                try:
+                for ancestor in component_ancestors(j):
+                    if ancestor.DisplayName not in ancestors:
+                        ancestors[ancestor.DisplayName] = ancestor.Prototype  # type: ignore
+                with WithResetDisplayPart():
                     for ancest in ancestors.keys():
-                        session().Parts.SetDisplay(ancestors[ancest], False, False)  # type: ignore
+                        session().Parts.SetDisplay(ancestors[ancest], False, False)
                         display_part().Layers.SetState(layer, State.Selectable)
                         part_occs1 = ufsession().Assem.AskOccsOfPart(
                             ancestors[ancest].Tag, part.Tag
@@ -102,7 +75,3 @@ def __main__(layer: int, color: int) -> None:
                             cmp.SetLayerOption(-1)
                             cmp.DirectOwner.ReplaceReferenceSet(cmp, "PART")
                             cmp.RedisplayObject()
-                finally:
-                    session().Parts.SetDisplay(original, False, False)
-    finally:
-        session().Parts.SetDisplay(original, False, False)
