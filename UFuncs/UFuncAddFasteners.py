@@ -90,7 +90,7 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body) -> None:
             continue
         xform_tag = feature_xform(extract)
         point = ufsession().So.AskPointOfXform(xform_tag)
-        origin = Point3d(point[0],point[1],point[2])
+        origin = Point3d(point[0], point[1], point[2])
         if point3d_equals_point3d(origin, component_origin(__child)):
             continue
         is_subtracted = True

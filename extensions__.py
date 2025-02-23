@@ -105,13 +105,13 @@ def cast_components(tagged_objects: List[TaggedObject]) -> List[Component]:
     return components
 
 
-
-
-def select_many_sheet_bodies()->Sequence[Body]:
+def select_many_sheet_bodies() -> Sequence[Body]:
     raise NotImplementedError()
 
-def edge_to_curve(edge:Edge)->Curve:
+
+def edge_to_curve(edge: Edge) -> Curve:
     raise NotImplementedError()
+
 
 def cycle_by_name(name: str) -> List[TaggedObject]:
     objects: List[TaggedObject] = []
