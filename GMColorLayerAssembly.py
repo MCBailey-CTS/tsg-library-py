@@ -6,32 +6,6 @@ from extensions__ import *
 from typing import Dict, List, Tuple
 
 
-def part_has_reference_set(part: Part, name: str) -> bool:
-    return any(r.Name == name for r in part.GetAllReferenceSets())
-
-
-def part_get_reference_set(part: Part, name: str):  # ->ReferenceSet:
-    for r in part.GetAllReferenceSets():
-        if r.Name == name:
-            return r
-    raise Exception()
-
-
-def part_crt_reference_set(part: Part, name: str):  # ->ReferenceSet:
-    refset = part.CreateReferenceSet()
-    refset.SetName(name)
-    return refset
-
-
-def hash_components_to_parts(components: List[Component]) -> List[Part]:
-    dict_: Dict[str, Part] = {}
-    for comp in components:
-        if comp.DisplayName in dict_:
-            continue
-        dict_[comp.DisplayName] = comp.Prototype
-    return dict_.values()
-
-
 def color_layer_solid_body_1(part: Part, layer: int, color: int) -> None:
     session().Parts.SetDisplay(part, False, False)
     display_part().Layers.SetState(layer, State.Selectable)
@@ -47,9 +21,6 @@ def color_layer_solid_body_1(part: Part, layer: int, color: int) -> None:
         else:
             refset = part_crt_reference_set(display_part(), "PART")
             refset.AddObjectsToReferenceSet(solid_body_layer_1)
-
-    # do_
-    # ufsession.Modeling.Update()
 
     assert (
         len(solid_body_layer_1) == 1
@@ -88,6 +59,13 @@ def __main__(layer: int, color: int) -> None:
     components = select_components()
     if len(components) == 0:
         return
+    
+    # for x in components:
+    #     print_(x.Prototype)
+    
+    # return
+    # parts =[]
+
     parts = hash_components_to_parts(components)
     original = display_part()
     try:
@@ -102,27 +80,19 @@ def __main__(layer: int, color: int) -> None:
     try:
         ancestors: Dict[str, Part] = {}
         for part in parts:
-            part_occs: Tuple[List[int], int] = ufsession().Assem.AskOccsOfPart(
+            part_occs: Tuple[Sequence[int], int] = ufsession().Assem.AskOccsOfPart(
                 display_part().Tag, part.Tag
             )
-
-            descendants = []
             for t in part_occs[0]:
-                # set layer of component
-                j = cast_tagged_object(t)
-                # print_(j.DisplayName)
-                # print_(j.Parent.DisplayName)
-
+                j = cast_component(t)
                 for ancest in component_ancestors(j):
                     if ancest.DisplayName not in ancestors:
-                        ancestors[ancest.DisplayName] = ancest.Prototype
+                        ancestors[ancest.DisplayName] = ancest.Prototype # type: ignore
                 try:
-                    for ancest in ancestors:
-                        session().Parts.SetDisplay(ancestors[ancest], False, False)
+                    for ancest in ancestors.keys():
+                        session().Parts.SetDisplay(ancestors[ancest], False, False) # type: ignore
                         display_part().Layers.SetState(layer, State.Selectable)
-                        part_occs1: Tuple[
-                            List[int], int
-                        ] = ufsession().Assem.AskOccsOfPart(
+                        part_occs1 = ufsession().Assem.AskOccsOfPart(
                             ancestors[ancest].Tag, part.Tag
                         )
 
@@ -132,15 +102,7 @@ def __main__(layer: int, color: int) -> None:
                             cmp.SetLayerOption(-1)
                             cmp.DirectOwner.ReplaceReferenceSet(cmp, "PART")
                             cmp.RedisplayObject()
-
-                    # print_(ancest)
                 finally:
                     session().Parts.SetDisplay(original, False, False)
-
-                # session().Parts.SetDisplay(j.Parent.Prototype, False, False)
-
     finally:
         session().Parts.SetDisplay(original, False, False)
-
-
-# __main__(10, 186)

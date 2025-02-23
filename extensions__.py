@@ -1,70 +1,60 @@
-from typing import List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 import NXOpen
-from NXOpen import (
-    WCS,
-    Body,
-    CartesianCoordinateSystem,
-    Curve,
-    Expression,
-    Line,
-    Matrix3x3,
-    NXObject,
-    NXObjectAttributeType,
-    Part,
-    Point,
-    Point3d,
-    ReferenceSet,
-    SmartObject,
-    TaggedObject,
-    Update,
-    UpdateOption,
-    Vector3d,
-)
-from NXOpen.Assemblies import Component
-from NXOpen.Drawings import DrawingSheet
-from NXOpen.Features import Block, BooleanFeature, Cylinder, ExtractFace, Feature
-from NXOpen.UF import UFSession as UFSession_
+from NXOpen import *
+from NXOpen import UF
+from NXOpen.Assemblies import *
+from NXOpen.Drawings import *
+from NXOpen.Features import *
+from NXOpen.UF import *
 
 
 class WithLockUpdates:
+    # def __enter__(self):
+    #     session().UpdateManager.SetUpdateLock(True)
+
+    # def __exit__(self):
+    #     session().UpdateManager.SetUpdateLock(False)
+    #     ufsession().GetUFSession().Modl.Update()
     def __enter__(self):
-        session().UpdateManager.SetUpdateLock(True)
+        # self.file = open(self.filename, self.mode)
+        # return self.file
+        raise NotImplementedError()
 
-    def __exit__(self):
-        session().UpdateManager.SetUpdateLock(False)
-        ufsession().GetUFSession().Modl.Update()
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # self.file.close()
+        raise NotImplementedError()
 
 
-def session() -> NXOpen.Session:
-    return NXOpen.Session.GetSession()
+def session() -> Session:
+    return Session.GetSession()
 
 
 def wcs() -> WCS:
     return display_part().WCS
 
 
-def ufsession() -> UFSession_:
-    return NXOpen.UF.UFSession.GetUFSession()
+def ufsession() -> UFSession:
+    return UF.UFSession.GetUFSession()
 
 
 def select_components() -> List[Component]:
-    selected_objects = NXOpen.UI.GetUI().SelectionManager.SelectTaggedObjects(
+    selected_objects = UI.GetUI().SelectionManager.SelectTaggedObjects(
         "Select components",
         "Select components",
-        NXOpen.SelectionSelectionScope.AnyInAssembly,
-        NXOpen.SelectionSelectionAction.ClearAndEnableSpecific,
+        SelectionSelectionScope.AnyInAssembly,
+        SelectionSelectionAction.ClearAndEnableSpecific,
         False,
         False,
-        [NXOpen.Selection.MaskTriple(63, 0, 0)],
+        [Selection.MaskTriple(63, 0, 0)],
     )
     return cast_components(selected_objects[1])
 
 
-def display_part() -> NXOpen.Part:
+def display_part() -> Part:
     return session().Parts.Display
 
 
-def work_part() -> NXOpen.Part:
+def work_part() -> Part:
     return session().Parts.Work
 
 
@@ -73,7 +63,7 @@ def work_component() -> Component:
 
 
 def cast_tagged_object(tag: int) -> TaggedObject:
-    return NXOpen.TaggedObjectManager.GetTaggedObject(tag)
+    return TaggedObjectManager.GetTaggedObject(tag)
 
 
 def cast_component(obj: Union[TaggedObject, int]) -> Component:
@@ -81,6 +71,13 @@ def cast_component(obj: Union[TaggedObject, int]) -> Component:
         tagged_object = cast_tagged_object(obj)
         return cast_component(tagged_object)
     assert isinstance(obj, Component), f"Could not cast type {obj} to Component"
+    return obj
+
+def cast_part(obj: Union[TaggedObject, int]) -> Part:
+    if isinstance(obj, int):
+        tagged_object = cast_tagged_object(obj)
+        return cast_part(tagged_object)
+    assert isinstance(obj, 'NXOpen.Part'), f"Could not cast type {obj} to Part"
     return obj
 
 
@@ -95,44 +92,48 @@ def cycle_by_name(name: str) -> List[TaggedObject]:
     objects: List[TaggedObject] = []
     tag = 0
     while True:
-        tag = UFSession_.GetUFSession().Obj.CycleByName(name, tag)
+        tag = ufsession().Obj.CycleByName(name, tag)
         if tag == 0:
             break
         objects.append(cast_tagged_object(tag))
     return objects
 
 
-def part_get_reference_set(part: Part, name: str) -> ReferenceSet:
+def part_get_reference_set_or_none(part: Part, name: str) -> Optional[ReferenceSet]:
     for ref in part.GetAllReferenceSets():
         if ref.Name == name:
             return ref
     return None
 
+def part_get_reference_set(part: Part, name: str) -> ReferenceSet:
+    refset = part_get_reference_set_or_none(part,name)
+    if refset is None:
+        raise ValueError()
+    return refset
 
 def GetProtoPartOcc(owningPart: Part, partOcc: Component) -> Component:
-    instance = ufsession().Assem.AskInstOfPartOcc(partOcc.Tag)
-    prototypeChildPartOcc = ufsession().Assem.AskPartOccOfInst(
-        owningPart.ComponentAssembly.RootComponent.Tag, instance
-    )
-    return cast_tagged_object(prototypeChildPartOcc)
+    instance = ufsession().Assem.AskInstOfPartOcc(partOcc.Tag)  # type: ignore
+    prototypeChildPartOcc = ufsession().Assem.AskPartOccOfInst(owningPart.ComponentAssembly.RootComponent.Tag, instance)  # type: ignore
+    return cast_component(prototypeChildPartOcc)
 
 
 def SubtractLinkedBody(
     owningPart: Part, subtractBody: Body, linkedBody: ExtractFace
 ) -> BooleanFeature:
-    booleanBuilder = owningPart.Features.CreateBooleanBuilderUsingCollector(
-        Feature.Null
-    )
-    try:
-        booleanBuilder.Target = subtractBody
-        collector = owningPart.ScCollectors.CreateCollector()
-        rules = [owningPart.ScRuleFactory.CreateRuleBodyDumb(linkedBody.GetBodies())]
-        collector.ReplaceRules(rules, False)
-        booleanBuilder.ToolBodyCollector = collector
-        booleanBuilder.Operation = Feature.BooleanType.Subtract
-        return booleanBuilder.Commit()
-    finally:
-        booleanBuilder.Destroy()
+    # booleanBuilder = owningPart.Features.CreateBooleanBuilderUsingCollector(
+    #     Feature.Null
+    # )
+    # try:
+    #     booleanBuilder.Target = subtractBody
+    #     collector = owningPart.ScCollectors.CreateCollector()
+    #     rules = [owningPart.ScRuleFactory.CreateRuleBodyDumb(linkedBody.GetBodies())]
+    #     collector.ReplaceRules(rules, False)
+    #     booleanBuilder.ToolBodyCollector = collector
+    #     booleanBuilder.Operation = Feature.BooleanType.Subtract
+    #     return booleanBuilder.Commit()
+    # finally:
+    #     booleanBuilder.Destroy()
+    raise NotImplementedError()
 
 
 def component_members(component: Component) -> Sequence[NXObject]:
@@ -140,30 +141,31 @@ def component_members(component: Component) -> Sequence[NXObject]:
 
 
 def CreateLinkedBody(owningPart: Part, child: Component) -> ExtractFace:
-    toolBodies = [
-        obj
-        for obj in component_members(child)
-        if isinstance(obj, Body) and obj.IsSolidBody
-    ]
-    linkedBodyBuilder = owningPart.Features.CreateExtractFaceBuilder(
-        NXOpen.Features.Feature.Null
-    )
-    try:
-        linkedBodyBuilder.Associative = True
-        linkedBodyBuilder.FeatureOption = (
-            NXOpen.Features.ExtractFaceBuilder.FeatureOptionType.OneFeatureForAllBodies
-        )
-        linkedBodyBuilder.FixAtCurrentTimestamp = False
-        linkedBodyBuilder.ParentPart = (
-            NXOpen.Features.ExtractFaceBuilder.ParentPartType.OtherPart
-        )
-        linkedBodyBuilder.Type = NXOpen.Features.ExtractFaceBuilder.ExtractType.Body
-        linkedBodyBuilder.ExtractBodyCollector.ReplaceRules(
-            [owningPart.ScRuleFactory.CreateRuleBodyDumb(toolBodies)], False
-        )
-        return linkedBodyBuilder.Commit()
-    finally:
-        linkedBodyBuilder.Destroy()
+    # toolBodies = [
+    #     obj
+    #     for obj in component_members(child)
+    #     if isinstance(obj, Body) and obj.IsSolidBody
+    # ]
+    # linkedBodyBuilder = owningPart.Features.CreateExtractFaceBuilder(
+    #     Features.Feature.Null
+    # )
+    # try:
+    #     linkedBodyBuilder.Associative = True
+    #     linkedBodyBuilder.FeatureOption = (
+    #         Features.ExtractFaceBuilder.FeatureOptionType.OneFeatureForAllBodies
+    #     )
+    #     linkedBodyBuilder.FixAtCurrentTimestamp = False
+    #     linkedBodyBuilder.ParentPart = (
+    #         Features.ExtractFaceBuilder.ParentPartType.OtherPart
+    #     )
+    #     linkedBodyBuilder.Type = Features.ExtractFaceBuilder.ExtractType.Body
+    #     linkedBodyBuilder.ExtractBodyCollector.ReplaceRules(
+    #         [owningPart.ScRuleFactory.CreateRuleBodyDumb(toolBodies)], False
+    #     )
+    #     return linkedBodyBuilder.Commit()
+    # finally:
+    #     linkedBodyBuilder.Destroy()
+    raise NotImplementedError()
 
 
 def component_is_loaded(component: Component) -> bool:
@@ -218,38 +220,39 @@ def AddFastenersGetLinkedBody(owning_part: Part, child: Component):
     for feature in list(owning_part.Features):
         if feature.FeatureType != "LINKED_BODY":
             continue
-        xform = ufsession().Wave.AskLinkXform(feature.Tag)
-        if xform == NXOpen.Tag.Null:
-            continue
-        fromPartOcc = ufsession().So.AskAssyCtxtPartOcc(
+        xform = ufsession().Wave.AskLinkXform(feature.Tag)  # type: ignore
+        if xform == 0:
+            continue  # 0 is Tag.Null
+
+        fromPartOcc = ufsession().So.AskAssyCtxtPartOcc( # type: ignore
             xform, owning_part.ComponentAssembly.RootComponent.Tag
-        )
+        )  # type: ignore
         if fromPartOcc == child.Tag:
             return feature
     return None
 
 
-def is_shcs(part: Part) -> bool:
+def is_shcs(obj: Union[Part, Component, str]) -> bool:
     raise Exception()
 
 
-def is_dwl(part: Part) -> bool:
+def is_dwl(obj: Union[Part, Component, str]) -> bool:
     raise Exception()
 
 
-def is_jck_screw(part: Part) -> bool:
+def is_jck_screw(obj: Union[Part, Component, str]) -> bool:
     raise Exception()
 
 
-def is_jck_screw_tsg(part: Part) -> bool:
+def is_jck_screw_tsg(obj: Union[Part, Component, str]) -> bool:
     raise Exception()
 
 
-def is_fastener(part: Part) -> bool:
+def is_fastener(obj: Union[Part, Component, str]) -> bool:
     raise Exception()
 
 
-def matrix3x3_identity():
+def matrix3x3_identity() -> Matrix3x3:
     raise Exception()
 
 
@@ -262,20 +265,57 @@ def part_get_dynamic_block(part: Part) -> Block:
 
 
 def block_get_origin(block: Block) -> Point3d:
-    ...
+    raise NotImplementedError()
 
 
 def block_get_orientation(block: Block) -> Matrix3x3:
-    ...
+    raise NotImplementedError()
 
 
 def point3d_equals_point3d(pnt0: Point3d, pnt1: Point3d) -> bool:
     raise Exception()
 
 
-def map_csys_to_csys(
+def map_point_csys_to_csys(
     origin: Point3d, csys0: CartesianCoordinateSystem, csys1: CartesianCoordinateSystem
 ) -> Point3d:
+    raise Exception()
+
+
+def map_vector_csys_to_csys(
+    vec: Vector3d, csys0: CartesianCoordinateSystem, csys1: CartesianCoordinateSystem
+) -> Vector3d:
+    raise Exception()
+
+
+def map_matrix_csys_to_csys(
+    matrix: Matrix3x3,
+    csys0: CartesianCoordinateSystem,
+    csys1: CartesianCoordinateSystem,
+) -> Matrix3x3:
+    raise Exception()
+
+
+def part_has_reference_set(part: Part, name: str) -> bool:
+    return any(r.Name == name for r in part.GetAllReferenceSets())
+
+def part_crt_reference_set(part: Part, name: str) -> ReferenceSet:
+    refset = part.CreateReferenceSet()
+    refset.SetName(name)
+    return refset
+
+
+def hash_components_to_parts(components: List[Component]) -> List[Part]:
+    dict_: Dict[str, Part] = {}
+    for comp in components:
+        if comp.DisplayName in dict_:
+            continue
+        # print(comp.DisplayName)
+        dict_[comp.DisplayName]  = comp.Prototype
+    return dict_.values()
+
+
+def session_get_or_open_part(leaf_or_path: str) -> Part:
     raise Exception()
 
 
@@ -286,20 +326,16 @@ def MakePlanView(csys) -> None:
     set_display_part(work_part())
     planView = part_get_modeling_view(work_part(), "PLAN")
     if planView is not None:
-        layout = work_part().Layouts.FindObject(l1)
+        layout = work_part().Layouts.FindObject(l1)  # type: ignore
         modelingView1 = work_part().ModelingViews.WorkView
         modelingView2 = work_part().ModelingViews.FindObject(top)
         layout.ReplaceView(modelingView1, modelingView2, True)
         tempView = work_part().ModelingViews.FindObject(plan)
         delete_objects([tempView])
-    ufsession().View.SetViewMatrix("", 3, csys.Tag, None)
-    modelingView1 = display_part().Views.SaveAs(
-        display_part().ModelingViews.WorkView, plan, False, False
-    )
+    ufsession().View.SetViewMatrix("", 3, csys.Tag, None)  # type: ignore
+    modelingView1 = display_part().Views.SaveAs(display_part().ModelingViews.WorkView, plan, False, False)  # type: ignore
     modelingView2 = display_part().ModelingViews.FindObject(top)
-    display_part().Layouts.FindObject(l1).ReplaceView(
-        modelingView1, modelingView2, True
-    )
+    display_part().Layouts.FindObject(l1).ReplaceView(modelingView1, modelingView2, True)  # type: ignore
     delete_objects([csys])
 
 
@@ -335,7 +371,7 @@ def DescendantParts(part: Part) -> List[Part]:
 
 def delete_objects(objects: Sequence[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "DELETE")
+    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE") # type: ignore
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
@@ -377,7 +413,7 @@ def print_(obj: object) -> None:
 
 
 # get all objects like {point, lines, bodies} and so on
-def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
+def all_objects(part: Part) -> List[NXObject]:
     raise Exception()
 
 
@@ -395,18 +431,18 @@ def all_objects(part: NXOpen.Part) -> List[NXOpen.NXObject]:
 #             Binormal
 #         }
 
-#         //public static NXOpen.Assemblies.Component __AddComponent(
-#         //   this NXOpen.BasePart basePart,
-#         //   NXOpen.BasePart partToAdd,
+#         //public static Assemblies.Component __AddComponent(
+#         //   this BasePart basePart,
+#         //   BasePart partToAdd,
 #         //   string referenceSet = "Entire Part",
 #         //   string componentName = null,
-#         //   NXOpen.Point3d? origin = null,
-#         //   NXOpen.Matrix3x3? orientation = null,
+#         //   Point3d? origin = null,
+#         //   Matrix3x3? orientation = null,
 #         //   int layer = 1)
 #         //{
 #         //    basePart.__AssertIsWorkPart();
-#         //    NXOpen.Point3d __origin = origin ?? new NXOpen.Point3d(0d, 0d, 0d);
-#         //    NXOpen.Matrix3x3 __orientation = orientation ?? new NXOpen.Matrix3x3
+#         //    Point3d __origin = origin ?? new Point3d(0d, 0d, 0d);
+#         //    Matrix3x3 __orientation = orientation ?? new Matrix3x3
 #         //    {
 #         //        Xx = 1,
 #         //        Xy = 0,
@@ -446,7 +482,7 @@ def part_create_cylinder(
     <returns>An NX.Cylinder feature</returns>
     """
     # assert part_is_work_part(part)
-    # builder = part.Features.CreateCylinderBuilder(NXOpen.Features.Feature.Null)
+    # builder = part.Features.CreateCylinderBuilder(Features.Feature.Null)
     # try:
     #     builder.Type = CylinderBuilder.Types.AxisDiameterAndHeight
     #     builder.BooleanOption.Type = BooleanOperation.BooleanType.Create
@@ -504,7 +540,7 @@ def part_get_expression(part: Part, name: str) -> Expression:
     return expression
 
 
-#         //public static bool _HasModelingView(this NXOpen.BasePart part, string modelingViewName)
+#         //public static bool _HasModelingView(this BasePart part, string modelingViewName)
 #         //{
 #         //    return part._FindModelingViewOrNull(modelingViewName) != null;
 #         //}
@@ -520,18 +556,11 @@ def part_get_expression(part: Part, name: str) -> Expression:
 #         }
 
 
-def part_get_modeling_view(part: Part, name: str):# -> ModelingView:
-    #         public static ModelingView __FindModelingView(this BasePart part, string modelingViewName)
-    #         {
-    #             return part.__FindModelingViewOrNull(modelingViewName)
-    #                 ?? throw new Exception(
-    #                     $"Could not find modeling view in part \"{part.Leaf}\" with name \"{modelingViewName}\"."
-    #                 );
-    #         }
-    raise NotImplementedError()
 
-def component_set_reference_set(component:Component, name:str)->None:
-    component.DirectOwner.ReplaceReferenceSet(component,name)
+
+
+def component_set_reference_set(component: Component, name: str) -> None:
+    component.DirectOwner.ReplaceReferenceSet(component, name)
 
 
 def part_descendant_parts(part: Part) -> Sequence[Part]:
@@ -579,7 +608,7 @@ def part_descendant_parts(part: Part) -> Sequence[Part]:
 #         /// <param name="pa">Apex point</param>
 #         /// <param name="p1">Last point</param>
 #         /// <param name="radius">Radius</param>
-#         /// <returns>An NXOpen.Arc representing the fillet</returns>
+#         /// <returns>An Arc representing the fillet</returns>
 #         /// <remarks>
 #         ///     <para>
 #         ///         The fillet will be tangent to the lines p0-pa and pa-p1.
@@ -625,7 +654,7 @@ def part_crt_boolean_feature(
     #         /// <returns>NX.Boolean feature formed by operation</returns>
     #         {
     assert part_is_work_part(part)
-    builder = part.Features.CreateBooleanBuilder(Feature.Null)
+    builder = part.Features.CreateBooleanBuilder(Feature.Null)  # type: ignore
 
     try:
         builder.Operation = boolean_type
@@ -645,14 +674,14 @@ def is_display_part(part: Part) -> bool:
 #         public static TaggedObject[] __CycleObjsInPart1(this BasePart basePart, string name)
 #         {
 #             //basePart._AssertIsWorkPart();
-#             //NXOpen.Tag _tag = NXOpen.Tag.Null;
-#             //var list = new List<NXOpen.TaggedObject>();
+#             //Tag _tag = Tag.Null;
+#             //var list = new List<TaggedObject>();
 
 #             //while (true)
 #             //{
 #             //    ufsession_.Obj.CycleObjsInPart1(name, ref _tag);
 
-#             //    if (_tag == NXOpen.Tag.Null)
+#             //    if (_tag == Tag.Null)
 #             //        break;
 
 #             //    list.Add(session_.GetObjectManager().GetTaggedObject(_tag));
@@ -1212,7 +1241,7 @@ def part_is_see_3d_data(part: Part) -> bool:
     #             );
     #             return descriptionValue != null && regex.IsMatch(descriptionValue.ToUpper());
     #         }
-    pass
+    raise NotImplementedError()
 
 
 #         /// <summary>Creates a tube feature, given spine and inner/outer diameters</summary>
@@ -1269,23 +1298,23 @@ def part_is_see_3d_data(part: Part) -> bool:
 #             part.Close(closeWholeTree_, closeModified_, null);
 #         }
 
-#         ///// <summary>Constructs a NXOpen.Arc from center, rotation matrix, radius, angles</summary>
+#         ///// <summary>Constructs a Arc from center, rotation matrix, radius, angles</summary>
 #         ///// <param name="center">Center point (in absolute coordinates)</param>
 #         ///// <param name="matrix">Orientation</param>
 #         ///// <param name="radius">Radius</param>
 #         ///// <param name="angle1">Start angle (in degrees)</param>
 #         ///// <param name="angle2">End angle (in degrees)</param>
-#         ///// <returns>A <see cref="NXOpen.Arc">NXOpen.Arc</see> object</returns>
-#         //public static NXOpen.Arc Arc(
-#         //    this NXOpen.BasePart part,
-#         //    NXOpen.Point3d center,
-#         //    NXOpen.Matrix3x3 matrix,
+#         ///// <returns>A <see cref="Arc">Arc</see> object</returns>
+#         //public static Arc Arc(
+#         //    this BasePart part,
+#         //    Point3d center,
+#         //    Matrix3x3 matrix,
 #         //    double radius,
 #         //    double angle1,
 #         //    double angle2)
 #         //{
-#         //    NXOpen.Vector3d axisX = matrix._AxisX();
-#         //    NXOpen.Vector3d axisY = matrix._AxisY();
+#         //    Vector3d axisX = matrix._AxisX();
+#         //    Vector3d axisY = matrix._AxisY();
 #         //    return part.__CreateArc(center, axisX, axisY, radius, angle1, angle2);
 #         //}
 
@@ -1466,24 +1495,24 @@ def part_is_see_3d_data(part: Part) -> bool:
 #             //basePart.__AssertIsWorkPart();
 #             //icurve.__IsLinearCurve();
 #             //icurve.__IsPlanar();
-#             //NXOpen.Session.UndoMarkId markId = SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "Snap_TangentLineAngle999");
-#             //NXOpen.Part workPart = __work_part_;
-#             //NXOpen.Features.AssociativeLine associativeLine = null;
-#             //NXOpen.Features.AssociativeLineBuilder associativeLineBuilder = workPart.BaseFeatures.CreateAssociativeLineBuilder(associativeLine);
+#             //Session.UndoMarkId markId = SetUndoMark(Session.MarkVisibility.Invisible, "Snap_TangentLineAngle999");
+#             //Part workPart = __work_part_;
+#             //Features.AssociativeLine associativeLine = null;
+#             //Features.AssociativeLineBuilder associativeLineBuilder = workPart.BaseFeatures.CreateAssociativeLineBuilder(associativeLine);
 
 #             //using (session_.using_builder_destroyer(associativeLineBuilder))
 #             //{
-#             //    associativeLineBuilder.StartPointOptions = NXOpen.Features.AssociativeLineBuilder.StartOption.Tangent;
+#             //    associativeLineBuilder.StartPointOptions = Features.AssociativeLineBuilder.StartOption.Tangent;
 #             //    associativeLineBuilder.StartTangent.SetValue(icurve, null, helpPoint);
-#             //    associativeLineBuilder.EndPointOptions = NXOpen.Features.AssociativeLineBuilder.EndOption.AtAngle;
+#             //    associativeLineBuilder.EndPointOptions = Features.AssociativeLineBuilder.EndOption.AtAngle;
 #             //    associativeLineBuilder.EndAtAngle.Value = DatumAxis(_Point3dOrigin, _Point3dOrigin._Add(_Vector3dX())).DatumAxis;
 #             //    associativeLineBuilder.EndAngle.RightHandSide = angle.ToString();
 #             //    associativeLineBuilder.Associative = false;
 #             //    associativeLineBuilder.Commit();
-#             //    NXOpen.Line obj = (NXOpen.Line)associativeLineBuilder.GetCommittedObjects()[0];
-#             //    NXOpen.Point3d position = obj.StartPoint;
-#             //    NXOpen.Point3d position2 = obj.EndPoint;
-#             //    NXOpen.Point3d[] array = Compute.ClipRay(new Geom.Curve.Ray(position, position2._Subtract(position)));
+#             //    Line obj = (Line)associativeLineBuilder.GetCommittedObjects()[0];
+#             //    Point3d position = obj.StartPoint;
+#             //    Point3d position2 = obj.EndPoint;
+#             //    Point3d[] array = Compute.ClipRay(new Geom.Curve.Ray(position, position2._Subtract(position)));
 #             //    UndoToMark(markId, "Snap_TangentLineAngle999");
 #             //    DeleteUndoMark(markId, "Snap_TangentLineAngle999");
 #             //    return Line(array[0], array[1]);
@@ -1507,7 +1536,7 @@ def part_is_see_3d_data(part: Part) -> bool:
 #         /// </remarks>
 #         /// <returns>A Snap.NX.OffsetCurve object</returns>
 #         [Obsolete(
-#             "Deprecated in NX8.5, please use Snap.Create.OffsetCurve(double, double, NXOpen.Point3d, NXOpen.Vector3d, params NX.ICurve[]) instead."
+#             "Deprecated in NX8.5, please use Snap.Create.OffsetCurve(double, double, Point3d, Vector3d, params NX.ICurve[]) instead."
 #         )]
 #         internal static OffsetCurve __CreateOffsetCurve(
 #             this BasePart basePart,
@@ -1674,8 +1703,8 @@ def part_is_see_3d_data(part: Part) -> bool:
 #             //    }
 #             //}
 
-#             //builder.ComputeOffsetDirection(seedPoint: (icurves[num] is NXOpen.Edge)
-#             //    ? Compute.ClosestPoints(pos, (NXOpen.Curve)icurves[num]).Point2
+#             //builder.ComputeOffsetDirection(seedPoint: (icurves[num] is Edge)
+#             //    ? Compute.ClosestPoints(pos, (Curve)icurves[num]).Point2
 #             //    : Compute.ClosestPoints(pos, (Edge)icurves[num]).Point2, seedEntity: icurves[num], offsetDirection: out Vector3d offsetDirection, startPoint: out Point3d _);
 
 #             //return helpVector._Multiply(offsetDirection) < 0.0;
@@ -1978,31 +2007,31 @@ def part_is_see_3d_data(part: Part) -> bool:
 #         [Obsolete(nameof(NotImplementedException))]
 #         public static Body __Widget()
 #         {
-#             //NXOpen.Point3d origin = _Point3dOrigin;
-#             //NXOpen.Vector3d axisX = Extensions._Vector3dX();
-#             //NXOpen.Vector3d axisY = Extensions._Vector3dY();
-#             //NXOpen.Vector3d axisZ = Extensions._Vector3dZ();
+#             //Point3d origin = _Point3dOrigin;
+#             //Vector3d axisX = Extensions._Vector3dX();
+#             //Vector3d axisY = Extensions._Vector3dY();
+#             //Vector3d axisZ = Extensions._Vector3dZ();
 #             //double num = 48.0;
 #             //double num2 = 40.0;
 #             //double num3 = 30.0;
 #             //double[] diameters = new double[2] { num, num2 };
 #             //double num4 = 80.0;
 #             //double num5 = 2.0 * num3;
-#             //NXOpen.Body body = Cone(origin, axisY, diameters, 90).GetBodies()[0];
-#             //NXOpen.Body body2 = Cylinder(new NXOpen.Point3d(0.0, num4 / 2.0, 0.0), axisZ, num5, num3).GetBodies()[0];
-#             //NXOpen.Line line = Line(0.0 - num, 0.0, 0.9 * num, 0.0 - num, num4, 0.7 * num);
-#             //NXOpen.Body body3 = ExtrudeSheet(new NXOpen.ICurve[1] { line }, axisX, 200);
-#             //NXOpen.Line line2 = Line(0.0, -10.0, -2.0 * num, 0.0, num4 + 10.0, -2.0 * num);
-#             //NXOpen.Body body4 = ExtrudeSheet(new NXOpen.ICurve[1] { line2 }, axisZ, 200);
+#             //Body body = Cone(origin, axisY, diameters, 90).GetBodies()[0];
+#             //Body body2 = Cylinder(new Point3d(0.0, num4 / 2.0, 0.0), axisZ, num5, num3).GetBodies()[0];
+#             //Line line = Line(0.0 - num, 0.0, 0.9 * num, 0.0 - num, num4, 0.7 * num);
+#             //Body body3 = ExtrudeSheet(new ICurve[1] { line }, axisX, 200);
+#             //Line line2 = Line(0.0, -10.0, -2.0 * num, 0.0, num4 + 10.0, -2.0 * num);
+#             //Body body4 = ExtrudeSheet(new ICurve[1] { line2 }, axisZ, 200);
 #             //TrimBody(body2, body3, direction: true);
-#             //NXOpen.Body body5 = TrimBody(body2, body4, direction: false).GetBodies()[0];
-#             //NXOpen.Body body6 = Unite(TrimBody(body, body4, direction: false), body5);
-#             //NXOpen.Edge[] edges = body6.Edges;
-#             //foreach (NXOpen.Edge edge in edges)
+#             //Body body5 = TrimBody(body2, body4, direction: false).GetBodies()[0];
+#             //Body body6 = Unite(TrimBody(body, body4, direction: false), body5);
+#             //Edge[] edges = body6.Edges;
+#             //foreach (Edge edge in edges)
 #             //{
 #             //    double[] arclengthPercents = new double[2] { 0.0, 100.0 };
 #             //    double[] radii = new double[2] { 9.0, 4.0 };
-#             //    bool flag = edge.SolidEdgeType == NXOpen.Edge.EdgeType.Intersection;
+#             //    bool flag = edge.SolidEdgeType == Edge.EdgeType.Intersection;
 #             //    bool flag2 = edge.Vertices.Length > 1;
 #             //    if (flag && flag2)
 #             //    {
@@ -2010,24 +2039,24 @@ def part_is_see_3d_data(part: Part) -> bool:
 #             //    }
 #             //}
 
-#             //NXOpen.Point3d position = new NXOpen.Point3d(0.0, 0.0, num / 2.0);
-#             //NXOpen.Point3d position2 = new NXOpen.Point3d(0.0, 5.0, 0.0);
-#             //NXOpen.Point3d position3 = new NXOpen.Point3d(0.0, 0.0, (0.0 - num) / 2.0);
-#             //NXOpen.Spline spline = BezierCurve(position, position2, position3);
-#             //NXOpen.Body body7 = ExtrudeSheet(new NXOpen.ICurve[1] { spline }, -axisX, num).Body;
-#             //NXOpen.Body targetBody = TrimBody(body6, body7, direction: true);
-#             //position = new NXOpen.Point3d(0.0, num4 + 10.0, 0.0);
-#             //position2 = new NXOpen.Point3d(0.0, num4, 20.0);
-#             //position3 = new NXOpen.Point3d(0.0, num4 - 15.0, 25.0);
-#             //NXOpen.Spline spline2 = BezierCurve(position, position2, position3);
-#             //NXOpen.Body body8 = RevolveSheet(new NXOpen.ICurve[1] { spline2 }, _Point3dOrigin, Extensions._AxisY());
-#             //NXOpen.Body body9 = TrimBody(targetBody, body8, direction: true);
-#             //NXOpen.Edge edge2 = null;
-#             //NXOpen.Edge edge3 = null;
+#             //Point3d position = new Point3d(0.0, 0.0, num / 2.0);
+#             //Point3d position2 = new Point3d(0.0, 5.0, 0.0);
+#             //Point3d position3 = new Point3d(0.0, 0.0, (0.0 - num) / 2.0);
+#             //Spline spline = BezierCurve(position, position2, position3);
+#             //Body body7 = ExtrudeSheet(new ICurve[1] { spline }, -axisX, num).Body;
+#             //Body targetBody = TrimBody(body6, body7, direction: true);
+#             //position = new Point3d(0.0, num4 + 10.0, 0.0);
+#             //position2 = new Point3d(0.0, num4, 20.0);
+#             //position3 = new Point3d(0.0, num4 - 15.0, 25.0);
+#             //Spline spline2 = BezierCurve(position, position2, position3);
+#             //Body body8 = RevolveSheet(new ICurve[1] { spline2 }, _Point3dOrigin, Extensions._AxisY());
+#             //Body body9 = TrimBody(targetBody, body8, direction: true);
+#             //Edge edge2 = null;
+#             //Edge edge3 = null;
 #             //edges = body9.Edges;
-#             //foreach (NXOpen.Edge edge4 in edges)
+#             //foreach (Edge edge4 in edges)
 #             //{
-#             //    bool num6 = edge4.SolidEdgeType == NXOpen.Edge.EdgeType.Circular;
+#             //    bool num6 = edge4.SolidEdgeType == Edge.EdgeType.Circular;
 #             //    bool flag3 = edge4.ArcLength > 1.2 * num2;
 #             //    if (num6 && flag3)
 #             //    {
@@ -2042,17 +2071,17 @@ def part_is_see_3d_data(part: Part) -> bool:
 
 #             //EdgeBlend(10, edge2);
 #             //EdgeBlend(7, edge3);
-#             //NXOpen.Body body10 = Cylinder(new NXOpen.Point3d(0.0 - num, 0.3 * num4, 0.0), axisX, 200, 20).Body;
-#             //NXOpen.Body body11 = Subtract(body9, body10).Body;
-#             //NXOpen.Body body12 = Sphere(new NXOpen.Point3d((0.0 - num2) / 2.0, 0.7 * num4, 0.0), 15).Body;
+#             //Body body10 = Cylinder(new Point3d(0.0 - num, 0.3 * num4, 0.0), axisX, 200, 20).Body;
+#             //Body body11 = Subtract(body9, body10).Body;
+#             //Body body12 = Sphere(new Point3d((0.0 - num2) / 2.0, 0.7 * num4, 0.0), 15).Body;
 #             //Snap.NX.Feature feature = Unite(body11, body12);
-#             //NXOpen.Body body13 = feature.Body;
+#             //Body body13 = feature.Body;
 #             //Snap.NX.Feature.Orphan(feature);
 #             //Snap.NX.NXObject.Delete(body7, body4, body3, body8);
 #             //Snap.NX.NXObject.Delete(line2, line, spline, spline2);
 #             //body13.Color = System.Drawing.Color.Black;
-#             //NXOpen.Face[] faces = body13.Faces;
-#             //foreach (NXOpen.Face face in faces)
+#             //Face[] faces = body13.Faces;
+#             //foreach (Face face in faces)
 #             //{
 #             //    if (face.SolidFaceType == Face.FaceType.Planar)
 #             //    {
@@ -2321,7 +2350,7 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 #         [Obsolete(nameof(NotImplementedException))]
 #         public static TaggedObject[] __CycleAll(this BasePart part)
 #         {
-#             //var objects = new List<NXOpen.TaggedObject>();
+#             //var objects = new List<TaggedObject>();
 
 #             //ufsession_.Obj.CycleAll
 
@@ -2470,8 +2499,8 @@ def part_dynamic_block_or_none(part: Part) -> Union[Block, None]:
 
 #         /// <summary>Creates an NX.Arc from center, axes, radius, angles in degrees</summary>
 #         /// <param name="center">Center point (in absolute coordinates)</param>
-#         /// <param name="axisX">Unit NXOpen.Vector3d along X-axis (where angle = 0)</param>
-#         /// <param name="axisY">Unit NXOpen.Vector3d along Y-axis (where angle = 90)</param>
+#         /// <param name="axisX">Unit Vector3d along X-axis (where angle = 0)</param>
+#         /// <param name="axisY">Unit Vector3d along Y-axis (where angle = 90)</param>
 #         /// <param name="radius">Radius</param>
 #         /// <param name="angle1">Start angle (in degrees)</param>
 #         /// <param name="angle2">End angle (in degrees)</param>
@@ -2666,14 +2695,14 @@ def part_fit(part: Part) -> None:
 #         }
 
 
-#         /// <summary>Constructs a NXOpen.Arc from center, axes, radius, angles</summary>
+#         /// <summary>Constructs a Arc from center, axes, radius, angles</summary>
 #         /// <param name="center">Center point (in absolute coordinates)</param>
 #         /// <param name="axisX">Unit vector along X-axis (where angle = 0)</param>
 #         /// <param name="axisY">Unit vector along Y-axis (where angle = 90)</param>
 #         /// <param name="radius">Radius</param>
 #         /// <param name="angle1">Start angle (in degrees)</param>
 #         /// <param name="angle2">End angle (in degrees)</param>
-#         /// <returns> A <see cref="Arc">NXOpen.Arc</see> object</returns>
+#         /// <returns> A <see cref="Arc">Arc</see> object</returns>
 #         internal static Arc __CreateArc1(
 #             this BasePart basePart,
 #             Point3d center,
@@ -2734,14 +2763,14 @@ def part_fit(part: Part) -> None:
 #             double radius
 #         )
 #         {
-#             //NXOpen.Vector3d vector = p0._Subtract(pa)._Unit();
-#             //NXOpen.Vector3d vector2 = p1._Subtract(pa)._Unit();
-#             //NXOpen.Vector3d vector3 = vector._Add(vector2);
+#             //Vector3d vector = p0._Subtract(pa)._Unit();
+#             //Vector3d vector2 = p1._Subtract(pa)._Unit();
+#             //Vector3d vector3 = vector._Add(vector2);
 #             //double num = vector._Angle(vector2) / 2.0;
 #             //double num2 = radius / Math.SinD(num);
-#             //NXOpen.Point3d center = vector3._Multiply(num2)._Add(pa);
-#             //NXOpen.Vector3d vector4 = vector3._Negate();
-#             //NXOpen.Vector3d vector5 = vector2._Subtract(vector)._Unit();
+#             //Point3d center = vector3._Multiply(num2)._Add(pa);
+#             //Vector3d vector4 = vector3._Negate();
+#             //Vector3d vector5 = vector2._Subtract(vector)._Unit();
 #             //double num3 = 90.0 - num;
 #             //double startAngle = 0.0 - num3;
 #             //double endAngle = num3;
@@ -2869,7 +2898,7 @@ def part_fit(part: Part) -> None:
 #             Conic conic,
 #             double startExtend,
 #             double endExtend,
-#             Sense sense = NXOpen.Sense.Forward
+#             Sense sense = Sense.Forward
 #         )
 #         {
 #             // Checks to make sure that the {conic} is closed.
@@ -2903,10 +2932,10 @@ def part_fit(part: Part) -> None:
 #             {
 #                 // We need to match the units of the {builder} to be the units of the {owningPart}.
 #                 builder.Limits.StartExtend.Value.Units = part.UnitCollection.FindObject(
-#                     part.PartUnits == NXOpen.BasePart.Units.Millimeters ? "MilliMeter" : "Inch"
+#                     part.PartUnits == BasePart.Units.Millimeters ? "MilliMeter" : "Inch"
 #                 );
 #                 builder.Limits.EndExtend.Value.Units = part.UnitCollection.FindObject(
-#                     part.PartUnits == NXOpen.BasePart.Units.Millimeters ? "MilliMeter" : "Inch"
+#                     part.PartUnits == BasePart.Units.Millimeters ? "MilliMeter" : "Inch"
 #                 );
 #                 builder.BooleanOperation.Type = NXOpen
 #                     .GeometricUtilities
@@ -2914,7 +2943,7 @@ def part_fit(part: Part) -> None:
 #                     .BooleanType
 #                     .Create;
 #                 builder.BooleanOperation.SetTargetBodies(new Body[0]);
-#                 builder.Offset.Option = NXOpen.GeometricUtilities.Type.NoOffset;
+#                 builder.Offset.Option = GeometricUtilities.Type.NoOffset;
 #                 builder.FeatureOptions.BodyType = NXOpen
 #                     .GeometricUtilities
 #                     .FeatureOptions
@@ -2946,11 +2975,11 @@ def part_fit(part: Part) -> None:
 
 
 def part_get_units_in(part: Part):  # ->Unit:
-    return part.UnitCollection.FindObject("Inch")
+    return part.UnitCollection.FindObject("Inch")  # type: ignore
 
 
 def part_get_units_mm(part: Part):  # ->Unit:
-    return part.UnitCollection.FindObject("MilliMeter")
+    return part.UnitCollection.FindObject("MilliMeter")  # type: ignore
 
 
 #         public static OffsetFace __CreateOffsetFace(
@@ -3448,14 +3477,14 @@ def part_get_units_mm(part: Part):  # ->Unit:
 #  //__work_plane_.ShowLabels
 #  //__work_plane_.SnapToGrid
 
-#  public static double __GridSpacing(this NXOpen.Preferences.WorkPlane work_plane)
+#  public static double __GridSpacing(this Preferences.WorkPlane work_plane)
 #  {
 #      return work_plane.GetRectangularUniformGridSize().MajorGridSpacing;
 #  }
 
-#  public static void __GridSpacing(this NXOpen.Preferences.WorkPlane work_plane, double grid_spacing)
+#  public static void __GridSpacing(this Preferences.WorkPlane work_plane, double grid_spacing)
 #  {
-#      work_plane.SetRectangularUniformGridSize(new NXOpen.Preferences.WorkPlane.GridSize()
+#      work_plane.SetRectangularUniformGridSize(new Preferences.WorkPlane.GridSize()
 #      {
 #          MajorGridSpacing = grid_spacing,
 #          MinorLinesPerMajor = 1,
@@ -3717,7 +3746,7 @@ def part_get_units_mm(part: Part):  # ->Unit:
 #      return component.FindOccurrence(proto);
 #  }
 
-#  //public static void reference_set(this NXOpen.Assemblies.Component component, string reference_set)
+#  //public static void reference_set(this Assemblies.Component component, string reference_set)
 #  //{
 #  //    component.DirectOwner.ReplaceReferenceSet(component, reference_set);
 #  //}
@@ -3908,17 +3937,17 @@ def part_get_units_mm(part: Part):  # ->Unit:
 #      //component.UsedArrangement
 #  }
 
-#  //public static NXOpen.Point3d _Origin(this NXOpen.Assemblies.Component component)
+#  //public static Point3d _Origin(this Assemblies.Component component)
 #  //{
 #  //    // ReSharper disable once UnusedVariable
-#  //    component.GetPosition(out NXOpen.Point3d position, out NXOpen.Matrix3x3 orientation);
+#  //    component.GetPosition(out Point3d position, out Matrix3x3 orientation);
 #  //    return position;
 #  //}
 
-#  //public static Orientation_ _Orientation(this NXOpen.Assemblies.Component component)
+#  //public static Orientation_ _Orientation(this Assemblies.Component component)
 #  //{
 #  //    // ReSharper disable once UnusedVariable
-#  //    component.GetPosition(out NXOpen.Point3d position, out NXOpen.Matrix3x3 orientation);
+#  //    component.GetPosition(out Point3d position, out Matrix3x3 orientation);
 #  //    return orientation;
 #  //}
 
@@ -5245,7 +5274,7 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 
 #    #region Mirror
 
-#         // public static void __Mirror(this NXOpen.CartesianCoordinateSystem obj, Su)
+#         // public static void __Mirror(this CartesianCoordinateSystem obj, Su)
 
 
 #         public static void __Data(this EdgeTangentRule rule, out Edge start, out Edge end, out bool isFromStart, out double angleTolerance, out bool hasSameConvexity)
@@ -5264,7 +5293,7 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 
 #             CompositeCurve fStartAssemblyCurve = fStartCurve.__CreateLinkedCurve();
 
-#             var actualCurve = (NXOpen.Curve)fStartAssemblyCurve.GetEntities()[0];
+#             var actualCurve = (Curve)fStartAssemblyCurve.GetEntities()[0];
 
 #             fStartAssemblyCurve.RemoveParameters();
 
@@ -5278,7 +5307,7 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 
 #             CompositeCurve tCompositeCurve = tStartAssemblyCurve.__CreateLinkedCurve();
 
-#             var tActualCurve = (NXOpen.Curve)tCompositeCurve.GetEntities()[0];
+#             var tActualCurve = (Curve)tCompositeCurve.GetEntities()[0];
 #             tCompositeCurve.RemoveParameters();
 #             tCompositeCurve.__Delete();
 
@@ -5286,16 +5315,16 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 
 #         }
 
-#         public static Edge __MatchCurveToEdge(this Part part, NXOpen.Curve curve)
+#         public static Edge __MatchCurveToEdge(this Part part, Curve curve)
 #         {
 #             throw new NotImplementedException();
 #         }
 
-#         public static CompositeCurve __CreateLinkedCurve(this NXOpen.Curve curve)
+#         public static CompositeCurve __CreateLinkedCurve(this Curve curve)
 #         {
 #             throw new NotImplementedException();
 # #pragma warning disable CS0162 // Unreachable code detected
-#             Session theSession = NXOpen.Session.GetSession();
+#             Session theSession = Session.GetSession();
 # #pragma warning restore CS0162 // Unreachable code detected
 #             Part workPart = theSession.Parts.Work;
 #             Part displayPart = theSession.Parts.Display;
@@ -5303,7 +5332,7 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 #             //   Menu: Insert->Associative Copy->WAVE Geometry Linker...
 #             // ----------------------------------------------
 #             Session.UndoMarkId markId1;
-#             markId1 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Visible, "Start");
+#             markId1 = theSession.SetUndoMark(Session.MarkVisibility.Visible, "Start");
 
 #             Feature nullNXOpen_Features_Feature = null;
 #             WaveLinkBuilder waveLinkBuilder1;
@@ -5330,7 +5359,7 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 #             MirrorBodyBuilder mirrorBodyBuilder1;
 #             mirrorBodyBuilder1 = waveLinkBuilder1.MirrorBodyBuilder;
 
-#             NXOpen.GeometricUtilities.CurveFitData curveFitData1;
+#             GeometricUtilities.CurveFitData curveFitData1;
 #             curveFitData1 = compositeCurveBuilder1.CurveFitData;
 
 #             curveFitData1.Tolerance = 0.001;
@@ -5340,13 +5369,13 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 #             Section section1 = ((Section)workPart.FindObject("ENTITY 113 4"));
 #             section1.SetAllowRefCrvs(false);
 
-#             extractFaceBuilder1.FaceOption = NXOpen.Features.ExtractFaceBuilder.FaceOptionType.FaceChain;
+#             extractFaceBuilder1.FaceOption = Features.ExtractFaceBuilder.FaceOptionType.FaceChain;
 
 #             waveLinkBuilder1.FixAtCurrentTimestamp = true;
 
-#             extractFaceBuilder1.ParentPart = NXOpen.Features.ExtractFaceBuilder.ParentPartType.OtherPart;
+#             extractFaceBuilder1.ParentPart = Features.ExtractFaceBuilder.ParentPartType.OtherPart;
 
-#             mirrorBodyBuilder1.ParentPartType = NXOpen.Features.MirrorBodyBuilder.ParentPart.OtherPart;
+#             mirrorBodyBuilder1.ParentPartType = Features.MirrorBodyBuilder.ParentPart.OtherPart;
 
 #             theSession.SetUndoMarkName(markId1, "WAVE Geometry Linker Dialog");
 
@@ -5370,23 +5399,23 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 
 #             compositeCurveBuilder1.InheritDisplayProperties = false;
 
-#             compositeCurveBuilder1.JoinOption = NXOpen.Features.CompositeCurveBuilder.JoinMethod.No;
+#             compositeCurveBuilder1.JoinOption = Features.CompositeCurveBuilder.JoinMethod.No;
 
 #             compositeCurveBuilder1.Tolerance = 0.001;
 
 #             Section section2;
 #             section2 = compositeCurveBuilder1.Section;
 
-#             NXOpen.GeometricUtilities.CurveFitData curveFitData2;
+#             GeometricUtilities.CurveFitData curveFitData2;
 #             curveFitData2 = compositeCurveBuilder1.CurveFitData;
 
-#             section2.SetAllowedEntityTypes(NXOpen.Section.AllowTypes.CurvesAndPoints);
+#             section2.SetAllowedEntityTypes(Section.AllowTypes.CurvesAndPoints);
 
 #             Session.UndoMarkId markId2;
-#             markId2 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "section mark");
+#             markId2 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "section mark");
 
 #             Session.UndoMarkId markId3;
-#             markId3 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, null);
+#             markId3 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, null);
 
 #             IBaseCurve[] curves1 = new IBaseCurve[1];
 #             Component component1 = ((Component)workPart.ComponentAssembly.RootComponent.FindObject("COMPONENT 001449-010-109 1"));
@@ -5401,19 +5430,19 @@ def mirror_vector3d(original: Vector3d, plane) -> Vector3d:
 #             rules1[0] = curveDumbRule1;
 #             NXObject nullNXOpen_NXObject = null;
 #             Point3d helpPoint1 = new Point3d(-1.2364300741239278, 10.674635720890926, -5.0515147620444623e-15);
-#             section2.AddToSection(rules1, line1, nullNXOpen_NXObject, nullNXOpen_NXObject, helpPoint1, NXOpen.Section.Mode.Create, false);
+#             section2.AddToSection(rules1, line1, nullNXOpen_NXObject, nullNXOpen_NXObject, helpPoint1, Section.Mode.Create, false);
 
 #             theSession.DeleteUndoMark(markId3, null);
 
 #             theSession.DeleteUndoMark(markId2, null);
 
 #             Session.UndoMarkId markId4;
-#             markId4 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "WAVE Geometry Linker");
+#             markId4 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "WAVE Geometry Linker");
 
 #             theSession.DeleteUndoMark(markId4, null);
 
 #             Session.UndoMarkId markId5;
-#             markId5 = theSession.SetUndoMark(NXOpen.Session.MarkVisibility.Invisible, "WAVE Geometry Linker");
+#             markId5 = theSession.SetUndoMark(Session.MarkVisibility.Invisible, "WAVE Geometry Linker");
 
 #             NXObject nXObject1;
 #             nXObject1 = waveLinkBuilder1.Commit();
@@ -5863,7 +5892,7 @@ def vector3d_unitize1(
 #         // Remarks:
 #         //     The new curves will be on the same layers as the original ones.
 #         //
-#         //     The function will throw an NXOpen.NXException, if the copy operation cannot be
+#         //     The function will throw an NXException, if the copy operation cannot be
 #         //     performed.
 #         [Obsolete(nameof(NotImplementedException))]
 #         public static Curve[] __Copy(this Curve curve, params Curve[] original)
@@ -5894,7 +5923,7 @@ def vector3d_unitize1(
 #             //trimCurveBuilder.InteresectionMethod = TrimCurveBuilder.InteresectionMethods.UserDefined;
 #             //trimCurveBuilder.InteresectionDirectionOption = TrimCurveBuilder.InteresectionDirectionOptions.RelativeToWcs;
 #             //trimCurveBuilder.CurvesToTrim.AllowSelfIntersection(allowSelfIntersection: true);
-#             //trimCurveBuilder.CurvesToTrim.SetAllowedEntityTypes(NXOpen.Section.AllowTypes.CurvesAndPoints);
+#             //trimCurveBuilder.CurvesToTrim.SetAllowedEntityTypes(Section.AllowTypes.CurvesAndPoints);
 #             //trimCurveBuilder.CurveOptions.Associative = false;
 #             //trimCurveBuilder.CurveOptions.InputCurveOption = CurveOptions.InputCurve.Replace;
 #             //trimCurveBuilder.CurveExtensionType = TrimCurveBuilder.CurveExtensionTypes.Natural;
@@ -5904,7 +5933,7 @@ def vector3d_unitize1(
 #             //Section section2 = Section.CreateSection(point2);
 #             //trimCurveBuilder.CurveList.Add(base.NXOpenTaggedObject, null, StartPoint);
 #             //SelectionIntentRule[] rules = Section.CreateSelectionIntentRule(this);
-#             //trimCurveBuilder.CurvesToTrim.AddToSection(rules, (NXOpen.Curve)this, null, null, StartPoint, NXOpen.Section.Mode.Create, chainWithinFeature: false);
+#             //trimCurveBuilder.CurvesToTrim.AddToSection(rules, (Curve)this, null, null, StartPoint, Section.Mode.Create, chainWithinFeature: false);
 #             //trimCurveBuilder.FirstBoundingObject.Add(section.NXOpenSection);
 #             //trimCurveBuilder.SecondBoundingObject.Add(section2.NXOpenSection);
 #             //trimCurveBuilder.Commit();
@@ -5954,15 +5983,15 @@ def vector3d_unitize1(
 #             //    divideCurveBuilder.BoundingObjects.Append(array[i]);
 #             //}
 
-#             //NXOpen.View workView = workPart.NXOpenPart.ModelingViews.WorkView;
+#             //View workView = workPart.NXOpenPart.ModelingViews.WorkView;
 #             //divideCurveBuilder.DividingCurve.SetValue(curve, workView, curve.StartPoint);
 #             //divideCurveBuilder.Commit();
-#             //NXOpen.NXObject[] committedObjects = divideCurveBuilder.GetCommittedObjects();
+#             //NXObject[] committedObjects = divideCurveBuilder.GetCommittedObjects();
 #             //divideCurveBuilder.Destroy();
 #             //Curve[] array3 = new Curve[committedObjects.Length];
 #             //for (int j = 0; j < array3.Length; j++)
 #             //{
-#             //    array3[j] = CreateCurve((NXOpen.Curve)committedObjects[j]);
+#             //    array3[j] = CreateCurve((Curve)committedObjects[j]);
 #             //}
 
 #             //NXObject.Delete(array2);
@@ -6114,19 +6143,19 @@ def curve_max_u(curve: Curve) -> float:
     #         /// <param name="curve">The curve</param>
     #         /// <returns>The value at the end of the curve</returns>
     """
-    # UFEval
-    eval = ufsession().Eval
-    evaluator = eval.Initialize2(curve.Tag)
-    array = [0.0, 1.0]
-    eval.AskLimits(evaluator, array)
-    eval.Free(evaluator)
-    return 1.0 * array[1]
+    # eval = ufsession().Eval
+    # evaluator = eval.Initialize2(curve.Tag)
+    # array = [0.0, 1.0]
+    # eval.AskLimits(evaluator, array)
+    # eval.Free(evaluator)
+    # return 1.0 * array[1]
+    raise NotImplementedError()
 
 
 #         ///// <summary>Calculates a point on the icurve at a given parameter value</summary>
 #         ///// <param name="curve">The curve</param>
 #         ///// <param name="value">The parameter value</param>
-#         ///// <returns>The <see cref="NXOpen.Point3d" /></returns>
+#         ///// <returns>The <see cref="Point3d" /></returns>
 #         //public static Point3d _Position(this Curve curve, double value)
 #         //{
 #         //    var eval = ufsession_.Eval;
@@ -6171,17 +6200,17 @@ def curve_max_u(curve: Curve) -> float:
 #             //Tag tag = curve.Tag;
 #             //ufsession_.Modl.AskBoundingBoxExact(tag, Tag.Null, array, array2, array3);
 #             //var minXYZ = _Point3dOrigin;
-#             //var vector = new NXOpen.Vector3d(array2[0, 0], array2[0, 1], array2[0, 2]);
-#             //var vector2 = new NXOpen.Vector3d(array2[1, 0], array2[1, 1], array2[1, 2]);
-#             //var vector3 = new NXOpen.Vector3d(array2[2, 0], array2[2, 1], array2[2, 2]);
-#             //var maxXYZ = new NXOpen.Point3d((array + array3[0] * vector + array3[1] * vector2 + array3[2] * vector3).Array);
+#             //var vector = new Vector3d(array2[0, 0], array2[0, 1], array2[0, 2]);
+#             //var vector2 = new Vector3d(array2[1, 0], array2[1, 1], array2[1, 2]);
+#             //var vector3 = new Vector3d(array2[2, 0], array2[2, 1], array2[2, 2]);
+#             //var maxXYZ = new Point3d((array + array3[0] * vector + array3[1] * vector2 + array3[2] * vector3).Array);
 #             //return new Box3d(minXYZ, maxXYZ);
 #             throw new NotImplementedException();
 #         }
 
 
 def curve_is_closed(curve: Curve) -> bool:
-    status = ufsession().Modl.AskCurvePeriodicity(curve.Tag)
+    status = ufsession().Modl.AskCurvePeriodicity(curve.Tag)  # type: ignore
     #  Status of the curve. UF_MODL_OPEN_CURVE UF_MODL_CLOSED_PERIODIC_CURVE UF_MODL_CLOSED_NON_PERIODIC_CURVE
     raise Exception()
 
@@ -6428,7 +6457,7 @@ def curve_is_closed(curve: Curve) -> bool:
 #             //double[] array3 = new double[3];
 #             //double[] derivatives = array3;
 #             //double num = 1.0 / Factor;
-#             //var array4 = new NXOpen.Point3d[values.LongLength];
+#             //var array4 = new Point3d[values.LongLength];
 #             //for (long num2 = 0L; num2 < values.LongLength; num2++)
 #             //{
 #             //    double parm = values[num2] * num;
@@ -6472,7 +6501,7 @@ def curve_is_closed(curve: Curve) -> bool:
 #         [Obsolete(nameof(NotImplementedException))]
 #         public static Curve __Mirror(this Curve original, Surface.Plane plane)
 #         {
-#             //if(original is NXOpen.Line line)
+#             //if(original is Line line)
 #             //    return line._Mi
 #             throw new NotImplementedException();
 #         }
@@ -6593,8 +6622,8 @@ def line_copy(line: Line) -> Line:
 #  }
 
 #  /// <summary>Creates a line between two positions</summary>
-#  /// <param name="p0">NXOpen.Point3d for start of line</param>
-#  /// <param name="p1">NXOpen.Point3d for end of line</param>
+#  /// <param name="p0">Point3d for start of line</param>
+#  /// <param name="p1">Point3d for end of line</param>
 #  /// <returns>A <see cref="T:Snap.NX.Line">Snap.NX.Line</see> object</returns>
 #  public static Line __CreateLine(Point3d p0, Point3d p1)
 #  {
@@ -6630,7 +6659,7 @@ def line_copy(line: Line) -> Line:
 #  [Obsolete]
 #  public static Line Copy(this Line line, Transform xform)
 #  {
-#      var curve = (NXOpen.Curve)line;
+#      var curve = (Curve)line;
 #      return (Line)curve.Copy(xform);
 #  }
 
@@ -6756,7 +6785,7 @@ def line_copy(line: Line) -> Line:
 #   /// <summary>A function that evaluates a position at a point on a curve</summary>
 #   /// <param name="data">Data item to be used in evaluation</param>
 #   /// <param name="t">Parameter value at which to evaluate (in range 0 to 1)</param>
-#   /// <returns>NXOpen.Point3d on curve at given parameter value</returns>
+#   /// <returns>Point3d on curve at given parameter value</returns>
 #   /// <remarks>
 #   ///     <para>
 #   ///         You use a CurvePositionFunction when constructing approximating curves using
@@ -6771,7 +6800,7 @@ def line_copy(line: Line) -> Line:
 #   /// <summary>A function that evaluates a position at a location on a surface</summary>
 #   /// <param name="data">Data item to be used in evaluation</param>
 #   /// <param name="uv">Parameter values at which to evaluate (in range [0,1] x [0,1])</param>
-#   /// <returns>NXOpen.Point3d on surface at given parameter value</returns>
+#   /// <returns>Point3d on surface at given parameter value</returns>
 #   /// <remarks>
 #   ///     <para>
 #   ///         You use a SurfacePositionFunction when constructing approximating surfaces using
@@ -6996,8 +7025,8 @@ def line_copy(line: Line) -> Line:
 #   public static Point3d WorkCompOrigin => throw
 
 #       //if (TSG_Library.Extensions.__work_part_.Tag == TSG_Library.Extensions.DisplayPart.Tag) return BaseOrigin;
-#       //if (!(NXOpen.Session.session_.Parts.WorkComponent != null)) throw new System.Exception("NullWorkComponentException");
-#       //return NXOpen.Assemblies.Component.Wrap(NXOpen.Session.session_.Parts.WorkComponent.Tag).Position;
+#       //if (!(Session.session_.Parts.WorkComponent != null)) throw new System.Exception("NullWorkComponentException");
+#       //return Assemblies.Component.Wrap(Session.session_.Parts.WorkComponent.Tag).Position;
 #       new NotImplementedException();
 
 #   //"CTS Office MFC on ctsfps1.cts.toolingsystemsgroup.com";
@@ -7081,7 +7110,7 @@ def line_copy(line: Line) -> Line:
 
 #       ufsession_;
 
-#   public static UFSession ufsession_ => NXOpen.UF.UFSession.GetUFSession();
+#   public static UFSession ufsession_ => UF.UFSession.GetUFSession();
 
 #   public static string TodaysDate
 #   {
@@ -7121,7 +7150,7 @@ def line_copy(line: Line) -> Line:
 #       set => __work_part_.Layers.WorkLayer = value;
 #   }
 
-#   public static NXOpen.Preferences.WorkPlane __work_plane_ => __display_part_.Preferences.Workplane;
+#   public static Preferences.WorkPlane __work_plane_ => __display_part_.Preferences.Workplane;
 
 #   /// <summary>Millimeters Per Unit (either 1 or 25.4)</summary>
 #   /// <remarks>
@@ -7281,7 +7310,7 @@ def line_copy(line: Line) -> Line:
 #   //set
 #   //{
 #   //    __wcs_.set
-#   //    NXOpen.Part __work_part_ = __work_part_;
+#   //    Part __work_part_ = __work_part_;
 #   //    __work_part_.WCS.SetOriginAndMatrix(Wcs.Origin, value);
 #   //}
 #   /// <summary>
@@ -7497,7 +7526,7 @@ def line_copy(line: Line) -> Line:
 
 #   //    // ufsession_.View.AskViewDependentStatus(dim.Tag, out _, out string drawingSheetName);
 #   //    //print_(drawingSheetName);
-#   //    //foreach (NXOpen.Drawings.DrawingSheet s in dim.__OwningPart().DrawingSheets)
+#   //    //foreach (Drawings.DrawingSheet s in dim.__OwningPart().DrawingSheets)
 #   //    //    print_(s.Name);
 #   //    // return dim.__OwningPart().DrawingSheets.ToArray().Single(__s => __s.Name.ToLower().Contains(drawingSheetName.ToLower()));
 #   //}
@@ -7581,8 +7610,8 @@ def line_copy(line: Line) -> Line:
 #  }
 
 #  /// <summary>Creates a line between two positions</summary>
-#  /// <param name="p0">NXOpen.Point3d for start of line</param>
-#  /// <param name="p1">NXOpen.Point3d for end of line</param>
+#  /// <param name="p0">Point3d for start of line</param>
+#  /// <param name="p1">Point3d for end of line</param>
 #  /// <returns>A <see cref="T:Snap.NX.Line">Snap.NX.Line</see> object</returns>
 #  public static Line __CreateLine(Point3d p0, Point3d p1)
 #  {
@@ -7618,7 +7647,7 @@ def line_copy(line: Line) -> Line:
 #  [Obsolete]
 #  public static Line Copy(this Line line, Transform xform)
 #  {
-#      var curve = (NXOpen.Curve)line;
+#      var curve = (Curve)line;
 #      return (Line)curve.Copy(xform);
 #  }
 
@@ -7834,11 +7863,11 @@ def line_copy(line: Line) -> Line:
 
 #         public static Point3d[] __EdgePositions(this Face __face)
 #         {
-#             //List<NXOpen.Point3d> points = new List<NXOpen.Point3d>();
+#             //List<Point3d> points = new List<Point3d>();
 
-#             //foreach (NXOpen.Edge edge in __face.GetEdges())
+#             //foreach (Edge edge in __face.GetEdges())
 #             //{
-#             //    edge.GetVertices(out NXOpen.Point3d poin1, out NXOpen.Point3d point2);
+#             //    edge.GetVertices(out Point3d poin1, out Point3d point2);
 
 #             //    points.Add(poin1);
 #             //    points.Add(point2);
@@ -8172,7 +8201,7 @@ def line_copy(line: Line) -> Line:
 
 #   public static Rollback __UsingRollback(
 #       this Session session,
-#       NXOpen.Features.Feature feat
+#       Features.Feature feat
 #   )
 #   { return new Rollback(feat, "Rollback"); }
 
@@ -8602,11 +8631,11 @@ def line_copy(line: Line) -> Line:
 #       throw new NotImplementedException();
 #   }
 
-#   // public static NXOpen.Curve SelectCurve(
+#   // public static Curve SelectCurve(
 #   //     string message = "Select Curve",
 #   //     string title = "Select Curve")
 #   // {
-#   //     NXOpen.Edge e = null;
+#   //     Edge e = null;
 #   //     e.SolidEdgeType ==
 
 #   //     throw new NotImplementedException();
@@ -9749,12 +9778,12 @@ def line_copy(line: Line) -> Line:
 #     #region Rules
 
 
-#     public static CurveDumbRule __ToCurveDumbRule(this NXOpen.Curve curve)
+#     public static CurveDumbRule __ToCurveDumbRule(this Curve curve)
 #     {
 #         return new[] { curve }.__ToCurveDumbRule();
 #     }
 
-#     public static CurveDumbRule __ToCurveDumbRule(this NXOpen.Curve[] curves)
+#     public static CurveDumbRule __ToCurveDumbRule(this Curve[] curves)
 #     {
 #         return curves[0].__OwningPart().ScRuleFactory.CreateRuleCurveDumb(curves);
 #     }
@@ -9779,12 +9808,12 @@ def line_copy(line: Line) -> Line:
 #         return edges[0].__OwningPart().ScRuleFactory.CreateRuleEdgeDumb(edges);
 #     }
 
-#     public static CurveChainRule __ToCurveChainRule(this NXOpen.Curve seedCurve, ICurve endCurve = null, bool isFromSeedStart = true, double gapTol = .001)
+#     public static CurveChainRule __ToCurveChainRule(this Curve seedCurve, ICurve endCurve = null, bool isFromSeedStart = true, double gapTol = .001)
 #     {
 #         return seedCurve.__OwningPart().ScRuleFactory.CreateRuleCurveChain(seedCurve, endCurve, isFromSeedStart, gapTol);
 #     }
 
-#     //public static EdgeChainRule __ToCurveChainRule(this NXOpen.Curve seedCurve, ICurve endCurve = null, bool isFromSeedStart = true, double gapTol = .001)
+#     //public static EdgeChainRule __ToCurveChainRule(this Curve seedCurve, ICurve endCurve = null, bool isFromSeedStart = true, double gapTol = .001)
 #     //{
 #     //    return seedCurve.__OwningPart().ScRuleFactory.CreateRuleEdgeChain(seedCurve, endCurve, isFromSeedStart, gapTol);
 #     //}
@@ -9988,12 +10017,12 @@ def line_copy(line: Line) -> Line:
 #         }
 #     }
 
-#     /// <summary>Constructs a NXOpen.Arc parallel to the XY-plane</summary>
+#     /// <summary>Constructs a Arc parallel to the XY-plane</summary>
 #     /// <param name="center">Center point (in absolute coordinates)</param>
 #     /// <param name="radius">Radius</param>
 #     /// <param name="angle1">Start angle (in degrees)</param>
 #     /// <param name="angle2">End angle (in degrees)</param>
-#     /// <returns>A <see cref="Arc">NXOpen.Arc</see> object</returns>
+#     /// <returns>A <see cref="Arc">Arc</see> object</returns>
 #     /// <remarks>
 #     ///     <para>
 #     ///         The arc will have its center at the given point, and will be parallel to the XY-plane.
@@ -10005,8 +10034,8 @@ def line_copy(line: Line) -> Line:
 #     [Obsolete]
 #     public static Arc __Arc(Point3d center, double radius, double angle1, double angle2)
 #     {
-#         //NXOpen.Vector3d axisX = _Vector3dX();
-#         //NXOpen.Vector3d axisY = _Vector3dY();
+#         //Vector3d axisX = _Vector3dX();
+#         //Vector3d axisY = _Vector3dY();
 #         //return CreateArc(center, axisX, axisY, radius, angle1, angle2);
 #         throw new NotImplementedException();
 #     }
@@ -10051,7 +10080,7 @@ def line_copy(line: Line) -> Line:
 #     /// <param name="center">Center point (in absolute coordinates)</param>
 #     /// <param name="axisZ">Unit vector normal to plane of circle</param>
 #     /// <param name="radius">Radius</param>
-#     /// <returns>A <see cref="T:NXOpen.Arc">NXOpen.Arc</see> object</returns>
+#     /// <returns>A <see cref="T:Arc">Arc</see> object</returns>
 #     /// <remarks>
 #     ///     <para>
 #     ///         This function gives you no control over how the circle is parameterized. You don't
@@ -10303,7 +10332,7 @@ def line_copy(line: Line) -> Line:
 #         //double x = start.X - end.X;
 #         //double y = start.Y - end.Y;
 #         //double z = start.Z - end.Z;
-#         //return new NXOpen.Vector3d(x, y, z);
+#         //return new Vector3d(x, y, z);
 #         throw new NotImplementedException();
 #     }
 
@@ -10449,7 +10478,7 @@ def line_copy(line: Line) -> Line:
 #     }
 
 #     /// <summary>Creates a datum plane from a point and a vector</summary>
-#     /// <param name="position">NXOpen.Point3d of the datum plane</param>
+#     /// <param name="position">Point3d of the datum plane</param>
 #     /// <param name="direction">The normal vector of the datum plane</param>
 #     /// <returns>An NX.DatumPlane object</returns>
 #     internal static DatumPlaneFeature __CreateDatumPlaneFeature(
@@ -10523,7 +10552,7 @@ def line_copy(line: Line) -> Line:
 #     [Obsolete(nameof(NotImplementedException))]
 #     public static Line[] __Rectangle(Point3d bottomLeft, Point3d topRight)
 #     {
-#         //NXOpen.Point3d center = (bottomLeft + topRight) / 2.0;
+#         //Point3d center = (bottomLeft + topRight) / 2.0;
 #         //double width = topRight.X - bottomLeft.X;
 #         //double height = topRight.Y - bottomLeft.Y;
 #         //return Rectangle(center, width, height);
@@ -10668,15 +10697,15 @@ def line_copy(line: Line) -> Line:
 #         //if (Compute.Distance(basePoint, (Snap.NX.NXObject)icurve) < 1E-05)
 #         //{
 #         //    double value = icurve.Parameter(basePoint);
-#         //    NXOpen.Vector3d axis = icurve.Tangent(value);
-#         //    NXOpen.Point3d[] array = Compute.ClipRay(new Snap.Geom.Curve.Ray(basePoint, axis));
+#         //    Vector3d axis = icurve.Tangent(value);
+#         //    Point3d[] array = Compute.ClipRay(new Snap.Geom.Curve.Ray(basePoint, axis));
 #         //    return Line(array[0], array[1]);
 #         //}
 
 #         //double value2 = icurve.Parameter(icurve._StartPoint());
 #         //Surface.Plane plane = new Surface.Plane(icurve._StartPoint(), icurve.Binormal(value2));
-#         //NXOpen.Point3d p = basePoint.Project(plane);
-#         //NXOpen.Point3d position = helpPoint.Project(plane);
+#         //Point3d p = basePoint.Project(plane);
+#         //Point3d position = helpPoint.Project(plane);
 #         //var workPart = __work_part_;
 #         //AssociativeLine associativeLine = null;
 #         //AssociativeLineBuilder associativeLineBuilder = workPart.NXOpenPart.BaseFeatures.CreateAssociativeLineBuilder(associativeLine);
@@ -10686,16 +10715,16 @@ def line_copy(line: Line) -> Line:
 #         //associativeLineBuilder.EndTangent.SetValue(icurve, null, position);
 #         //associativeLineBuilder.Associative = false;
 #         //associativeLineBuilder.Commit();
-#         //NXOpen.NXObject nXObject = associativeLineBuilder.GetCommittedObjects()[0];
+#         //NXObject nXObject = associativeLineBuilder.GetCommittedObjects()[0];
 #         //associativeLineBuilder.Destroy();
-#         //return new Snap.NX.Line((NXOpen.Line)nXObject);
+#         //return new Snap.NX.Line((Line)nXObject);
 #         throw new NotImplementedException();
 #     }
 
 #     ///// <summary>Creates an NX.Point object from given coordinates</summary>
-#     ///// <param name="p">NXOpen.Point3d</param>
-#     ///// <returns>An invisible NXOpen.Point object (a "smart point")</returns>
-#     //internal static NXOpen.Point CreatePointInvisible(NXOpen.Point3d p)
+#     ///// <param name="p">Point3d</param>
+#     ///// <returns>An invisible Point object (a "smart point")</returns>
+#     //internal static Point CreatePointInvisible(Point3d p)
 #     //{
 #     //    return CreatePointInvisible(p.X, p.Y, p.Z);
 #     //}
@@ -10852,7 +10881,7 @@ def point3d_midpoint_point3d(pnt0: Point3d, pnt1: Point3d) -> Point3d:
     #     //{
     #     //    return new Point3d((position1.X + position2.X) / 2.0, (position1.Y + position2.Y) / 2.0, (position1.Z + position2.Z) / 2.0);
     #     //}
-    pass
+    raise NotImplementedError()
 
 
 #     public static Point _CreatePoint(this Part part, Point3d origin)
@@ -10881,7 +10910,7 @@ def point3d_midpoint_point3d(pnt0: Point3d, pnt1: Point3d) -> Point3d:
 #         return new Point3d(num, num2, num3);
 #     }
 
-#     public static Point3d _AveragePosition(this NXOpen.Curve[] curves)
+#     public static Point3d _AveragePosition(this Curve[] curves)
 #     {
 #         return curves
 #             .SelectMany(c => new Point3d[2] { c.__StartPoint(), c.__EndPoint() })
@@ -10890,13 +10919,14 @@ def point3d_midpoint_point3d(pnt0: Point3d, pnt1: Point3d) -> Point3d:
 #     }
 
 
-def point3d_to_nxpoint(pnt3d: Point3d, name: str = None) -> Point:
-    point = work_part().Points.CreatePoint(pnt3d)
-    point.SetVisibility(SmartObject.VisibilityOption.Visible)
-    point.RedisplayObject()
-    if name is not None:
-        point.SetName(name)
-    return point
+def point3d_to_nxpoint(pnt3d: Point3d, name: str = "") -> Point:
+    # point = work_part().Points.CreatePoint(pnt3d)
+    # point.SetVisibility(SmartObject.VisibilityOption.Visible)
+    # point.RedisplayObject()
+    # if name is not None:
+    #     point.SetName(name)
+    # return point
+    raise NotImplementedError()
 
 
 #     public static PointFeature __ToPointFeature(this Point3d point3d)
@@ -10932,14 +10962,12 @@ def point3d_to_nxpoint(pnt3d: Point3d, name: str = None) -> Point:
 #         return distance;
 #     }
 
-#     public static Point __ToPoint(this Point3d point3d)
-#     {
-#         Point point = __work_part_.Points.CreatePoint(point3d);
-#         point.SetVisibility(SmartObject.VisibilityOption.Visible);
-#         return point;
-#     }
 
-#     #endregion
+def __ToPoint(pnt: Point3d) -> Point:
+    #         Point point = __work_part_.Points.CreatePoint(point3d);
+    #         point.SetVisibility(SmartObject.VisibilityOption.Visible);
+    #         return point;
+    raise NotImplementedError()
 
 
 #       public static Point __Point(this PointFeature feature)
@@ -10950,20 +10978,20 @@ def point3d_to_nxpoint(pnt3d: Point3d, name: str = None) -> Point:
 
 #   public static DatumAxisFeature __ToDatumAxisFeature(this Point origin, Vector3d vector)
 #   {
-#       NXOpen.Features.DatumAxisBuilder datumAxisBuilder1;
+#       Features.DatumAxisBuilder datumAxisBuilder1;
 #       datumAxisBuilder1 = origin.__OwningPart().Features.CreateDatumAxisBuilder(null);
 
 #       using (datumAxisBuilder1.__UsingBuilder())
 #       {
 #           datumAxisBuilder1.IsAssociative = true;
-#           datumAxisBuilder1.Type = NXOpen.Features.DatumAxisBuilder.Types.PointAndDir;
+#           datumAxisBuilder1.Type = Features.DatumAxisBuilder.Types.PointAndDir;
 #           datumAxisBuilder1.Point = origin;
 #           var direction1 = origin
 #               .__OwningPart()
 #               .Directions.CreateDirection(
 #                   origin.Coordinates,
 #                   vector,
-#                   NXOpen.SmartObject.UpdateOption.WithinModeling
+#                   SmartObject.UpdateOption.WithinModeling
 #               );
 #           datumAxisBuilder1.Vector = direction1;
 #           datumAxisBuilder1.ResizedEndDistance = 4.0;
@@ -11075,12 +11103,12 @@ def nxobject_get_attribute(nxobject: NXObject, title: str) -> str:
 
 
 def nxobject_has_attribute(nxobject: NXObject, title: str) -> bool:
-    return nxobject.HasUserAttribute(title, NXObject.AttributeType.String, -1)
+    return nxobject.HasUserAttribute(title, NXObjectAttributeType.String, -1)
 
 
 def nxobject_del_attribute(nxobject: NXObject, title: str) -> None:
     return nxobject.DeleteUserAttribute(
-        NXObjectAttributeType.String, title, True, Update.Option.Now
+        title, NXObjectAttributeType.String, True, UpdateOption.Now
     )
 
 
@@ -11429,7 +11457,7 @@ def matrix3x3_to_sequence(matrix: Matrix3x3) -> Sequence[float]:
 #       new Selection.MaskTriple(UF_solid_type, UF_face_type, UF_UI_SEL_FEATURE_ANY_FACE);
 
 #   /// <summary>
-#   ///     Returns the mask for an NXOpen.Assemblies.Component.
+#   ///     Returns the mask for an Assemblies.Component.
 #   /// </summary>
 #   public static UFUi.Mask ComponentMask =>
 #       //[IgnoreExtensionAspect]

@@ -1,10 +1,19 @@
 from typing import List, Optional, Sequence, Tuple, Union
-from NXOpen import Builder, DisplayableObject, Matrix3x3, NXObject, Part, Point3d
+from NXOpen import (
+    Builder,
+    DisplayableObject,
+    Matrix3x3,
+    NXObject,
+    NXObjectAttributeType,
+    Part,
+    Point3d,
+    UpdateOption,
+)
 import NXOpen
 
 class Component(DisplayableObject):
     def GetChildren(self) -> Sequence[Component]: ...
-    def GetPosition(self)->Tuple[Point3d, Matrix3x3]:...
+    def GetPosition(self) -> Tuple[Point3d, Matrix3x3]: ...
     @property
     def DisplayName(self) -> str: ...
     @property
@@ -18,14 +27,41 @@ class Component(DisplayableObject):
     def Unsuppress(self) -> None: ...
     @property
     def DirectOwner(self) -> ComponentAssembly: ...
-    def HasInstanceUserAttribute(self, title:str, attribute_type:NXOpen.NXObject.AttributeType, index:int)->bool:...
+    def HasInstanceUserAttribute(
+        self, title: str, attribute_type: NXObjectAttributeType, index: int
+    ) -> bool: ...
     @property
-    def ReferenceSet(self)->str:...
+    def ReferenceSet(self) -> str: ...
+    def SetInstanceUserAttribute(
+        self, title: str, index: int, value: str, option: UpdateOption
+    ) -> None: ...
 
 class ComponentAssembly:
     @property
     def RootComponent(self) -> Component: ...
-    def ReplaceReferenceSet(self, cmp:Component, name:str)->None:...
+    def ReplaceReferenceSet(self, cmp: Component, name: str) -> None: ...
+    def AddComponent(
+        self,
+        part_to_add,
+        reference_set_name,
+        component_name,
+        base_point,
+        orientation,
+        layer,
+    ) -> Component:
+        """
+        part_to_add	(string) The part that defines the new component
+        reference_set_name	(string) The name of the reference set used to represent the new component
+        component_name	(string) The name of the new component
+        base_point	(NXOpen::Point3d ) Location of the new component
+        orientation	(NXOpen::Matrix3x3 ) Orientation matrix for the new component, in column order.
+        layer	(int) The layer to place the new component on -1 means use the original layers defined in the component. 0 means use the work layer. 1-256 means use the specified layer.
+
+        """
+        pass
 
 class ReplaceComponentBuilder(Builder):
-    pass
+    @property
+    def ComponentNameOption(self) -> int: ...
+    @ComponentNameOption.setter
+    def ComponentNameOption(self, value: int) -> None: ...

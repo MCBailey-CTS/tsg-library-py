@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import List, Sequence
-from NXOpen import Part, Session, TaggedObject
+from NXOpen import Part, Session, SessionMarkVisibility, TaggedObject
 import NXOpen
 import os
 
@@ -57,7 +57,7 @@ def DescendantParts(part: Part) -> List[Part]:
 
 def delete_objects(objects: Sequence[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "DELETE")
+    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
@@ -66,7 +66,7 @@ def delete_objects(objects: Sequence[TaggedObject]) -> None:
 print_("in here")
 
 
-session().SetUndoMark(Session.SetUndoMarkVisibility.Visible, "GMCleanAssembly")
+session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "GMCleanAssembly") # type: ignore
 
 original_display = session().Parts.Display
 # print_('helllo world')

@@ -1,5 +1,6 @@
 import traceback
 from GMCleanAssembly import delete_objects
+from NXOpen import WCSAxis
 from NXOpen.Assemblies import ReplaceComponentBuilder
 from NXOpen.Features import ExtractFace
 import NXOpen.Features
@@ -49,7 +50,8 @@ def WaveIn():
             work_part().Layers.SetState(96, State.Visible)
             solid_body_layer_1 = part_get_dynamic_block(work_part()).GetBodies()[0]
 
-        if work_part().ComponentAssembly.RootComponent is None:return
+        if work_part().ComponentAssembly.RootComponent is None:
+            return
 
         for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
             try:
@@ -72,7 +74,7 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
 
     is_subtracted = False
 
-    for feature in display_part().Features.ToArray():
+    for feature in list(display_part().Features):
         if not isinstance(feature, ExtractFace):
             continue
         extract = feature
@@ -82,7 +84,7 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
             continue
         xform_tag = feature_xform(extract)
         point = [0.0, 0.0, 0.0]
-        ufsession().So.AskPointOfXform(xform_tag, point)
+        ufsession().So.AskPointOfXform(xform_tag, point)  # type: ignore
         origin = Point3d()
         if point3d_equals_point3d(origin, component_origin(__child)):
             continue
@@ -92,24 +94,22 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
     if is_subtracted:
         return
     if not __child.HasInstanceUserAttribute(
-        "subtract", NXObject.AttributeType.String, -1
+        "subtract", NXObjectAttributeType.String, -1
     ):
         return
 
-    subtract_att = __child.__GetAttribute("subtract")
-    subtract_ref_set
+    subtract_att = nxobject_get_attribute(__child, "subtract")
 
-    if subtract_att =="HANDLING" or subtract_att == 'SHORT-TAP':
-            subtract_ref_set = "SHORT-TAP"
-    elif subtract_att == 'BLIND_OPP':
-            subtract_ref_set = "CBORE_BLIND_OPP"
-    elif subtract_att == 'CLR_DRILL' :
-            subtract_ref_set = "CLR_HOLE"
+    if subtract_att == "HANDLING" or subtract_att == "SHORT-TAP":
+        subtract_ref_set = "SHORT-TAP"
+    elif subtract_att == "BLIND_OPP":
+        subtract_ref_set = "CBORE_BLIND_OPP"
+    elif subtract_att == "CLR_DRILL":
+        subtract_ref_set = "CLR_HOLE"
     else:
-            subtract_ref_set = subtract_att
+        subtract_ref_set = subtract_att
 
-
-    component_set_reference_set(__child,subtract_ref_set)
+    component_set_reference_set(__child, subtract_ref_set)
 
     linked_body = CreateLinkedBody(work_part(), __child)
     linked_body.OwningPart.Layers.MoveDisplayableObjects(96, linked_body.GetBodies())
@@ -124,33 +124,36 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
         )
         traceback.print_exc()
 
-    if subtract_att == 'HANDLING' or subtract_att == 'WIRE_TAP':
-            __child.Layer = 98
-            __child.RedisplayObject()
-    elif subtract_att == 'TOOLING':
-            __child.Layer = 97
-            __child.RedisplayObject()
+    if subtract_att == "HANDLING" or subtract_att == "WIRE_TAP":
+        __child.Layer = 98
+        __child.RedisplayObject()
+    elif subtract_att == "TOOLING":
+        __child.Layer = 97
+        __child.RedisplayObject()
 
     if __child.Layer != 99 or subtract_att == "HANDLING" or subtract_att == "WIRE_TAP":
-        component_set_reference_set(__child, 'Empty')
-        work_part().__FindReferenceSet("BODY").RemoveObjectsFromReferenceSet([__child])
+        component_set_reference_set(__child, "Empty")
+        part_get_reference_set(work_part(), "BODY").RemoveObjectsFromReferenceSet(
+            [__child]
+        )
         return
-    component_set_reference_set(__child, 'BODY')
+    component_set_reference_set(__child, "BODY")
     part_get_reference_set(work_part(), "BODY").AddObjectsToReferenceSet([__child])
 
 
 def InsertWireTaps() -> None:
-    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP")
+    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP") # type: ignore
     if display_part().Tag == work_part().Tag:
         for i in [99, 98, 97]:
             display_part().Layers.SetState(i, State.Selectable)
-    wireTapScrew = session().__FindOrOpen(
+    wireTapScrew = session_get_or_open_part(
         "G:\\0Library\\Fasteners\\Metric\\SocketHeadCapScrews\\008\\8mm-shcs-020.prt"
     )
-    display_part().WCS.Rotate(WCS.Axis.XAxis, 90.0)
+
+    display_part().WCS.Rotate(WCSAxis.XAxis, 90.0)
     savedCsys = display_part().WCS.Save()
     rotateOrientation = savedCsys.Orientation.Element
-    x = 1 if display_part().PartUnits == NXOpen.BasePart.Units.Inches else 25.4
+    x = 1 if display_part().PartUnits == NXOpen.BasePartUnits.Inches else 25.4
     offset2 = [3.00 * x, 0.875 * x, 0.00]
     mappedOffset1 = ufsession().Csys.MapPoint(
         NXOpen.UF.UFConstants.UF_CSYS_ROOT_WCS_COORDS,
@@ -181,13 +184,9 @@ def InsertWireTaps() -> None:
         wireTapScrew, "SHORT-TAP", "8mm-shcs-020", basePoint2, rotateOrientation, 98
     )
 
-    display_part().WCS.Rotate(WCS.Axis.XAxis, -90.0)
-    component1.SetInstanceUserAttribute(
-        "subtract", -1, "WIRE_TAP", NXOpen.Update.Option.Now
-    )
-    component2.SetInstanceUserAttribute(
-        "subtract", -1, "WIRE_TAP", NXOpen.Update.Option.Now
-    )
+    display_part().WCS.Rotate(WCSAxis.XAxis, -90.0)
+    component1.SetInstanceUserAttribute("subtract", -1, "WIRE_TAP", UpdateOption.Now)
+    component2.SetInstanceUserAttribute("subtract", -1, "WIRE_TAP", UpdateOption.Now)
     delete_objects([savedCsys])
 
 
@@ -218,15 +217,14 @@ def SubstituteFasteners(nxPart: Part) -> None:
             return
 
         original_display_name = fasteners_to_substitue[0].DisplayName
-        replaceBuilder = work_part().AssemblyManager.CreateReplaceComponentBuilder()
+        replaceBuilder = work_part().AssemblyManager.CreateReplaceComponentBuilder()  # type: ignore
 
         try:
             replaceBuilder.ReplacementPart = nxPart.FullPath
             replaceBuilder.MaintainRelationships = True
             replaceBuilder.ReplaceAllOccurrences = False
-            replaceBuilder.ComponentNameType = (
-                ReplaceComponentBuilder.ComponentNameOption.AsSpecified
-            )
+            replaceBuilder.ComponentNameType = ReplaceComponentBuilder.ComponentNameOption.AsSpecified  # type: ignore
+
             replaceBuilder.ComponentsToReplace.Add(fasteners_to_substitue)
             replaceBuilder.Commit()
         finally:
@@ -269,26 +267,27 @@ def WaveOut():
 
 
 def SetWcsToWorkPart() -> None:
-    dynamicBlock = part_get_dynamic_block(work_part())
-    origin = block_get_origin(dynamicBlock)
-    orientation = block_get_orientation(dynamicBlock)
-    if work_part().Tag == display_part().Tag:
-        display_part().WCS.SetOriginAndMatrix(origin, orientation)
-        return
-    absCsys = display_part().CoordinateSystems.CreateCoordinateSystem(
-        Point3d(), matrix3x3_identity(), True
-    )
-    compCsys = display_part().CoordinateSystems.CreateCoordinateSystem(
-        component_origin(work_component()),
-        component_orientation(work_component()),
-        True,
-    )
-    newOrigin = map_csys_to_csys(origin, compCsys, absCsys)
-    newXVec = map_csys_to_csys(
-        axisx(component_orientation(work_component())), compCsys, absCsys
-    )
-    newYVec = map_csys_to_csys(
-        axisy(component_orientation(work_component())), compCsys, absCsys
-    )
-    newOrientation = to_matrix3x3(newXVec, newYVec)
-    display_part().WCS.SetOriginAndMatrix(newOrigin, newOrientation)
+    # dynamicBlock = part_get_dynamic_block(work_part())
+    # origin = block_get_origin(dynamicBlock)
+    # orientation = block_get_orientation(dynamicBlock)
+    # if work_part().Tag == display_part().Tag:
+    #     display_part().WCS.SetOriginAndMatrix(origin, orientation)
+    #     return
+    # absCsys = display_part().CoordinateSystems.CreateCoordinateSystem(
+    #     Point3d(), matrix3x3_identity(), True
+    # )
+    # compCsys = display_part().CoordinateSystems.CreateCoordinateSystem(
+    #     component_origin(work_component()),
+    #     component_orientation(work_component()),
+    #     True,
+    # )
+    # newOrigin = map_point_csys_to_csys(origin, compCsys, absCsys)
+    # newXVec = map_point_csys_to_csys(
+    #     axisx(component_orientation(work_component())), compCsys, absCsys
+    # )
+    # newYVec = map_vector_csys_to_csys(
+    #     axisy(component_orientation(work_component())), compCsys, absCsys
+    # )
+    # newOrientation = to_matrix3x3(newXVec, newYVec)
+    # display_part().WCS.SetOriginAndMatrix(newOrigin, newOrientation)
+    raise NotImplementedError()

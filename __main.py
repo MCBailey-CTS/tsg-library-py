@@ -12,9 +12,16 @@ from NXOpen import Session, TaggedObject
 from extensions__ import *
 import NXOpen.Drawings
 
-for x in NXOpen.SmartObject.__dict__.items():
+from GMColorLayerAssembly import __main__
+
+# for x in NXOpen.Features.Feature.__dict__.items():
     # for x in dir(NXOpen.Features.Block):
-    print_(x)
+    # print_(x)
+
+# print_('in here')
+
+
+__main__(10,10)
 
 # session().SetUndoMark(NXOpen.)
 
