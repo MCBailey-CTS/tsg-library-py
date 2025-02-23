@@ -29,9 +29,7 @@ def strip_wave_out() -> None:
                     continue
                 point = [0.0, 0.0, 0.0]
                 ufsession().So.AskPointOfXform(xform, point)  # type: ignore
-                from_comp = NXOpen.TaggedObjectManager.GetTaggedObject(  # type: ignore
-                    from_part_occ
-                )  # type: Component
+                from_comp = cast_component(from_part_occ)
                 origin = Point3d()
                 corigin = component_origin(from_comp)
                 if not point3d_equals_point3d(origin, corigin):
@@ -63,7 +61,7 @@ def WaveIn() -> None:
 
         for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
             try:
-                WaveIn(__child, solid_body_layer_1)  # type: ignore
+                WaveIn1(__child, solid_body_layer_1)
             except Exception as ex:
                 print_(ex)
                 traceback.print_exc()
@@ -91,9 +89,8 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body) -> None:
         if feature_is_broken(extract):
             continue
         xform_tag = feature_xform(extract)
-        point = [0.0, 0.0, 0.0]
-        ufsession().So.AskPointOfXform(xform_tag, point)  # type: ignore
-        origin = Point3d()
+        point = ufsession().So.AskPointOfXform(xform_tag)
+        origin = Point3d(point[0],point[1],point[2])
         if point3d_equals_point3d(origin, component_origin(__child)):
             continue
         is_subtracted = True
