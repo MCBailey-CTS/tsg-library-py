@@ -59,10 +59,10 @@ def __main__(layer: int, color: int) -> None:
     components = select_components()
     if len(components) == 0:
         return
-    
+
     # for x in components:
     #     print_(x.Prototype)
-    
+
     # return
     # parts =[]
 
@@ -87,10 +87,10 @@ def __main__(layer: int, color: int) -> None:
                 j = cast_component(t)
                 for ancest in component_ancestors(j):
                     if ancest.DisplayName not in ancestors:
-                        ancestors[ancest.DisplayName] = ancest.Prototype # type: ignore
+                        ancestors[ancest.DisplayName] = ancest.Prototype  # type: ignore
                 try:
                     for ancest in ancestors.keys():
-                        session().Parts.SetDisplay(ancestors[ancest], False, False) # type: ignore
+                        session().Parts.SetDisplay(ancestors[ancest], False, False)  # type: ignore
                         display_part().Layers.SetState(layer, State.Selectable)
                         part_occs1 = ufsession().Assem.AskOccsOfPart(
                             ancestors[ancest].Tag, part.Tag

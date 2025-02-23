@@ -535,7 +535,12 @@ class PartCleanupDeleteGroups(enum.Enum):
 # Point
 
 class Point3d:
-    def __init__(self, x: Optional[float] =None, y: Optional[float] = None, z: Optional[float] = None): ...
+    def __init__(
+        self,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        z: Optional[float] = None,
+    ): ...
     @property
     def X(self) -> float:
         pass
@@ -627,9 +632,7 @@ class Session(TaggedObject):
     @property
     def UpdateManager(self) -> Update:
         pass
-    def SetUndoMark(
-        self, visibility: SessionMarkVisibility, name: str
-    ) -> int:
+    def SetUndoMark(self, visibility: SessionMarkVisibility, name: str) -> int:
         pass
     @property
     def DisplayManager(self) -> NXOpen.DisplayManager:

@@ -2,7 +2,9 @@ from typing import List, Sequence, Tuple
 import NXOpen
 
 class Assem:
-    def AskOccsOfPart(self, parent_part: int, descedant_part: int) -> Tuple[Sequence[int],int]: ...
+    def AskOccsOfPart(
+        self, parent_part: int, descedant_part: int
+    ) -> Tuple[Sequence[int], int]: ...
 
 class Csys:
     def MapPoint(

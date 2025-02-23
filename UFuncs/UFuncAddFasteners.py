@@ -55,7 +55,7 @@ def WaveIn():
 
         for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
             try:
-                WaveIn(__child, solid_body_layer_1)
+                WaveIn(__child, solid_body_layer_1)  # type: ignore
             except Exception as ex:
                 print_(ex)
                 traceback.print_exc()
@@ -142,7 +142,7 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body):
 
 
 def InsertWireTaps() -> None:
-    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP") # type: ignore
+    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "WIRE_TAP")  # type: ignore
     if display_part().Tag == work_part().Tag:
         for i in [99, 98, 97]:
             display_part().Layers.SetState(i, State.Selectable)
@@ -263,7 +263,7 @@ def WaveOut():
         if not is_fastener(child):
             continue
         protoPartOcc = GetProtoPartOcc(work_part(), child)
-        WaveOut(protoPartOcc)
+        WaveOut(protoPartOcc)  # type: ignore
 
 
 def SetWcsToWorkPart() -> None:

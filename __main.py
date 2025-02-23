@@ -15,13 +15,13 @@ import NXOpen.Drawings
 from GMColorLayerAssembly import __main__
 
 # for x in NXOpen.Features.Feature.__dict__.items():
-    # for x in dir(NXOpen.Features.Block):
-    # print_(x)
+# for x in dir(NXOpen.Features.Block):
+# print_(x)
 
 # print_('in here')
 
 
-__main__(10,10)
+__main__(10, 10)
 
 # session().SetUndoMark(NXOpen.)
 

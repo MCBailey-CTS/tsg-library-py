@@ -73,11 +73,12 @@ def cast_component(obj: Union[TaggedObject, int]) -> Component:
     assert isinstance(obj, Component), f"Could not cast type {obj} to Component"
     return obj
 
+
 def cast_part(obj: Union[TaggedObject, int]) -> Part:
     if isinstance(obj, int):
         tagged_object = cast_tagged_object(obj)
         return cast_part(tagged_object)
-    assert isinstance(obj, 'NXOpen.Part'), f"Could not cast type {obj} to Part"
+    assert isinstance(obj, "NXOpen.Part"), f"Could not cast type {obj} to Part"
     return obj
 
 
@@ -105,11 +106,13 @@ def part_get_reference_set_or_none(part: Part, name: str) -> Optional[ReferenceS
             return ref
     return None
 
+
 def part_get_reference_set(part: Part, name: str) -> ReferenceSet:
-    refset = part_get_reference_set_or_none(part,name)
+    refset = part_get_reference_set_or_none(part, name)
     if refset is None:
         raise ValueError()
     return refset
+
 
 def GetProtoPartOcc(owningPart: Part, partOcc: Component) -> Component:
     instance = ufsession().Assem.AskInstOfPartOcc(partOcc.Tag)  # type: ignore
@@ -224,7 +227,7 @@ def AddFastenersGetLinkedBody(owning_part: Part, child: Component):
         if xform == 0:
             continue  # 0 is Tag.Null
 
-        fromPartOcc = ufsession().So.AskAssyCtxtPartOcc( # type: ignore
+        fromPartOcc = ufsession().So.AskAssyCtxtPartOcc(  # type: ignore
             xform, owning_part.ComponentAssembly.RootComponent.Tag
         )  # type: ignore
         if fromPartOcc == child.Tag:
@@ -299,6 +302,7 @@ def map_matrix_csys_to_csys(
 def part_has_reference_set(part: Part, name: str) -> bool:
     return any(r.Name == name for r in part.GetAllReferenceSets())
 
+
 def part_crt_reference_set(part: Part, name: str) -> ReferenceSet:
     refset = part.CreateReferenceSet()
     refset.SetName(name)
@@ -311,7 +315,7 @@ def hash_components_to_parts(components: List[Component]) -> List[Part]:
         if comp.DisplayName in dict_:
             continue
         # print(comp.DisplayName)
-        dict_[comp.DisplayName]  = comp.Prototype
+        dict_[comp.DisplayName] = comp.Prototype
     return dict_.values()
 
 
@@ -371,7 +375,7 @@ def DescendantParts(part: Part) -> List[Part]:
 
 def delete_objects(objects: Sequence[TaggedObject]) -> None:
     session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE") # type: ignore
+    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")  # type: ignore
     session().UpdateManager.AddObjectsToDeleteList(objects)
     session().UpdateManager.DoUpdate(undo)
 
@@ -554,9 +558,6 @@ def part_get_expression(part: Part, name: str) -> Expression:
 #                 .ToArray()
 #                 .SingleOrDefault(view => view.Name == modelingViewName);
 #         }
-
-
-
 
 
 def component_set_reference_set(component: Component, name: str) -> None:
