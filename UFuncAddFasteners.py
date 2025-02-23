@@ -1,5 +1,4 @@
 import traceback
-from GMCleanAssembly import delete_objects
 from NXOpen import WCSAxis
 from NXOpen.Assemblies import ReplaceComponentBuilder
 from NXOpen.Features import ExtractFace
@@ -63,8 +62,10 @@ def WaveIn() -> None:
             try:
                 WaveIn1(__child, solid_body_layer_1)
             except Exception as ex:
+                print_("///////////////////")
                 print_(ex)
-                traceback.print_exc()
+                print_(traceback.format_exc())
+                print_("///////////////////")
     except Exception as ex:
         print_(ex)
         traceback.print_exc()
@@ -122,12 +123,14 @@ def WaveIn1(__child: Component, solid_body_layer_1: Body) -> None:
 
     try:
         SubtractLinkedBody(work_part(), solid_body_layer_1, linked_body)
-    except Exception as ex:
+    except:
         # catch (NXException ex) when (ex.ErrorCode == 670030)
+        print_("//////////////////////////////////////")
+        print_(traceback.format_exc())
         print(
             f"Could not subtract {__child.DisplayName} with reference set {subtract_ref_set}"
         )
-        traceback.print_exc()
+        print_("//////////////////////////////////////")
 
     if subtract_att == "HANDLING" or subtract_att == "WIRE_TAP":
         __child.Layer = 98
@@ -229,7 +232,6 @@ def SubstituteFasteners(nxPart: Part) -> None:
             replaceBuilder.MaintainRelationships = True
             replaceBuilder.ReplaceAllOccurrences = False
             replaceBuilder.ComponentNameType = ReplaceComponentBuilder.ComponentNameOption.AsSpecified  # type: ignore
-
             replaceBuilder.ComponentsToReplace.Add(fasteners_to_substitue)
             replaceBuilder.Commit()
         finally:
@@ -245,30 +247,36 @@ def WaveOut1(child: Component) -> None:
 
 
 def WaveOut() -> None:
-    if work_part().Tag == display_part().Tag:
-        for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
-            try:
-                if __child.Layer != 99 and __child.Layer != 98 and __child.Layer != 97:
-                    continue
-                if __child.IsSuppressed:
-                    continue
-                if not is_fastener(__child):
-                    continue
+    try:
+        if work_part().Tag == display_part().Tag:
+            for __child in work_part().ComponentAssembly.RootComponent.GetChildren():
+                try:
+                    if (
+                        __child.Layer != 99
+                        and __child.Layer != 98
+                        and __child.Layer != 97
+                    ):
+                        continue
+                    if __child.IsSuppressed:
+                        continue
+                    if not is_fastener(__child):
+                        continue
+                    WaveOut1(__child)
+                except:
+                    print_("//////////////////")
+                    print_(traceback.format_exc())
+                    print_("//////////////////")
+            return
 
-                link = AddFastenersGetLinkedBody(work_part(), __child)
-                WaveOut1(__child)
-                delete_objects(link)
-            except:
-                traceback.print_exc()
-        return
-
-    for child in work_component().GetChildren():
-        if child.IsSuppressed:
-            continue
-        if not is_fastener(child):
-            continue
-        protoPartOcc = GetProtoPartOcc(work_part(), child)
-        WaveOut(protoPartOcc)  # type: ignore
+        for child in work_component().GetChildren():
+            if child.IsSuppressed:
+                continue
+            if not is_fastener(child):
+                continue
+            protoPartOcc = GetProtoPartOcc(work_part(), child)
+            WaveOut1(protoPartOcc)  # type: ignore
+    except Exception as ex:
+        print_(ex)
 
 
 def SetWcsToWorkPart() -> None:

@@ -266,23 +266,47 @@ def AddFastenersGetLinkedBody(owning_part: Part, child: Component):  # type: ign
 
 
 def is_shcs(obj: Union[Part, Component, str]) -> bool:
-    raise Exception()
+    if isinstance(obj, Part):
+        leaf = obj.Leaf
+    elif isinstance(obj, Component):
+        leaf = obj.DisplayName
+    else:
+        leaf = obj
+    return "shcs" in leaf.lower()
 
 
 def is_dwl(obj: Union[Part, Component, str]) -> bool:
-    raise Exception()
+    if isinstance(obj, Part):
+        leaf = obj.Leaf
+    elif isinstance(obj, Component):
+        leaf = obj.DisplayName
+    else:
+        leaf = obj
+    return "dwl" in leaf.lower()
 
 
 def is_jck_screw(obj: Union[Part, Component, str]) -> bool:
-    raise Exception()
+    if isinstance(obj, Part):
+        leaf = obj.Leaf
+    elif isinstance(obj, Component):
+        leaf = obj.DisplayName
+    else:
+        leaf = obj
+    return "jck-screw" in leaf.lower() and "jck-screw-tsg" not in leaf.lower()
 
 
 def is_jck_screw_tsg(obj: Union[Part, Component, str]) -> bool:
-    raise Exception()
+    if isinstance(obj, Part):
+        leaf = obj.Leaf
+    elif isinstance(obj, Component):
+        leaf = obj.DisplayName
+    else:
+        leaf = obj
+    return "jck-screw-tsg" in leaf.lower()
 
 
 def is_fastener(obj: Union[Part, Component, str]) -> bool:
-    raise Exception()
+    return is_shcs(obj) or is_dwl(obj) or is_jck_screw(obj) or is_jck_screw_tsg(obj)
 
 
 def matrix3x3_identity() -> Matrix3x3:
