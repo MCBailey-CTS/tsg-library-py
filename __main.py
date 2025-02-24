@@ -21,7 +21,7 @@ import NXOpen.Drawings
 
 # print_(display_part().Layers.WorkLayer)
 
-print_('in here1111')
+print_("in here1111")
 
 # print_('in here')
 
@@ -40,5 +40,5 @@ print_('in here1111')
 # with classes and sub classes
 
 
-if __name__ == '__main__':
-    print_('here also')
+if __name__ == "__main__":
+    print_("here also")

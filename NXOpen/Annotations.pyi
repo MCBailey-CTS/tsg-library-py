@@ -1,8 +1,6 @@
-
 from typing import Iterable
 
 from NXOpen import DisplayableObject
-
 
 class Annotation(DisplayableObject):
     pass

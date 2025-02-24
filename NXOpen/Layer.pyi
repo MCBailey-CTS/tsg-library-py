@@ -1,9 +1,7 @@
-
 import enum
 from typing import Sequence
 
 from NXOpen import DisplayableObject
-
 
 class State(enum.Enum):
     Hidden: int

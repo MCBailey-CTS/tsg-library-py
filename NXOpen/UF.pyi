@@ -1,6 +1,4 @@
-
 from typing import List, Sequence, Tuple
-
 
 class Assem:
     def AskOccsOfPart(
