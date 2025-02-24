@@ -100,7 +100,7 @@ def cast_part(obj: Union[TaggedObject, int]) -> Part:
 
 
 def cast_components(
-    tagged_objects: Union[Sequence[TaggedObject] | Sequence[int]],
+    tagged_objects: Union[Sequence[TaggedObject] , Sequence[int]],
 ) -> List[Component]:
     components: List[Component] = []
     for obj in tagged_objects:
