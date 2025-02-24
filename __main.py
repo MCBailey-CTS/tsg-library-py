@@ -19,7 +19,9 @@ import NXOpen.Drawings
 # for x in dir(NXOpen.BasePartCloseAfterSave):
 #     print_(x)
 
-print_(display_part().Layers.WorkLayer)
+# print_(display_part().Layers.WorkLayer)
+
+print_('in here1111')
 
 # print_('in here')
 
@@ -36,3 +38,7 @@ print_(display_part().Layers.WorkLayer)
 
 # convert all Nxopen to a single file
 # with classes and sub classes
+
+
+if __name__ == '__main__':
+    print_('here also')
