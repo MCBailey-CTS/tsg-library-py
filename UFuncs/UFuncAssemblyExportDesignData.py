@@ -10,7 +10,7 @@ _printerCts = "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC"
 Layers = {1, 94, 100, 111, 200, 230}
 
 
-def export_design_DeleteOpFolders(part: Part, folder) -> None: # type: ignore
+def export_design_DeleteOpFolders(part: Part, folder) -> None:  # type: ignore
     # if (folder is null)
     #     throw new ArgumentException()
     # // Matches the {part.Leaf} to 000 regex.
@@ -135,9 +135,9 @@ def export_design_CheckSizeDescriptions(partsInBom: List[Part]) -> bool:
     raise NotImplementedError()
 
 
-def export_design_CreatePath( # type: ignore
+def export_design_CreatePath(  # type: ignore
     folder, part: Part, directoryTag: str, extension: str
-) -> str: # 
+) -> str:  #
     # string directory =
     #     $"{folder.DirJob}\\{folder.CustomerNumber}-{part.__AskDetailOp()}\\{folder.CustomerNumber}-{part.__AskDetailOp()}{directoryTag}"
     # string stpPath = $"{directory}\\{part.Leaf}{extension}"
@@ -155,7 +155,7 @@ def export_design_SetLayers() -> None:
     raise NotImplementedError()
 
 
-def export_design_CreateCasting(part, folder) -> None: # type: ignore
+def export_design_CreateCasting(part, folder) -> None:  # type: ignore
     # using (session_.__UsingDisplayPartReset())
     #     __display_part_ = part
     #     string op = part.__AskDetailOp()
@@ -594,7 +594,7 @@ def export_design_ZipupDirectories() -> None:
     raise NotImplementedError()
 
 
-def export_design_MoveSimReport(folder, exportDirectory: str) -> None: # type: ignore
+def export_design_MoveSimReport(folder, exportDirectory: str) -> None:  # type: ignore
     # if (!folder.is_cts_job())
     #     return
     # if (GetReports(folder.CtsNumber).Length != 0)
@@ -651,7 +651,7 @@ def export_design_UpdateParts_Other(parts: List[Part]) -> None:
     raise NotImplementedError()
 
 
-def export_design_SetUpStrip(folder) -> None: # type: ignore
+def export_design_SetUpStrip(folder) -> None:  # type: ignore
     #          {
     #              try
     #              {
@@ -726,7 +726,7 @@ def export_design_ErrorCheck() -> None:
     raise NotImplementedError()
 
 
-def export_design_Print4Views(allParts) -> None: # type: ignore
+def export_design_Print4Views(allParts) -> None:  # type: ignore
     # bool IsNotAssembly(Part part)
     # {
     #     string name = Path.GetFileNameWithoutExtension(part.FullPath)

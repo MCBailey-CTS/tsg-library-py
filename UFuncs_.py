@@ -6,12 +6,13 @@ from extensions__ import *
 import NXOpen
 import os
 
+
 def delete_unused_curves() -> None:
     curves = delete_unused_curves_select_many_curves()
     if len(curves) == 0:
         return
     for delete in curves:
-        featTag = ufsession().Modl.AskObjectFeat(delete.Tag) # type: ignore
+        featTag = ufsession().Modl.AskObjectFeat(delete.Tag)  # type: ignore
         if featTag == 0:
             delete_objects([delete])
 
@@ -357,7 +358,7 @@ def layout_ref_sets() -> None:
             or refset.Name == "MATE"
         ):
             refset_name = refset.Name
-            display_part().DeleteReferenceSet(refset)# type: ignore
+            display_part().DeleteReferenceSet(refset)  # type: ignore
             print_(f"Deleted ref set {refset_name}")
 
     solid_bodies_layer_10 = part_solid_bodies_on_layer(display_part(), 10)
@@ -683,14 +684,14 @@ def assembly_wavelink_WaveLinkBoolean(
     raise NotImplementedError()
 
 
-def extract_free_edges()->None:
+def extract_free_edges() -> None:
     if display_part() is None:
         print_("No Display Part")
         return
     session().SetUndoMark(SessionMarkVisibility.Visible, "extract_free_edges")
-    selectedSheetBodies = select_many_sheet_bodies("extract_free_edges") # type: ignore
+    selectedSheetBodies = select_many_sheet_bodies("extract_free_edges")  # type: ignore
     edges = map(lambda b: b.GetEdges(), selectedSheetBodies)
-    faces = map(lambda e: e.GetFaces(), edges) # type: ignore
+    faces = map(lambda e: e.GetFaces(), edges)  # type: ignore
     freeEdgeCurves = list(map(lambda f: edge_to_curve(f), faces))
     for curve in freeEdgeCurves:
         curve.Layer = display_part().Layers.WorkLayer
@@ -769,76 +770,77 @@ def copy_to_layer_50() -> None:
     raise NotImplementedError()
 
 
-def gm_color_layer_color_layer_solid_body_1(part: Part, layer: int, color: int) -> None:
-    session().Parts.SetDisplay(part, False, False)
-    display_part().Layers.SetState(layer, State.Selectable)
-
-    solid_body_layer_1 = list(
-        filter(lambda b: b.Layer == 1, list(display_part().Bodies))
-    )
-
-    if not part_has_reference_set(display_part(), "PART"):
-        if part_has_reference_set(display_part(), "BODY"):
-            refset = part_get_reference_set(display_part(), "BODY")
-            refset.SetName("PART")
-        else:
-            refset = part_crt_reference_set(display_part(), "PART")
-            refset.AddObjectsToReferenceSet(solid_body_layer_1)
-
-    assert (
-        len(solid_body_layer_1) == 1
-    ), f"There were {len(solid_body_layer_1)} solid bodies in part {part.Leaf}"
-
-    display_part().Features.GetParentFeatureOfBody(
-        solid_body_layer_1[0]
-    ).MakeCurrentFeature()
-
-    displayModification1 = session().DisplayManager.NewDisplayModification()
-    displayModification1.ApplyToAllFaces = True
-    displayModification1.ApplyToOwningParts = True
-    displayModification1.NewColor = color
-    displayModification1.NewLayer = layer
-    displayModification1.Apply([solid_body_layer_1[0]])
-    displayModification1.Dispose()
-    features = list(display_part().Features)
-    features[len(features) - 1].MakeCurrentFeature()
-
-
-def gm_color_layer(layer: int, color: int) -> None:
-    components = select_components()
-    if len(components) == 0:
+def gm_color_layer(layer: int, color: int, blank_tools: bool) -> None:
+    selected_components = select_components()
+    if len(selected_components) == 0:
         return
-    parts = hash_components_to_parts(components)
-    with WithResetDisplayPart():
-        for part in parts:
-            try:
-                gm_color_layer_color_layer_solid_body_1(part, layer, color)
-            except Exception as ex:
-                print_(ex)
-    with WithResetDisplayPart():
-        ancestors: Dict[str, Part] = {}
-        for part in parts:
-            print_(part)
-            part_occs = ufsession().Assem.AskOccsOfPart(display_part().Tag, part.Tag)
-            for t in part_occs[0]:
-                component = cast_component(t)
-                for ancestor in component_ancestors(component):
-                    if ancestor.DisplayName not in ancestors:
-                        ancestors[ancestor.DisplayName] = ancestor.Prototype  # type: ignore
-                with WithResetDisplayPart():
+    parts = hash_components_to_parts(selected_components)
+    parts_edited = []
+    with WithSuppressDisplay():
+        with WithResetDisplayPart():
+            for part in parts:
+                session().Parts.SetDisplay(part, False, False)
+                if display_part().Layers.WorkLayer != layer:
+                    display_part().Layers.SetState(layer, State.Selectable)
+                solid_body_layer_1 = list(
+                    filter(lambda b: b.Layer == 1, list(display_part().Bodies))
+                )
+                if len(solid_body_layer_1) != 1:
+                    print_(
+                        f"There were {len(solid_body_layer_1)} solid bodies in part {part.Leaf}"
+                    )
+                    continue
+                parts_edited.append(part)
+                if not part_has_reference_set(display_part(), "PART"):
+                    if part_has_reference_set(display_part(), "BODY"):
+                        refset = part_get_reference_set(display_part(), "BODY")
+                        refset.SetName("PART")
+                    else:
+                        refset = part_crt_reference_set(display_part(), "PART")
+                        refset.AddObjectsToReferenceSet(solid_body_layer_1)
+                display_part().Features.GetParentFeatureOfBody(
+                    solid_body_layer_1[0]
+                ).MakeCurrentFeature()
+                displayModification1 = session().DisplayManager.NewDisplayModification()
+                displayModification1.ApplyToAllFaces = True
+                displayModification1.ApplyToOwningParts = True
+                displayModification1.NewColor = color
+                displayModification1.NewLayer = layer
+                displayModification1.Apply([solid_body_layer_1[0]])
+                displayModification1.Dispose()
+                features = list(display_part().Features)
+                features[len(features) - 1].MakeCurrentFeature()
+        with WithResetDisplayPart():
+            ancestors: Dict[str, Part] = {}
+            for part in parts_edited:
+                part_occs = ufsession().Assem.AskOccsOfPart(
+                    display_part().Tag, part.Tag
+                )
+                for tag in part_occs[0]:
+                    component = cast_component(tag)
+                    for ancestor in component_ancestors(component):
+                        if ancestor.DisplayName not in ancestors:
+                            ancestors[ancestor.DisplayName] = ancestor.Prototype  # type: ignore
                     for ancest in ancestors.keys():
                         session().Parts.SetDisplay(ancestors[ancest], False, False)
-                        display_part().Layers.SetState(layer, State.Selectable)
+                        if display_part().Layers.WorkLayer != layer:
+                            display_part().Layers.SetState(layer, State.Selectable)
                         part_occs1 = ufsession().Assem.AskOccsOfPart(
                             ancestors[ancest].Tag, part.Tag
                         )
-
-                        for h in part_occs1[0]:
-                            cmp = cast_component(h)
-                            cmp.Layer = layer
-                            cmp.SetLayerOption(-1)
-                            cmp.DirectOwner.ReplaceReferenceSet(cmp, "PART")
-                            cmp.RedisplayObject()
+                        for tag in part_occs1[0]:
+                            cmp1 = cast_component(tag)
+                            cmp1.Layer = layer
+                            cmp1.SetLayerOption(-1)
+                            cmp1.DirectOwner.ReplaceReferenceSet(cmp1, "PART")
+                            cmp1.RedisplayObject()
+        if blank_tools:
+            for part in parts_edited:
+                part_occs = ufsession().Assem.AskOccsOfPart(
+                    display_part().Tag, part.Tag
+                )
+                session().DisplayManager.BlankObjects(cast_components(part_occs[0]))  # type: ignore
+    ufsession().Disp.Refresh()
 
 
 def add_fasteners_strip_wave_out() -> None:
@@ -1106,7 +1108,7 @@ def add_fasteners_WaveOut() -> None:
             if not is_fastener(child):
                 continue
             protoPartOcc = GetProtoPartOcc(work_part(), child)
-            add_fasteners_WaveOut1(protoPartOcc)  
+            add_fasteners_WaveOut1(protoPartOcc)
     except Exception as ex:
         print_(ex)
 
@@ -1540,9 +1542,7 @@ def export_design() -> None:
     raise NotImplementedError()
 
 
-
-
-def gm_clean_assembly()->None:
+def gm_clean_assembly() -> None:
     session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "GMCleanAssembly")
 
     original_display = session().Parts.Display
@@ -1555,9 +1555,7 @@ def gm_clean_assembly()->None:
             temp = Path(path).stem
             fasteners[temp] = temp  # type: ignore
 
-
     parts = DescendantParts(display_part())
-
 
     parts = list(filter(lambda p: p.Leaf not in fasteners, parts))
     parts = list(filter(lambda p: "layout" not in p.Leaf.lower(), parts))
@@ -1644,7 +1642,6 @@ def gm_clean_assembly()->None:
     # for k in dir(NXOpen.PartCleanup.CleanupParts):
     #     print_(k)
 
-
     # change this to Components.
     # that way when the program gets here,
     # we should be at the first display part.
@@ -1677,7 +1674,6 @@ def gm_clean_assembly()->None:
     )
     part_cleanup.TurnOffHighlighting = True
     part_cleanup.DoCleanup()
-
 
     # def scale_part(part, scale_factor):
     #     # Get the work part's bodies and scale them

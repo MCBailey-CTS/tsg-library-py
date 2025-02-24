@@ -312,12 +312,12 @@ class NXObject(TaggedObject):
 # Parabola
 
 class BasePartSaveComponents(enum.Enum):
-    TrueValue:int
-    FalseValue:int
+    TrueValue: int
+    FalseValue: int
 
 class BasePartCloseAfterSave(enum.Enum):
-    TrueValue:int
-    FalseValue:int
+    TrueValue: int
+    FalseValue: int
 
 class Body(DisplayableObject):
     Null: Body

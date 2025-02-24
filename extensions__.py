@@ -17,20 +17,21 @@ class WithLockUpdates:
         ufsession().GetUFSession().Modl.Update()  # type: ignore
 
 
+class WithSuppressDisplay:
+    def __enter__(self):  # type: ignore
+        ufsession().Disp.SetDisplay(UFConstants.UF_DISP_SUPPRESS_DISPLAY)  # type: ignore
+
+    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
+        ufsession().Disp.SetDisplay(UFConstants.UF_DISP_UNSUPPRESS_DISPLAY)  # type: ignore
+        ufsession().Disp.RegenerateDisplay()
+
+
 class WithResetDisplayPart:
     def __enter__(self):  # type: ignore
         self.original_display_part = display_part()
 
     def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         session().Parts.SetDisplay(self.original_display_part, False, False)
-
-
-class WithSuppressDisplay:
-    def __enter__(self):  # type: ignore
-        raise NotImplementedError()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):  # type: ignore
-        raise NotImplementedError()
 
 
 class WithReferenceSetReset:
@@ -98,7 +99,9 @@ def cast_part(obj: Union[TaggedObject, int]) -> Part:
     return obj
 
 
-def cast_components(tagged_objects: List[TaggedObject]) -> List[Component]:
+def cast_components(
+    tagged_objects: Union[Sequence[TaggedObject] | Sequence[int]],
+) -> List[Component]:
     components: List[Component] = []
     for obj in tagged_objects:
         components.append(cast_component(obj))
@@ -107,6 +110,13 @@ def cast_components(tagged_objects: List[TaggedObject]) -> List[Component]:
 
 def select_many_sheet_bodies() -> Sequence[Body]:
     raise NotImplementedError()
+
+
+def part_goc_reference_set(part: Part, name: str) -> ReferenceSet:
+    refset = part_get_reference_set(part, name)
+    if refset is None:
+        return part_crt_reference_set(part, name)
+    return refset
 
 
 def edge_to_curve(edge: Edge) -> Curve:
@@ -11797,7 +11807,7 @@ def export_strip_UpdateForStp() -> None:
     raise NotImplementedError()
 
 
-def export_strip_NewMethod(partsToSave: set , child: Component) -> None: # type: ignore
+def export_strip_NewMethod(partsToSave: set, child: Component) -> None:  # type: ignore
     # Part proto = (Part)child.Prototype
     # ReferenceSet referenceSet = proto.GetAllReferenceSets().First(refset => refset.Name == child.ReferenceSet)
     # NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet()
@@ -11958,23 +11968,23 @@ def export_strip_ExportStripPdf(
     #                             $@"Part '{partPath}' does not have a sheet named '{drawingSheetName}'.")
     # __display_part_ = part
     # __work_part_ = __display_part_
-    pdfBuilder = part.PlotManager.CreatePrintPdfbuilder() # type: ignore
+    pdfBuilder = part.PlotManager.CreatePrintPdfbuilder()  # type: ignore
     try:
-        pdfBuilder.Scale = 1.0  
+        pdfBuilder.Scale = 1.0
         pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor  # type: ignore
         pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines  # type: ignore
         pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English  # type: ignore
-        pdfBuilder.XDimension = 8.5  
-        pdfBuilder.YDimension = 11.0  
-        pdfBuilder.RasterImages = True  
+        pdfBuilder.XDimension = 8.5
+        pdfBuilder.YDimension = 11.0
+        pdfBuilder.RasterImages = True
         pdfBuilder.Colors = PrintPDFBuilder.Color.AsDisplayed  # type: ignore
-        pdfBuilder.Watermark = ""  
-        flag = ufsession().Draw.IsObjectOutOfDate(sheet.Tag) # type: ignore
+        pdfBuilder.Watermark = ""
+        flag = ufsession().Draw.IsObjectOutOfDate(sheet.Tag)  # type: ignore
         if flag:
-            ufsession().Draw.UpdOutOfDateViews(sheet.Tag) # type: ignore
-            part.__Save() # type: ignore
-        sheet.Open() # type: ignore
-        pdfBuilder.SourceBuilder.SetSheets([sheet]) # type: ignore
+            ufsession().Draw.UpdOutOfDateViews(sheet.Tag)  # type: ignore
+            part.__Save()  # type: ignore
+        sheet.Open()  # type: ignore
+        pdfBuilder.SourceBuilder.SetSheets([sheet])  # type: ignore
         pdfBuilder.Filename = filePath
         pdfBuilder.Commit()
     finally:
@@ -11993,16 +12003,16 @@ def export_strip_ExportStripPrintDrawing(copies: int) -> None:
         printBuilder1.Copies = copies
         printBuilder1.RasterImages = True
         printBuilder1.Output = PrintBuilder.OutputOption.WireframeBlackWhite  # type: ignore
-        sheets = list(work_part().DrawingSheets) 
+        sheets = list(work_part().DrawingSheets)
         if len(sheets) == 0:
             print("Current work part doesn't not have a sheet to print.")
             return
         elif len(sheets) == 1:
-            session().ApplicationSwitchImmediate("UG_APP_DRAFTING") # type: ignore
+            session().ApplicationSwitchImmediate("UG_APP_DRAFTING")  # type: ignore
             sheets[0].Open()
-            outOfDate = ufsession().Draw.IsObjectOutOfDate(sheets[0].Tag) # type: ignore
+            outOfDate = ufsession().Draw.IsObjectOutOfDate(sheets[0].Tag)  # type: ignore
             if outOfDate:
-                ufsession().Draw.UpdOutOfDateViews(sheets[0].Tag) # type: ignore
+                ufsession().Draw.UpdOutOfDateViews(sheets[0].Tag)  # type: ignore
                 sheets[0].OwningPart.Save(
                     NXOpen.BasePartSaveComponents.TrueValue,
                     NXOpen.BasePartCloseAfterSave.FalseValue,
@@ -12087,7 +12097,7 @@ def assemby_wavelink_select_single_solid_body() -> Body:
     raise NotImplementedError()
 
 
-def export_design_ExportDwg4Views(components) -> None:# type: ignore
+def export_design_ExportDwg4Views(components) -> None:  # type: ignore
     # folder = GFolder.Create(__display_part_.FullPath)
     # Part[] parts = components.Select(c => c.Prototype)
     #     .OfType<Part>()
@@ -12121,4 +12131,3 @@ def export_design_ExportDwg4Views(components) -> None:# type: ignore
     #         dwgCreator.Commit()
     #         dwgCreator.Destroy()
     raise NotImplementedError()
-

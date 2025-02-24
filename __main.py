@@ -16,9 +16,10 @@ import NXOpen.Drawings
 # from GMColorLayerAssembly import gm_color_layer
 
 # for x in NXOpen.Features.Feature.__dict__.items():
-for x in dir(NXOpen.BasePartCloseAfterSave):
-    print_(x)
+# for x in dir(NXOpen.BasePartCloseAfterSave):
+#     print_(x)
 
+print_(display_part().Layers.WorkLayer)
 
 # print_('in here')
 
