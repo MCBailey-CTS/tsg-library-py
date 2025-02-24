@@ -1,14 +1,17 @@
+from pathlib import Path
 import traceback
-from typing import Sequence
+from typing import List, Sequence, Optional, Dict
+from NXOpen.Layer import State
 from extensions__ import *
-
+import NXOpen
+import os
 
 def delete_unused_curves() -> None:
     curves = delete_unused_curves_select_many_curves()
     if len(curves) == 0:
         return
     for delete in curves:
-        featTag = ufsession().Modl.AskObjectFeat(delete.Tag)
+        featTag = ufsession().Modl.AskObjectFeat(delete.Tag) # type: ignore
         if featTag == 0:
             delete_objects([delete])
 
@@ -354,7 +357,7 @@ def layout_ref_sets() -> None:
             or refset.Name == "MATE"
         ):
             refset_name = refset.Name
-            display_part().DeleteReferenceSet(refset)
+            display_part().DeleteReferenceSet(refset)# type: ignore
             print_(f"Deleted ref set {refset_name}")
 
     solid_bodies_layer_10 = part_solid_bodies_on_layer(display_part(), 10)
@@ -573,7 +576,7 @@ def assembly_wavelink_WaveLinkFasteners(
 
 
 def assembly_wavelink_WaveLinkBoolean(
-    blank_tools: bool, booleanType: Feature.BooleanType
+    blank_tools: bool, booleanType: FeatureBooleanType
 ) -> None:
     # session_.SetUndoMark(Session.MarkVisibility.Visible, "Assembly Wavelink")
     # using (session_.__UsingDisplayPartReset())
@@ -680,15 +683,15 @@ def assembly_wavelink_WaveLinkBoolean(
     raise NotImplementedError()
 
 
-def extract_free_edges():
+def extract_free_edges()->None:
     if display_part() is None:
         print_("No Display Part")
         return
-    session().SetUndoMark(Session.MarkVisibility.Visible, "extract_free_edges")
-    selectedSheetBodies = select_many_sheet_bodies("extract_free_edges")
+    session().SetUndoMark(SessionMarkVisibility.Visible, "extract_free_edges")
+    selectedSheetBodies = select_many_sheet_bodies("extract_free_edges") # type: ignore
     edges = map(lambda b: b.GetEdges(), selectedSheetBodies)
-    faces = map(lambda e: e.GetFaces(), edges)
-    freeEdgeCurves = map(lambda f: edge_to_curve(f), faces)
+    faces = map(lambda e: e.GetFaces(), edges) # type: ignore
+    freeEdgeCurves = list(map(lambda f: edge_to_curve(f), faces))
     for curve in freeEdgeCurves:
         curve.Layer = display_part().Layers.WorkLayer
         curve.RedisplayObject()
@@ -815,10 +818,11 @@ def gm_color_layer(layer: int, color: int) -> None:
     with WithResetDisplayPart():
         ancestors: Dict[str, Part] = {}
         for part in parts:
+            print_(part)
             part_occs = ufsession().Assem.AskOccsOfPart(display_part().Tag, part.Tag)
             for t in part_occs[0]:
-                j = cast_component(t)
-                for ancestor in component_ancestors(j):
+                component = cast_component(t)
+                for ancestor in component_ancestors(component):
                     if ancestor.DisplayName not in ancestors:
                         ancestors[ancestor.DisplayName] = ancestor.Prototype  # type: ignore
                 with WithResetDisplayPart():
@@ -1102,7 +1106,7 @@ def add_fasteners_WaveOut() -> None:
             if not is_fastener(child):
                 continue
             protoPartOcc = GetProtoPartOcc(work_part(), child)
-            add_fasteners_WaveOut1(protoPartOcc)  # type: ignore
+            add_fasteners_WaveOut1(protoPartOcc)  
     except Exception as ex:
         print_(ex)
 
@@ -1534,3 +1538,151 @@ def export_design() -> None:
     #     }
     # }
     raise NotImplementedError()
+
+
+
+
+def gm_clean_assembly()->None:
+    session().SetUndoMark(NXOpen.SessionMarkVisibility.Visible, "GMCleanAssembly")
+
+    original_display = session().Parts.Display
+    # print_('helllo world')
+    fasteners: dict[str, Part] = {}
+
+    for root, dirs, files in os.walk("G:\\0Library\\Fasteners"):
+        for file in files:
+            path = os.path.join(root, file)
+            temp = Path(path).stem
+            fasteners[temp] = temp  # type: ignore
+
+
+    parts = DescendantParts(display_part())
+
+
+    parts = list(filter(lambda p: p.Leaf not in fasteners, parts))
+    parts = list(filter(lambda p: "layout" not in p.Leaf.lower(), parts))
+    parts = list(filter(lambda p: "strip" not in p.Leaf.lower(), parts))
+
+    #     using (session_.__UsingDisplayPartReset())
+    #     using (session_.__UsingSuppressDisplay())
+    #         for (int i = 0; i < parts.Length; i++)
+
+    # print_(len(parts))
+
+    for index, value in enumerate(parts):
+        #             try
+        #             {
+        #                 Part part = parts[i];
+        #                 prompt($"({i + 1} - {parts.Length}) -> {part.Leaf}");
+
+        session().Parts.SetDisplay(value, False, False)
+
+        suppresed_features = list(
+            filter(lambda f: not f.Suppressed, display_part().Features)
+        )
+
+        if len(suppresed_features) > 0:
+            # session_.__DeleteObjects(suppresed_features);
+            pass
+
+        # display = session.Parts.Display
+        removeBuilder = display_part().Features.CreateRemoveParametersBuilder()
+        removeBuilder.Objects.Add(list(display_part().Bodies))
+        removeBuilder.Objects.Add(list(display_part().Curves))
+        removeBuilder.Objects.Add(list(display_part().Points))
+        removeBuilder.Objects.Add(list(display_part().Datums))
+        removeBuilder.Objects.Add(list(display_part().CoordinateSystems))
+        if removeBuilder.Objects.Size > 0:
+            removeBuilder.Commit()
+        removeBuilder.Destroy()
+
+        non_layer_1_bodies = list(
+            filter(lambda b: b.Layer != 1, list(display_part().Bodies))
+        )
+
+        if len(non_layer_1_bodies) > 0:
+            delete_objects(non_layer_1_bodies)
+
+        Curves = list(display_part().Curves)
+
+        if len(Curves) > 0:
+            delete_objects(Curves)
+
+        Datums = list(display_part().Datums)
+
+        if len(Datums) > 0:
+            delete_objects(Datums)
+
+        Notes = list(display_part().Notes)
+
+        if len(Notes) > 0:
+            delete_objects(Notes)
+
+        root_comp = display_part().ComponentAssembly.RootComponent
+
+        if root_comp is not None:
+            for child in List(root_comp.GetChildren()):
+                if child.DisplayName in fasteners or child.IsSuppressed:
+                    delete_objects([child])
+
+        contraints = list(display_part().DisplayedConstraints)
+
+        if len(contraints) > 0:
+            delete_objects(contraints)
+
+        drawings = list(display_part().DrawingSheets)
+
+        if len(drawings) > 0:
+            delete_objects(drawings)
+
+    session().Parts.SetDisplay(original_display, False, False)
+    part_cleanup = session().NewPartCleanup()
+
+    #         using (part_cleanup)
+    #         {
+
+    # for k in dir(NXOpen.PartCleanup.CleanupParts):
+    #     print_(k)
+
+
+    # change this to Components.
+    # that way when the program gets here,
+    # we should be at the first display part.
+    # it will prevent them from cleaning up all open parts
+    # and fasteners that might not pertain to this assembly any more
+    part_cleanup.PartsToCleanup = NXOpen.PartCleanupCleanupParts.Components
+    part_cleanup.CleanupAssemblyConstraints = True
+    part_cleanup.CleanupCAMObjects = True
+    part_cleanup.CleanupDraftingObjects = True
+    part_cleanup.CleanupFeatureData = True
+    part_cleanup.CleanupMatingData = True
+    part_cleanup.CleanupMotionData = True
+    part_cleanup.CleanupPartFamilyData = True
+    part_cleanup.CleanupRoutingData = True
+    part_cleanup.DeleteBrokenInterpartLinks = True
+    part_cleanup.DeleteDuplicateLights = True
+    part_cleanup.DeleteInvalidAttributes = True
+    part_cleanup.DeleteMaterials = True
+    part_cleanup.DeleteSpreadSheetData = True
+    part_cleanup.DeleteUnusedExpressions = True
+    part_cleanup.DeleteUnusedExtractReferences = True
+    part_cleanup.DeleteUnusedFonts = True
+    part_cleanup.DeleteUnusedObjects = True
+    part_cleanup.DeleteUnusedUnits = True
+    part_cleanup.DeleteVisualEditorData = True
+    part_cleanup.FixOffplaneSketchCurves = True
+    part_cleanup.GroupsToDelete = NXOpen.PartCleanupDeleteGroups.All
+    part_cleanup.ResetComponentDisplay = (
+        NXOpen.PartCleanupResetComponentDisplayAction.RemoveAllChanges
+    )
+    part_cleanup.TurnOffHighlighting = True
+    part_cleanup.DoCleanup()
+
+
+    # def scale_part(part, scale_factor):
+    #     # Get the work part's bodies and scale them
+    #     bodies = part.Bodies
+    #     for body in bodies:
+    #         # Scale each body in the part by the scale factor
+    #         body.Transform(NXOpen.Matrix3x3.Identity(), NXOpen.Vector3d.Zero(), scale_factor)
+    #         print(f"Scaled body: {body.Name} by factor {scale_factor}")

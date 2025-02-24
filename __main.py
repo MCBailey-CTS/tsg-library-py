@@ -13,10 +13,10 @@ from NXOpen import Session, TaggedObject
 from extensions__ import *
 import NXOpen.Drawings
 
-from GMColorLayerAssembly import gm_color_layer
+# from GMColorLayerAssembly import gm_color_layer
 
 # for x in NXOpen.Features.Feature.__dict__.items():
-for x in dir(NXOpen.BasePartSaveComponents):
+for x in dir(NXOpen.BasePartCloseAfterSave):
     print_(x)
 
 

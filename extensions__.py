@@ -11797,7 +11797,7 @@ def export_strip_UpdateForStp() -> None:
     raise NotImplementedError()
 
 
-def export_strip_NewMethod(partsToSave: set , child: Component) -> None:
+def export_strip_NewMethod(partsToSave: set , child: Component) -> None: # type: ignore
     # Part proto = (Part)child.Prototype
     # ReferenceSet referenceSet = proto.GetAllReferenceSets().First(refset => refset.Name == child.ReferenceSet)
     # NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet()
@@ -11958,24 +11958,23 @@ def export_strip_ExportStripPdf(
     #                             $@"Part '{partPath}' does not have a sheet named '{drawingSheetName}'.")
     # __display_part_ = part
     # __work_part_ = __display_part_
-    pdfBuilder = part.PlotManager.CreatePrintPdfbuilder()
+    pdfBuilder = part.PlotManager.CreatePrintPdfbuilder() # type: ignore
     try:
-        # sql
-        pdfBuilder.Scale = 1.0  # type: ignore
+        pdfBuilder.Scale = 1.0  
         pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor  # type: ignore
         pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines  # type: ignore
         pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English  # type: ignore
-        pdfBuilder.XDimension = 8.5  # type: ignore
-        pdfBuilder.YDimension = 11.0  # type: ignore
-        pdfBuilder.RasterImages = True  # type: ignore
+        pdfBuilder.XDimension = 8.5  
+        pdfBuilder.YDimension = 11.0  
+        pdfBuilder.RasterImages = True  
         pdfBuilder.Colors = PrintPDFBuilder.Color.AsDisplayed  # type: ignore
-        pdfBuilder.Watermark = ""  # type: ignore
-        flag = ufsession().Draw.IsObjectOutOfDate(sheet.Tag)
+        pdfBuilder.Watermark = ""  
+        flag = ufsession().Draw.IsObjectOutOfDate(sheet.Tag) # type: ignore
         if flag:
-            ufsession().Draw.UpdOutOfDateViews(sheet.Tag)
-            part.__Save()
-        sheet.Open()
-        pdfBuilder.SourceBuilder.SetSheets([sheet])
+            ufsession().Draw.UpdOutOfDateViews(sheet.Tag) # type: ignore
+            part.__Save() # type: ignore
+        sheet.Open() # type: ignore
+        pdfBuilder.SourceBuilder.SetSheets([sheet]) # type: ignore
         pdfBuilder.Filename = filePath
         pdfBuilder.Commit()
     finally:
@@ -11983,9 +11982,9 @@ def export_strip_ExportStripPdf(
 
 
 def export_strip_ExportStripPrintDrawing(copies: int) -> None:
-    if len(copies) == 0:
+    if copies == 0:
         return
-    printBuilder1 = work_part().PlotManager.CreatePrintBuilder()
+    printBuilder1 = work_part().PlotManager.CreatePrintBuilder()  # type: ignore
     try:
         # sql
         printBuilder1.ThinWidth = 1.0
@@ -11994,19 +11993,19 @@ def export_strip_ExportStripPrintDrawing(copies: int) -> None:
         printBuilder1.Copies = copies
         printBuilder1.RasterImages = True
         printBuilder1.Output = PrintBuilder.OutputOption.WireframeBlackWhite  # type: ignore
-        sheets = work_part().DrawingSheets.ToArray()
+        sheets = list(work_part().DrawingSheets) 
         if len(sheets) == 0:
             print("Current work part doesn't not have a sheet to print.")
             return
         elif len(sheets) == 1:
-            session().ApplicationSwitchImmediate("UG_APP_DRAFTING")
+            session().ApplicationSwitchImmediate("UG_APP_DRAFTING") # type: ignore
             sheets[0].Open()
-            outOfDate = ufsession().Draw.IsObjectOutOfDate(sheets[0].Tag)
+            outOfDate = ufsession().Draw.IsObjectOutOfDate(sheets[0].Tag) # type: ignore
             if outOfDate:
-                ufsession().Draw.UpdOutOfDateViews(sheets[0].Tag)
+                ufsession().Draw.UpdOutOfDateViews(sheets[0].Tag) # type: ignore
                 sheets[0].OwningPart.Save(
                     NXOpen.BasePartSaveComponents.TrueValue,
-                    NXOpen.BasePart.CloseAfterSave.FalseValue,
+                    NXOpen.BasePartCloseAfterSave.FalseValue,
                 )
                 print_("need to uncomment the line before this line 725")
 
@@ -12088,7 +12087,7 @@ def assemby_wavelink_select_single_solid_body() -> Body:
     raise NotImplementedError()
 
 
-def export_design_ExportDwg4Views(components) -> None:
+def export_design_ExportDwg4Views(components) -> None:# type: ignore
     # folder = GFolder.Create(__display_part_.FullPath)
     # Part[] parts = components.Select(c => c.Prototype)
     #     .OfType<Part>()
@@ -12122,42 +12121,4 @@ def export_design_ExportDwg4Views(components) -> None:
     #         dwgCreator.Commit()
     #         dwgCreator.Destroy()
     raise NotImplementedError()
-
-
-
-def get_all_descendants(component: Component) -> List[Component]:
-    descendants = []
-    # print_('hdhdhdh')
-
-    if component is None:
-        # print_('none')
-        return descendants
-
-    # Get children of the current component
-    children = component.GetChildren()
-
-    # Iterate through children and collect them recursively
-    for child in children:
-        descendants.append(child)
-        # Recursively get descendants of the child component
-        descendants.extend(get_all_descendants(child))
-
-    return descendants
-
-
-def DescendantParts(part: Part) -> List[Part]:
-    __parts = {}
-    __parts[part.Leaf] = part
-    for component in get_all_descendants(part.ComponentAssembly.RootComponent):
-        if isinstance(component.Prototype, Part):
-            if component.DisplayName not in __parts.keys():
-                __parts[component.DisplayName] = component.Prototype
-    return list(__parts.values())
-
-
-def delete_objects(objects: Sequence[TaggedObject]) -> None:
-    session().UpdateManager.ClearDeleteList()
-    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")
-    session().UpdateManager.AddObjectsToDeleteList(objects)
-    session().UpdateManager.DoUpdate(undo)
 

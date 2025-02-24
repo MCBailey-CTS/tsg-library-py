@@ -1,4 +1,5 @@
 from extensions__ import *
+from typing import List, Sequence, Optional
 
 #         public partial class AutoDetail : _UFuncForm
 #     {
