@@ -124,6 +124,10 @@ def cycle_by_name(name: str) -> List[TaggedObject]:
     return objects
 
 
+def delete_unused_curves_select_many_curves() -> Sequence[Curve]:
+    raise NotImplementedError()
+
+
 def part_get_reference_set_or_none(part: Part, name: str) -> Optional[ReferenceSet]:
     for ref in part.GetAllReferenceSets():
         if ref.Name == name:
@@ -370,7 +374,7 @@ def hash_components_to_parts(components: List[Component]) -> List[Part]:
             continue
         # print(comp.DisplayName)
         dict_[comp.DisplayName] = comp.Prototype  # type: ignore
-    return dict_.items()  # type: ignore
+    return dict_.values()  # type: ignore
 
 
 def session_get_or_open_part(leaf_or_path: str) -> Part:
@@ -11684,3 +11688,476 @@ def math_pow(number: float, power: float) -> float:
 #             //}
 #             throw new NotImplementedException();
 #         }
+
+
+export_strip_Regex_Strip = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-strip$"
+export_strip_DummyPath = "G:\\0Library\\SeedFiles\\Components\\Dummy.prt"
+export_strip_Regex_PressAssembly = (
+    "^(?<customerNum>\\d+)-Press-(?<opNum>\\d+)-Assembly$"
+)
+export_strip_Regex_Layout = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-layout$"
+export_strip_Regex_Blank = "^(?<customerNum>\\d+)-(?<opNum>\\d+)-blank$"
+
+
+def export_strip_CheckAssemblyDummyFiles() -> None:
+    # if (__display_part_.ComponentAssembly.RootComponent is null)
+    #     return
+    # foreach (Component childOfStrip in __display_part_.ComponentAssembly.RootComponent.GetChildren())
+    #     if (childOfStrip.IsSuppressed)
+    #         continue
+    #     if (!(childOfStrip.Prototype is Part))
+    #         continue
+    #     if (!Regex.IsMatch(childOfStrip.DisplayName, Regex_PressAssembly, RegexOptions.IgnoreCase))
+    #         continue
+    #     if (childOfStrip.GetChildren().Length == 0)
+    #         throw new Exception($"A press exists in your assembly without any children. {childOfStrip.__AssemblyPathString()}")
+    #     if (childOfStrip.GetChildren().Length == 1)
+    #         throw new Exception($"A press exists in your assembly with only one child. Expecting a ram and a bolster. {childOfStrip.__AssemblyPathString()}")
+    #     if (childOfStrip.GetChildren().Length != 2)
+    #         continue
+    #     foreach (Component childOfPress in childOfStrip.GetChildren())
+    #         if (!(childOfPress.Prototype is Part))
+    #             throw new Exception($"The child of a press must be loaded. {childOfPress.__AssemblyPathString()}")
+    #         if (childOfPress.IsSuppressed)
+    #             throw new Exception($"The child of a press cannot be suppressed. {childOfPress.__AssemblyPathString()}")
+    #         if (childOfPress.GetChildren().Length != 0
+    #             && childOfPress.GetChildren().Any(component => !component.IsSuppressed && component.Prototype is Part))
+    #             continue
+    #         throw new Exception($"The child of a bolster or ram under a press must be the Dummy file: {DummyPath}{childOfPress.__AssemblyPathString()}")
+    #     break
+    raise NotImplementedError()
+
+
+def export_strip_UpdateForStp() -> None:
+    # {
+    #     HashSet<Part> partsToSave = new HashSet<Part>()
+    #     Part currentD = __display_part_
+    #     Part currentW = session_.Parts.Work
+
+    #     try
+    #     {
+    #         foreach (Component child in session_.Parts.Work.ComponentAssembly.RootComponent.GetChildren())
+    #         {
+    #             if (child.IsSuppressed)
+    #                 continue
+
+    #             if (!(child.Prototype is Part))
+    #                 continue
+
+    #             __display_part_ = child.__Prototype()
+
+    #             switch (child.ReferenceSet)
+    #             {
+    #                 case "Empty":
+    #                     continue
+
+    #                 default:
+    #                     {
+    #                         Part proto = (Part)child.Prototype
+
+    #                         ReferenceSet referenceSet = proto.GetAllReferenceSets().FirstOrDefault(refset => refset.Name == child.ReferenceSet)
+
+    #                         if (referenceSet is null)
+    #                             continue
+
+    #                         NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet()
+
+    #                         foreach (NXObject obj in objectsInReferenceSet)
+    #                         {
+    #                             if (!(obj is DisplayableObject disp))
+    #                                 continue
+
+    #                             if (disp.Layer <= 1 || disp.Layer >= 256)
+    #                                 continue
+
+    #                             if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
+    #                                 continue
+
+    #                             proto.Layers.SetState(disp.Layer, State.Selectable)
+    #                         }
+
+    #                         session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray())
+
+    #                         partsToSave.Add(proto)
+    #                     }
+
+    #                     continue
+    #             }
+    #         }
+    #     }
+    #     finally
+    #     {
+    #         session_.Parts.SetDisplay(currentD, false, false, out _)
+    #         session_.Parts.SetWork(currentW)
+    #     }
+
+    #     foreach (Part part in partsToSave)
+    #         part.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False)
+    # }
+    raise NotImplementedError()
+
+
+def export_strip_NewMethod(partsToSave: set , child: Component) -> None:
+    # Part proto = (Part)child.Prototype
+    # ReferenceSet referenceSet = proto.GetAllReferenceSets().First(refset => refset.Name == child.ReferenceSet)
+    # NXObject[] objectsInReferenceSet = referenceSet.AskMembersInReferenceSet()
+    # foreach (NXObject obj in objectsInReferenceSet)
+    #     if (!(obj is DisplayableObject disp))
+    #         continue
+    #     if (disp.Layer <= 1 || disp.Layer >= 256)
+    #         continue
+    #     if (proto.Layers.GetState(disp.Layer) == State.WorkLayer)
+    #         continue
+    #     proto.Layers.SetState(disp.Layer, State.Selectable)
+    # session_.DisplayManager.UnblankObjects(objectsInReferenceSet.OfType<DisplayableObject>().ToArray())
+    # partsToSave.Add(proto)
+    raise NotImplementedError()
+
+
+def export_strip_UpdateForPdf() -> None:
+    # DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray()
+    # switch (sheets.Length)
+    # {
+    #     case 0:
+    #         throw new InvalidOperationException("Current work part doesn't not have a sheet to print.")
+    #     case 1:
+    #         session_.ApplicationSwitchImmediate("UG_APP_DRAFTING")
+    #         sheets[0].Open()
+    #         uf_.Draw.IsObjectOutOfDate(sheets[0].Tag, out bool outOfDate)
+    #         if (outOfDate)
+    #             uf_.Draw.UpdOutOfDateViews(sheets[0].Tag)
+    #         sheets[0].OwningPart.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False)
+    #         break
+    #     default:
+    #         throw new InvalidOperationException("Current work part contains more than 1 sheet.")
+    raise NotImplementedError()
+
+
+def export_strip_ExportPDF(outPutPath: str, fileName: str) -> str:
+    # DrawingSheet[] sheets = session_.Parts.Work.DrawingSheets.ToArray()
+    # ExportStripPdf(session_.Parts.Work.FullPath, sheets[0].Name, $"{outPutPath}\\{fileName}.pdf")
+    # return $"{outPutPath}\\{fileName}.pdf"
+    raise NotImplementedError()
+
+
+def export_strip_AddDummy(part: Part, layers: Sequence[int]) -> None:
+    # Prompt($"Setting layers in {__display_part_.Leaf}.")
+    # int[] layerArray = layers.ToArray()
+    # __display_part_.Layers.WorkLayer = 1
+    # for (int i = 2 i < +256 i++)
+    #     if (layerArray.Contains(i))
+    #         __display_part_.Layers.SetState(i, State.Selectable)
+    #     else
+    #         __display_part_.Layers.SetState(i, State.Hidden)
+    # __display_part_.Layers.SetState(layerArray.Min(), State.WorkLayer)
+    # __display_part_.Layers.SetState(1, State.Hidden)
+    # if (part.ComponentAssembly.RootComponent != null)
+    #     Component validChild = part.ComponentAssembly.RootComponent
+    #         .GetChildren()
+    #         .Where(component => component.Prototype is Part)
+    #         .FirstOrDefault(component => !component.IsSuppressed)
+    #     if (validChild != null)
+    #         return
+    # Part dummyPart = session_.__FindOrOpen(DummyPath)
+    # Prompt($"Adding dummy file to {part.Leaf}.")
+    # session_.Parts.Work.ComponentAssembly.AddComponent(dummyPart, "Entire Part", "DUMMY", _Point3dOrigin,_Matrix3x3Identity, 1, out PartLoadStatus status)
+    # status.Dispose()
+    raise NotImplementedError()
+
+
+def export_strip_SetLayersInBlanksAndLayoutsAndAddDummies(snapStrip010: Part) -> None:
+    # if (!Regex.IsMatch(snapStrip010.Leaf, Regex_Strip, RegexOptions.IgnoreCase))
+    #     throw new ArgumentException(@"Must be an op 010 strip.", nameof(snapStrip010))
+    # Part currentD = __display_part_
+    # Part currentW = session_.Parts.Work
+    # try
+    #     Regex blankNameRegex = new Regex("^BLANK-([0-9]{1,})$")
+    #     Regex layoutNameRegex = new Regex("^LAYOUT-([0-9]{1,})$")
+    #     Part layoutPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
+    #         .Select(component => component.Prototype)
+    #         .OfType<Part>()
+    #         .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Layout, RegexOptions.IgnoreCase))
+    #     Part blankPart = Descendants(__display_part_.ComponentAssembly.RootComponent)
+    #         .Select(component => component.Prototype)
+    #         .OfType<Part>()
+    #         .FirstOrDefault(component => Regex.IsMatch(component.Leaf, Regex_Blank, RegexOptions.IgnoreCase))
+    #     HashSet<int> layoutLayers = new HashSet<int>()
+    #     HashSet<int> blankLayers = new HashSet<int>()
+    #     foreach (Component child in Descendants(__display_part_.ComponentAssembly.RootComponent))
+    #         if (!(child.Prototype is Part))
+    #             continue
+    #         if (child.IsSuppressed)
+    #             continue
+    #         Match blankMatch = blankNameRegex.Match(child.Name)
+    #         Match layoutMatch = layoutNameRegex.Match(child.Name)
+    #         if (blankMatch.Success)
+    #             blankLayers.Add(int.Parse(blankMatch.Groups[1].Value) + 10)
+    #         if (!layoutMatch.Success)
+    #             continue
+    #         int layer = int.Parse(layoutMatch.Groups[1].Value) * 10
+    #         layoutLayers.Add(layer)
+    #         layoutLayers.Add(layer + 1)
+    #     if (blankLayers.Count != 0 && blankPart != null)
+    #         session_.Parts.SetDisplay(blankPart, false, false, out _)
+    #         session_.Parts.SetWork(__display_part_)
+    #         AddDummy(blankPart, blankLayers)
+    #         Prompt($"Saving: {blankPart.Leaf}.")
+    #         __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False)
+    #     if (layoutLayers.Count != 0 && layoutPart != null)
+    #         session_.Parts.SetDisplay(layoutPart, false, false, out _)
+    #         session_.Parts.SetWork(__display_part_)
+    #         AddDummy(layoutPart, layoutLayers)
+    #         Prompt($"Saving: {layoutPart.Leaf}.")
+    #         __display_part_.Save(BasePart.SaveComponents.False, BasePart.CloseAfterSave.False)
+    # finally:
+    #     session_.Parts.SetDisplay(currentD, false, false, out _)
+    #     session_.Parts.SetWork(currentW)
+    # snapStrip010.Save(BasePart.SaveComponents.True, BasePart.CloseAfterSave.False)
+    raise NotImplementedError()
+
+
+def export_strip_ExportStripStp(outgoingFolderName: str) -> None:
+    # string outputPath = $"{outgoingFolderName}\\{session_.Parts.Work.Leaf}-{TodaysDate}.stp"
+    # StepCreator step = session_.DexManager.CreateStepCreator()
+    # using (session_.__UsingBuilderDestroyer(step))
+    #     step.ExportDestination = BaseCreator.ExportDestinationOption.NativeFileSystem
+    #     // sql convert
+    #     // in theory you should just be able to load the settingfile
+    #     // and not set any other step.properties
+    #     step.SettingsFile = "U:\\nxFiles\\Step Translator\\ExternalStep_AllLayers.def"
+    #     step.ExportAs = StepCreator.ExportAsOption.Ap214
+    #     step.InputFile = session_.Parts.Work.FullPath
+    #     step.OutputFile = outputPath
+    #     step.ProcessHoldFlag = true
+    #     step.Commit()
+    # print(File.Exists(outputPath)
+    #     ? $"Successfully created \"{outputPath}\"."
+    #     : $"Did not successfully create \"{outputPath}\".")
+    raise NotImplementedError()
+
+
+def export_strip_Path_GetDirectoryName(path: str) -> str:
+    raise NotImplementedError()
+
+
+def export_strip_ExportStripPdf(
+    partPath: str, drawingSheetName: str, filePath: str
+) -> None:
+    directory = export_strip_Path_GetDirectoryName(filePath)
+    # if (!filePath.EndsWith(".pdf"))
+    #     throw new Exception("File path for PDF must end with \".pdf\".")
+    # if (File.Exists(filePath))
+    #     throw new Exception($"PDF '{filePath}' already exists.")
+    # Part part = session_.__FindOrOpen(partPath)
+    # //We can use SingleOrDefault here because NX will prevent the naming of two drawing sheets the exact same string.
+    # DrawingSheet sheet = part.DrawingSheets
+    #                             .ToArray()
+    #                             .SingleOrDefault(drawingSheet => drawingSheet.Name == drawingSheetName)
+    #                         ??
+    #                         throw new Exception(
+    #                             $@"Part '{partPath}' does not have a sheet named '{drawingSheetName}'.")
+    # __display_part_ = part
+    # __work_part_ = __display_part_
+    pdfBuilder = part.PlotManager.CreatePrintPdfbuilder()
+    try:
+        # sql
+        pdfBuilder.Scale = 1.0  # type: ignore
+        pdfBuilder.Size = PrintPDFBuilder.SizeOption.ScaleFactor  # type: ignore
+        pdfBuilder.OutputText = PrintPDFBuilder.OutputTextOption.Polylines  # type: ignore
+        pdfBuilder.Units = PrintPDFBuilder.UnitsOption.English  # type: ignore
+        pdfBuilder.XDimension = 8.5  # type: ignore
+        pdfBuilder.YDimension = 11.0  # type: ignore
+        pdfBuilder.RasterImages = True  # type: ignore
+        pdfBuilder.Colors = PrintPDFBuilder.Color.AsDisplayed  # type: ignore
+        pdfBuilder.Watermark = ""  # type: ignore
+        flag = ufsession().Draw.IsObjectOutOfDate(sheet.Tag)
+        if flag:
+            ufsession().Draw.UpdOutOfDateViews(sheet.Tag)
+            part.__Save()
+        sheet.Open()
+        pdfBuilder.SourceBuilder.SetSheets([sheet])
+        pdfBuilder.Filename = filePath
+        pdfBuilder.Commit()
+    finally:
+        pdfBuilder.Destroy()
+
+
+def export_strip_ExportStripPrintDrawing(copies: int) -> None:
+    if len(copies) == 0:
+        return
+    printBuilder1 = work_part().PlotManager.CreatePrintBuilder()
+    try:
+        # sql
+        printBuilder1.ThinWidth = 1.0
+        printBuilder1.NormalWidth = 2.0
+        printBuilder1.ThickWidth = 3.0
+        printBuilder1.Copies = copies
+        printBuilder1.RasterImages = True
+        printBuilder1.Output = PrintBuilder.OutputOption.WireframeBlackWhite  # type: ignore
+        sheets = work_part().DrawingSheets.ToArray()
+        if len(sheets) == 0:
+            print("Current work part doesn't not have a sheet to print.")
+            return
+        elif len(sheets) == 1:
+            session().ApplicationSwitchImmediate("UG_APP_DRAFTING")
+            sheets[0].Open()
+            outOfDate = ufsession().Draw.IsObjectOutOfDate(sheets[0].Tag)
+            if outOfDate:
+                ufsession().Draw.UpdOutOfDateViews(sheets[0].Tag)
+                sheets[0].OwningPart.Save(
+                    NXOpen.BasePartSaveComponents.TrueValue,
+                    NXOpen.BasePart.CloseAfterSave.FalseValue,
+                )
+                print_("need to uncomment the line before this line 725")
+
+            printBuilder1.SourceBuilder.SetSheets([sheets[0]])
+        else:
+            print("Current work part contains more than 1 sheet.")
+            return
+
+        printBuilder1.PrinterText = (
+            "\\\\ctsfps1.cts.toolingsystemsgroup.com\\CTS Office MFC"
+        )
+        printBuilder1.Orientation = PrintBuilder.OrientationOption.Landscape  # type: ignore
+        printBuilder1.Paper = PrintBuilder.PaperSize.Inch11x17  # type: ignore
+        printBuilder1.Commit()
+    finally:
+        printBuilder1.Destroy()
+
+
+def assembly_wavelink_select_multiple_solid_bodies() -> Sequence[Body]:
+    # Body[] targets = SelectMultipleTaggedObjects1(
+    #     "Select Target Body",
+    #     "select Target Body",
+    #     new[] { BodyMask },
+    #     k =>
+    #     {
+    #         if (!(k is Body b))
+    #             return false
+
+    #         return b.IsOccurrence
+    #         && !b.OwningComponent.DisplayName.ToLower().Contains("strip")
+    #         && !b.OwningComponent.DisplayName.ToLower().Contains("press")
+    #         && !b.OwningComponent.DisplayName.ToLower().Contains("layout")
+    #         && !b.OwningComponent.DisplayName.__IsAssemblyHolder()
+    #     }).Cast<Body>().ToArray()
+    raise NotImplementedError()
+
+
+def assembly_wavelink_select_multiple_components() -> Sequence[Component]:
+    # Component[] tools = SelectMultipleTaggedObjects1(
+    #     "Select Tool Components",
+    #     "Select Tool Components",
+    #     new[] { Masks.ComponentMask },
+    #     tool1 =>
+    #     {
+    #         if (!(tool1 is Component tool))
+    #             return false
+    #         return !tool.DisplayName._IsLayout_()
+    #         && !tool.DisplayName.ToLower().Contains("strip")
+    #         && !tool.DisplayName._IsFastenerExtended_()
+    #         && !tool.DisplayName.__IsAssemblyHolder()
+    #         && targets.All(t => t.OwningComponent.Tag != tool.Tag)
+    #     }).Cast<Component>().ToArray()
+    raise NotImplementedError()
+
+
+def part_solid_bodies_on_layer(part: Part, layer: int) -> Sequence[Body]:
+    return [b for b in list(part.Bodies) if b.IsSolidBody() and b.Layer == layer]
+
+
+def assemby_wavelink_select_many_component1() -> Sequence[Component]:
+    # Component[] tools = SelectManyComponents1(c =>
+    # {
+    #     if (!(c is Component comp))
+    #         return false
+
+    #     return comp.Tag != target.OwningComponent.Tag
+    #     && (from refset in comp.__Prototype().GetAllReferenceSets()
+    #         let name = refset.Name.ToUpper()
+    #         where name == "SUB_TOOL" || Name == "SUB-TOOL" || name == "SUBTOOL"
+    #         select refset
+    #         ).Any() && !comp.DisplayName.__IsAssemblyHolder()
+    # }
+
+    #         )
+    raise NotImplementedError()
+
+
+def assemby_wavelink_select_single_solid_body() -> Body:
+    raise NotImplementedError()
+
+
+def export_design_ExportDwg4Views(components) -> None:
+    # folder = GFolder.Create(__display_part_.FullPath)
+    # Part[] parts = components.Select(c => c.Prototype)
+    #     .OfType<Part>()
+    #     .Where(p => p.__HasDrawingSheet("4-VIEW"))
+    #     .Distinct()
+    #     .ToArray()
+    # var parts_to_export = from part in parts
+    #                     where part.__IsPartDetail()
+    #                     let op = part.__AskDetailOp()
+    #                     let match = Regex.Match(part.Leaf, "^(\\d+-\\d+)-\\d+$")
+    #                     where match.Success
+    #                     let dir = $"{folder.dir_op(op)}\\{match.Groups[1].Value}-dwg-4-views"
+    #                     let output = $"{dir}\\{part.Leaf}.dwg"
+    #                     select new
+    #                     {
+    #                         input_part = part.FullPath,
+    #                         output_part = output,
+    #                     }
+    # foreach (var p in parts_to_export)
+    #     string dir = Path.GetDirectoryName(p.output_part)
+    #     if (!Directory.Exists(dir))
+    #         Directory.CreateDirectory(dir)
+    #     dwgCreator = session_.DexManager.CreateDxfdwgCreator()
+    #         dwgCreator.ExportData = DxfdwgCreator.ExportDataOption.Drawing
+    #         dwgCreator.SettingsFile = "C:\\Program Files\\Siemens\\NX1899\\dxfdwg\\dxfdwg.def"
+    #         dwgCreator.OutputFileType = DxfdwgCreator.OutputFileTypeOption.Dwg
+    #         dwgCreator.InputFile = p.input_part
+    #         dwgCreator.OutputFile = p.output_part
+    #         dwgCreator.DrawingList = "4-VIEW"
+    #         dwgCreator.ProcessHoldFlag = true
+    #         dwgCreator.Commit()
+    #         dwgCreator.Destroy()
+    raise NotImplementedError()
+
+
+
+def get_all_descendants(component: Component) -> List[Component]:
+    descendants = []
+    # print_('hdhdhdh')
+
+    if component is None:
+        # print_('none')
+        return descendants
+
+    # Get children of the current component
+    children = component.GetChildren()
+
+    # Iterate through children and collect them recursively
+    for child in children:
+        descendants.append(child)
+        # Recursively get descendants of the child component
+        descendants.extend(get_all_descendants(child))
+
+    return descendants
+
+
+def DescendantParts(part: Part) -> List[Part]:
+    __parts = {}
+    __parts[part.Leaf] = part
+    for component in get_all_descendants(part.ComponentAssembly.RootComponent):
+        if isinstance(component.Prototype, Part):
+            if component.DisplayName not in __parts.keys():
+                __parts[component.DisplayName] = component.Prototype
+    return list(__parts.values())
+
+
+def delete_objects(objects: Sequence[TaggedObject]) -> None:
+    session().UpdateManager.ClearDeleteList()
+    undo = session().SetUndoMark(SessionMarkVisibility.Visible, "DELETE")
+    session().UpdateManager.AddObjectsToDeleteList(objects)
+    session().UpdateManager.DoUpdate(undo)
+

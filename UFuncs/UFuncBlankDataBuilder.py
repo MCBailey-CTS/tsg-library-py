@@ -1,3 +1,6 @@
+from typing import List
+
+
 class UFuncBlankDataBuilder:
     #      public partial class BlankDataBuilder : _UFuncForm
     #  {
@@ -265,8 +268,12 @@ class UFuncBlankDataBuilder:
     #          comboBoxVersion.Items.Add("V24");
     #          comboBoxVersion.Items.Add("V25");
     #      }
+    pass
 
-    #      private void BuildFilesExportDxf(string partFile, Tag[] tagObjects)
+
+def blank_data_builder_BuildFilesExportDxf(
+    partFile: str, tagObjects: List[int]
+) -> None:
     #      {
     #          try
     #          {
@@ -420,16 +427,4 @@ class UFuncBlankDataBuilder:
     #          textBoxRevisionLevel.Text = nameBuilder;
     #      }
 
-    #      private void BlankDataBuilderForm_Load(object sender, EventArgs e)
-    #      {
-    #          Text = ufunc_rev_name;
-    #          Location = Settings.Default.blank_data_builder_form_window_location;
-    #      }
-
-    #      private void BlankDataBuilderForm_FormClosed(object sender, FormClosedEventArgs e)
-    #      {
-    #          Settings.Default.blank_data_builder_form_window_location = Location;
-    #          Settings.Default.Save();
-    #      }
-    #  }
     pass
