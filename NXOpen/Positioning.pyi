@@ -1,5 +1,8 @@
+
 from typing import Iterable
+
 from NXOpen import DisplayableObject
+
 
 class DisplayedConstraintCollection(Iterable[DisplayedConstraint]):
     def __iter__(self):  # type: ignore

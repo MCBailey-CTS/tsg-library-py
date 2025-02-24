@@ -1,7 +1,9 @@
+
 from enum import Enum
 from typing import Iterable, Sequence
 
 from NXOpen import Body, Builder, Edge, Face, NXObject, SelectNXObjectList
+
 
 class RemoveParametersBuilder(Builder):
     @property

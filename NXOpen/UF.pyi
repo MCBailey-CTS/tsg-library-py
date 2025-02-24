@@ -1,5 +1,6 @@
+
 from typing import List, Sequence, Tuple
-import NXOpen
+
 
 class Assem:
     def AskOccsOfPart(

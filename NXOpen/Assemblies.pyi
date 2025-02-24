@@ -1,15 +1,7 @@
-from typing import List, Optional, Sequence, Tuple, Union
-from NXOpen import (
-    Builder,
-    DisplayableObject,
-    Matrix3x3,
-    NXObject,
-    NXObjectAttributeType,
-    Part,
-    Point3d,
-    UpdateOption,
-)
-import NXOpen
+
+from typing import Sequence, Tuple
+from NXOpen import Builder, DisplayableObject, Matrix3x3, NXObjectAttributeType, Part, Point3d, UpdateOption
+
 
 class Component(DisplayableObject):
     def GetChildren(self) -> Sequence[Component]: ...
