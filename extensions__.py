@@ -1,11 +1,11 @@
 from typing import Dict, List, Optional, Sequence, Tuple, Union
 import NXOpen
 from NXOpen import *
-from NXOpen import UF
+from NXOpen import UF  # type: ignore
 from NXOpen.Assemblies import *
-from NXOpen.Drawings import *
-from NXOpen.Features import *
-from NXOpen.UF import *
+from NXOpen.Drawings import * 
+from NXOpen.Features import * 
+from NXOpen.UF import *  
 
 
 class WithLockUpdates:
@@ -100,7 +100,7 @@ def cast_part(obj: Union[TaggedObject, int]) -> Part:
 
 
 def cast_components(
-    tagged_objects: Union[Sequence[TaggedObject] , Sequence[int]],
+    tagged_objects: Union[Sequence[TaggedObject], Sequence[int]],
 ) -> List[Component]:
     components: List[Component] = []
     for obj in tagged_objects:
